@@ -90,6 +90,7 @@
 <script type="text/javascript" src="${contextPath}/resources/ztree/js/jquery.ztree.exhide-3.5.js"></script>
 <script type="text/javascript">
     jQuery(function ($) {
+        bui.loading.show();
         loadTree();
     });
     //加载树
@@ -124,9 +125,11 @@
                     data.data.push({code: "", id: 0, name: "根目录", parent: -1, path: "0", pyInitials: ""});
                 }
                 $.fn.zTree.init($("#treeView1"), settings, data.data);
+                bui.loading.hide();
             },
             error: function () {
                 tips("提示", "加载品类树失败");
+                bui.loading.hide();
             }
         });
     }
@@ -162,6 +165,7 @@
     var isQuery = true;
 
     function loadTable() {
+        bui.loading.show();
         if (isQuery) {
             loadTree();
             if (status) {
@@ -187,6 +191,7 @@
         tableurl = '/cus_category/table.html' + '?parent=' + pid;
         isQuery = false;
         loadTable();
+        bui.loading.hide();
     }
 
     function tips(title, msg) {

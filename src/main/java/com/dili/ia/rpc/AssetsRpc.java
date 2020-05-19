@@ -1,10 +1,7 @@
 package com.dili.ia.rpc;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dili.assets.sdk.dto.BoothDTO;
-import com.dili.assets.sdk.dto.BoothRentDTO;
-import com.dili.assets.sdk.dto.CategoryDTO;
-import com.dili.assets.sdk.dto.DistrictDTO;
+import com.dili.assets.sdk.dto.*;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "assets-service" , url = "http://127.0.0.1:8182")
+@FeignClient(name = "assets-service")
 public interface AssetsRpc {
 
     /**
@@ -23,10 +20,22 @@ public interface AssetsRpc {
     BaseOutput<List<CategoryDTO>> list(CategoryDTO categoryDTO);
 
     /**
+     * 获取客户列表信息
+     */
+    @RequestMapping(value = "/api/customCategory/getTree", method = RequestMethod.POST)
+    BaseOutput<List<CategoryDTO>> listCusCategory(CategoryDTO categoryDTO);
+
+    /**
      * 新增品类
      */
     @RequestMapping(value = "/api/category/save", method = RequestMethod.POST)
     BaseOutput save(CategoryDTO dto);
+
+    /**
+     * 新增品类
+     */
+    @RequestMapping(value = "/api/customCategory/save", method = RequestMethod.POST)
+    BaseOutput saveCusCategory(CustomCategoryDTO dto);
 
     /**
      * 获取单个品类
@@ -35,10 +44,22 @@ public interface AssetsRpc {
     BaseOutput<CategoryDTO> get(Long id);
 
     /**
+     * 获取单个品类
+     */
+    @RequestMapping(value = "/api/customCategory/get", method = RequestMethod.POST)
+    BaseOutput<CustomCategoryDTO> getCusCategory(@RequestParam("id") Long id, @RequestParam("marketId") Long marketId);
+
+    /**
      * 删除品类
      */
     @RequestMapping(value = "/api/category/batchUpdate", method = RequestMethod.POST)
     BaseOutput batchUpdate(@RequestParam("id") Long id, @RequestParam("value") Integer value);
+
+    /**
+     * 删除品类
+     */
+    @RequestMapping(value = "/api/customCategory/batchUpdate", method = RequestMethod.POST)
+    BaseOutput batchCusCategoryUpdate(@RequestParam("id") Long id, @RequestParam("value") Integer value, @RequestParam("marketId") Long marketId);
 
     /**
      * 新增摊位

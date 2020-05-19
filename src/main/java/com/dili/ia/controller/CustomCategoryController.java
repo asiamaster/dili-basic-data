@@ -1,6 +1,7 @@
 package com.dili.ia.controller;
 
 import com.dili.assets.sdk.dto.CategoryDTO;
+import com.dili.assets.sdk.dto.CustomCategoryDTO;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.ia.rpc.AssetsRpc;
 import com.dili.ia.util.LogBizTypeConst;
@@ -28,8 +29,8 @@ import java.util.*;
  * CategoryController
  */
 @Controller
-@RequestMapping("/category")
-public class CategoryController {
+@RequestMapping("/cus_category")
+public class CustomCategoryController {
 
     @Autowired
     private AssetsRpc assetsRpc;
@@ -39,50 +40,18 @@ public class CategoryController {
      */
     @RequestMapping("list.html")
     public String list() {
-        return "category/list";
+        return "cus_category/list";
     }
 
-    /**
-     * 返回添加品类页面片段
-     */
-    @RequestMapping("addView.html")
-    public String toAdd(Long pid, ModelMap map) {
-        // 品类未选择或者选择根品类时，添加页面不显示上级品类字段
-        if (pid == null) {
-            pid = 0L;
-        }
-        if (pid != 0) {
-            map.put("pid", pid);
-            CategoryDTO data = assetsRpc.get(pid).getData();
-            map.put("parentName", data.getName());
-        }
-        return "category/add";
-    }
 
     /**
      * 返回修改品类页面片段
      */
     @RequestMapping("editView.html")
     public String toEdit(Long id, ModelMap map) {
-        map.put("obj", assetsRpc.get(id).getData());
-        return "category/edit";
-    }
-
-    /**
-     * 中文转拼音
-     */
-    @RequestMapping(value = "/convert.action")
-    @ResponseBody
-    public Map<String, Object> convert(String name) {
-        Map<String, Object> map = new HashMap<>();
-        if (name == null || name.trim().length() == 0) {
-            map.put("first", "");
-            map.put("whole", "");
-            return map;
-        }
-        map.put("first", PinyinUtil.converterToFirstSpell(name));
-        map.put("whole", PinyinUtil.converterToSpell(name));
-        return map;
+        map.put("obj", assetsRpc.getCusCategory(id, SessionContext.getSessionContext().getUserTicket().getFirmId()).getData());
+        map.put("category", id);
+        return "cus_category/edit";
     }
 
     /**
@@ -92,34 +61,29 @@ public class CategoryController {
     @ResponseBody
     public BaseOutput<List<CategoryDTO>> getTree(CategoryDTO input) {
         try {
-            return assetsRpc.list(input);
+            input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+            return assetsRpc.listCusCategory(input);
         } catch (Exception e) {
             return BaseOutput.failure(e.getMessage());
         }
     }
 
     /**
-     * 新增品类
+     * 设置品类
      */
     @RequestMapping(value = "/save.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput save(CategoryDTO input) {
+    public BaseOutput save(CustomCategoryDTO input) {
         try {
-            input.setCreateTime(new Date());
-            input.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
-            input.setModifyTime(new Date());
-            if (input.getId() != null) {
-                LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
-            }
-            BaseOutput save = assetsRpc.save(input);
-            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
+            input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+            BaseOutput save = assetsRpc.saveCusCategory(input);
             return save;
         } catch (Exception e) {
             return BaseOutput.failure("系统异常");
         }
     }
+
 
     /**
      * 品类列表页面
@@ -132,16 +96,23 @@ public class CategoryController {
         List<CategoryDTO> results = new ArrayList<>();
 
         if (input.getParent() != null && input.getParent() != 0) {
-            CategoryDTO c = assetsRpc.get(input.getParent()).getData();
-            if (c.getState() != 3) {
-                results.add(c);
+            CustomCategoryDTO ccDto = assetsRpc.getCusCategory(input.getParent(), SessionContext.getSessionContext().getUserTicket().getFirmId()).getData();
+            CategoryDTO categoryDTO = assetsRpc.get(input.getParent()).getData();
+            if (categoryDTO.getState() != 3) {
+                if (ccDto != null) {
+                    categoryDTO.setKeycode(ccDto.getKeycode());
+                    categoryDTO.setCusName(ccDto.getCusName());
+                    categoryDTO.setState(ccDto.getState());
+                }
+                results.add(categoryDTO);
             }
         }
         Map<String, Object> map = new HashMap<>();
-        List<CategoryDTO> list = assetsRpc.list(input).getData();
+        input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        List<CategoryDTO> list = assetsRpc.listCusCategory(input).getData();
         results.addAll(list);
         map.put("obj", results);
-        return new ModelAndView("category/table", map);
+        return new ModelAndView("cus_category/table", map);
     }
 
     /**
@@ -155,7 +126,7 @@ public class CategoryController {
     @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
     public BaseOutput batchUpdate(Long id, Integer value) {
         try {
-            BaseOutput baseOutput = assetsRpc.batchUpdate(id, value);
+            BaseOutput baseOutput = assetsRpc.batchCusCategoryUpdate(id, value, SessionContext.getSessionContext().getUserTicket().getFirmId());
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             if (value.equals(EnabledStateEnum.ENABLED.getCode())) {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "enable");
@@ -167,31 +138,10 @@ public class CategoryController {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "del");
             }
 
-
             LoggerUtil.buildLoggerContext(id, String.valueOf(value), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;
         } catch (Exception e) {
             return BaseOutput.failure("系统异常");
-        }
-    }
-
-    /**
-     * list Category
-     */
-    @ApiOperation("list category")
-    @RequestMapping(value = "/search.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput<List<CategoryDTO>> search(String keyword) {
-        CategoryDTO categoryDTO = new CategoryDTO();
-        if(null == keyword){
-            categoryDTO.setParent(0L);
-        }else{
-            categoryDTO.setKeyword(keyword.toString());
-        }
-        try {
-            return assetsRpc.list(categoryDTO);
-        } catch (Exception e) {
-            return BaseOutput.success().setData(new ArrayList<>());
         }
     }
 }

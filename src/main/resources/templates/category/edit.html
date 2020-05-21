@@ -53,6 +53,7 @@
                         updateTreeNode(data.data);
                         $('#editModal').modal('hide');
                         tips("提示", "品类信息修改成功!");
+                        bui.loading.hide();
                         okButton.removeAttr("disabled");
                     },
                     error: function () {

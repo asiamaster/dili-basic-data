@@ -59,6 +59,7 @@
                         addTreeNode($("#parentId").val(), data.data, true);
                         $('#addModal').modal('hide');
                         bs4pop.alert("品类信息新增成功", {type: 'success'});
+                        bui.loading.hide();
                         okButton.removeAttr("disabled");
                     },
                     error: function () {

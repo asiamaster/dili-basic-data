@@ -36,6 +36,7 @@
                         loadTable();
                         $('#editModal').modal('hide');
                         tips("提示", "设置成功!");
+                        bui.loading.hide();
                         okButton.removeAttr("disabled");
                     },
                     error: function () {

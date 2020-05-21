@@ -87,6 +87,7 @@
                         }
                         loadTable();
                         tips("提示", "禁用品类成功!");
+                        bui.loading.hide();
                     },
                     error: function () {
                         tips("提示", "禁用品类失败!");
@@ -121,6 +122,7 @@
                         }
                         loadTable();
                         tips("提示", "启用品类成功!");
+                        bui.loading.hide();
                     },
                     error: function () {
                         tips("提示", "启用品类失败!");

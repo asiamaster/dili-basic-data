@@ -1,16 +1,22 @@
 package com.dili.ia.rpc;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.assets.sdk.dto.*;
-import com.dili.ss.domain.BaseOutput;
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
+import com.dili.assets.sdk.dto.BoothDTO;
+import com.dili.assets.sdk.dto.BoothRentDTO;
+import com.dili.assets.sdk.dto.CarTypeDTO;
+import com.dili.assets.sdk.dto.CarTypePublicDTO;
+import com.dili.assets.sdk.dto.CategoryDTO;
+import com.dili.assets.sdk.dto.DistrictDTO;
+import com.dili.ss.domain.BaseOutput;
 
-@FeignClient(name = "assets-service")
+@FeignClient(name = "assets-service", url = "http://127.0.0.1:8182")
 public interface AssetsRpc {
 
     /**
@@ -175,4 +181,61 @@ public interface AssetsRpc {
     @RequestMapping(value = "/api/boothRent/updateEnd", method = RequestMethod.POST)
     BaseOutput updateEndBoothRent(BoothRentDTO input);
 
+    /**
+     * 获取车型列表
+     */
+    @RequestMapping(value = "/api/carType/listPage", method = RequestMethod.GET)
+    String listPage(CarTypeDTO input);
+    /**
+     * 新增车型
+     */
+    @RequestMapping(value = "/api/carType/save", method = RequestMethod.POST)
+    BaseOutput save(CarTypeDTO dto);
+    /**
+     * 根据@param{车型id}获取车型
+     */
+    @RequestMapping(value = "/api/carType/get", method = RequestMethod.POST)
+	BaseOutput<CarTypeDTO> getCarTypeById(Long id);
+    /**
+     * 修改车型
+     */
+    @RequestMapping(value = "/api/carType/update", method = RequestMethod.POST)
+    BaseOutput update(CarTypeDTO carType);
+    /**
+     * 删除车型
+     */
+    @RequestMapping(value = "/api/carType/delete", method = RequestMethod.POST)
+    BaseOutput delete(Long id);
+    /**
+     * 获取车型列表
+     */
+    @RequestMapping(value = "/api/carTypePublic/listPage", method = RequestMethod.GET)
+    String listPage(CarTypePublicDTO input);
+    /**
+     * 根据@param{车型id}获取车型
+     */
+    @RequestMapping(value = "/api/carTypePublic/get", method = RequestMethod.POST)
+    BaseOutput getCarTypePublicById(CarTypePublicDTO carTypePublic);
+    /**
+     * 新增车型
+     */
+    @RequestMapping(value = "/api/carTypePublic/save", method = RequestMethod.POST)
+    BaseOutput save(CarTypePublicDTO dto);
+    /**
+     * 修改车型
+     */
+    @RequestMapping(value = "/api/carTypePublic/update", method = RequestMethod.POST)
+    BaseOutput update(CarTypePublicDTO carTypePublic);
+
+    /**
+     * 修改车型状态
+     */
+    @RequestMapping(value = "/api/carTypePublic/updateStatus", method = RequestMethod.POST)
+	BaseOutput updateStatus(CarTypePublicDTO carTypePublic);
+    
+    /**
+     * 删除车型
+     */
+    @RequestMapping(value = "/api/carTypePublic/deleteTagExt", method = RequestMethod.POST)
+    BaseOutput deleteTagExt(CarTypePublicDTO carTypePublic);
 }

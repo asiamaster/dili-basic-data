@@ -1,0 +1,145 @@
+<style>
+    #updateForm .select2-container--default .select2-selection--single {
+        border: 1px solid #DBDDE1;
+        height: 33.5px;
+
+    }
+    #updateForm .select2-container--default .select2-selection--single .select2-selection__rendered {
+        line-height: 33.5px;
+    }
+</style>
+<div class="container-fluid">
+    <form class="form" id="updateForm">
+        <input type="hidden" name="id" value="${obj.id!}">
+        <input type="hidden" name="carTypeId" value="${carTypeId!}">
+        <input type="hidden" name="carType.name" value="${name!}">
+        <p style="color: red;">${number!}-${name!}</p>
+        <div id="baseInfo" class="row row-cols-1 mx-auto">
+	        <div class="form-group col">
+	            <label for="number">快捷编码</label>
+	            <input type="text" class="form-control" name="code" value="${obj.code!}" id="code" maxlength="6" required/>
+	        </div>
+	        <div class="form-group col">
+	            <label>标签以及自重</label>
+	            <div class="" id="tagCheckboxDiv">
+	            	<%for(tag in cartypeTags){%>
+	                        <div class="custom-control custom-checkbox tag-checkbox">
+						        <% 
+						        	var ss = '';
+						        	if(obj != null){
+							        	ss = obj[(tag.code + '_weight')];
+						        	}
+						        
+						        %>
+					        	<input type="checkbox" value="${tag.code!}" id="c_tagCheckbox_${tagLP.index!}" name="tag" class="custom-control-input" <% if(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code)){%>checked<%}%> onclick="changeInput(this)">
+						        <label class="custom-control-label" for="c_tagCheckbox_${tagLP.index!}" >${tag.name!}-</label>
+				        		<input type="text" class="custom-control-inline tagValue" name="tagExtWeight"  value="${ss!}" <% if(!(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code))){%> disabled  <%}%> digits="true" maxlength="20" placeholder="公斤"/>
+				        		<input type="hidden" value="${tag.code!}" name="tagExtCode">
+				        		<input type="hidden" value="${tag.name!}" name="tagExtName">
+					    	</div>
+					<%}%>
+				</div>
+				
+	        </div>
+	        <div class="form-group col">
+	            <label for="c_autoPassCheckbox">自动放行</label>
+	            <div>
+				    <div class="custom-control custom-checkbox">
+				        <input type="checkbox" id="c_autoPassCheckbox" value="1" name="autoPass" class="custom-control-input">
+				        <label class="custom-control-label" for="c_autoPassCheckbox">是</label>
+				    </div>
+				</div>
+	        </div>
+	        <div class="form-group col">
+	            <label for="c_autoSaveCheckbox">是否存储</label>
+	            <div>
+				    <div class="custom-control custom-checkbox">
+				        <input type="checkbox" id="c_autoSaveCheckbox" value="1" name="autoSave" class="custom-control-input">
+				        <label class="custom-control-label" for="c_autoSaveCheckbox">是</label>
+				    </div>
+				</div>
+	        </div>
+	        <div class="form-group col">
+	            <label for="notes">备注</label>
+	            <textarea class="form-control" id="remark" name="remark" rows="1" maxlength="100">${obj.remark!}</textarea>
+	        </div>
+	    </div>
+
+        <div class="text-right">
+            <button type="button" class="btn btn-secondary px-5" data-dismiss="modal" id="cancel">取消</button>
+            <button type="button" class="btn btn-primary px-5" id="editformSubmit">提交</button>
+        </div>
+    </form>
+</div>
+<script>
+	var autoPass = '${obj.autoPass!}';
+	var autoSave = '${obj.autoSave!}';
+	$(function(){
+		if(autoPass && autoPass == 1){
+			$("#c_autoPassCheckbox").attr("checked", "checked");
+		}
+		if(autoSave && autoSave == 1){
+			$("#c_autoSaveCheckbox").attr("checked", "checked");
+		}
+	})
+	
+	function changeInput(checkbox){
+		var input = $(checkbox).parent().find(".tagValue");
+		if(typeof($(input[0]).attr("disabled")) == "undefined"){
+			$(input[0]).attr("disabled", "disabled");
+		}else{
+			$(input[0]).attr("disabled", false);
+		}
+	}
+    // 提交保存
+    $('#editformSubmit').on('click', function (e) {
+        if (!$('#updateForm').valid()) {
+            return false;
+        } else {
+            bui.loading.show('努力提交中，请稍候。。。');
+            let _formData = new FormData($('#updateForm')[0]);
+            if(!$("input[name=autoPass]").attr("checked")){
+	            _formData.append("autoPass", 2);
+            }
+            var tags = $("input[name=tag]:checked");
+            var carTypePublicId = $("input[name=id]").val();
+            for (var i = 0; i < tags.length; i++) {
+            	var weight = $(tags[i]).closest(".tag-checkbox").find("input[name=tagExtWeight]").val();
+            	var code = $(tags[i]).closest(".tag-checkbox").find("input[name=tagExtCode]").val();
+            	var name = $(tags[i]).closest(".tag-checkbox").find("input[name=tagExtName]").val();
+				 _formData.append("tagExt[" + i + "].weight", weight);
+				 _formData.append("tagExt[" + i + "].name", name);
+				 _formData.append("tagExt[" + i + "].code", code);
+				 _formData.append("tagExt[" + i + "].carTypePublicId", carTypePublicId);
+			}
+            _formData.append("opType","edit");
+            $.ajax({
+                type: "POST",
+                url: "/carTypePublic/update.action",
+                data: _formData,
+                processData: false,
+                contentType: false,
+                async: true,
+                success: function (res) {
+                    bui.loading.hide();
+                    if (res.code == "200") {
+                        bs4pop.alert('成功', {type: 'success'}, function () {
+                            /* 应该要带条件刷新 */
+                            window.location.reload();
+                        });
+                    } else {
+                        bui.loading.hide();
+                        bs4pop.alert(res.result, {type: 'error'});
+                    }
+                },
+                error: function (error) {
+                    bui.loading.hide();
+                    bs4pop.alert(error.result, {type: 'error'});
+                }
+            });
+        }
+    });
+
+</script>
+
+

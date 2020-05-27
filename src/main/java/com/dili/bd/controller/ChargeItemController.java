@@ -98,13 +98,23 @@ public class ChargeItemController {
         }
         try {
             chargeItem.setModifyTime(LocalDateTime.now());
+            chargeItem.setOperatorId(SessionContext.getSessionContext().getUserTicket().getId());
             if (Objects.isNull(chargeItem.getId())) {
                 chargeItem.setCreateTime(chargeItem.getModifyTime());
                 chargeItem.setIsDelete(YesOrNoEnum.NO.getCode());
                 chargeItem.setIsEnable(YesOrNoEnum.YES.getCode());
+                chargeItemRpc.save(chargeItem);
+            }else{
+                Optional<ChargeItemDto> item = this.getById(chargeItem.getId());
+                if (item.isPresent()) {
+                    ChargeItemDto old = item.get();
+                    old.setName(chargeItem.getName());
+                    old.setNotes(chargeItem.getNotes());
+                    chargeItemRpc.save(old);
+                }else{
+                    return BaseOutput.failure("数据已不存在");
+                }
             }
-            chargeItem.setOperatorId(SessionContext.getSessionContext().getUserTicket().getId());
-            chargeItemRpc.save(chargeItem);
             return BaseOutput.success();
         } catch (Exception e) {
             log.error(String.format("保存收费项信息[$s]出现异常:[%s]", chargeItem.toString(), e.getMessage()), e);

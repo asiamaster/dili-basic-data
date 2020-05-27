@@ -1,4 +1,4 @@
-package com.dili.ia.provider;
+package com.dili.bd.provider;
 
 import com.alibaba.fastjson.JSONObject;
 import com.dili.ss.dto.DTOUtils;
@@ -18,7 +18,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 数据字典批量提供者
+ * <B></B>
+ * <B>Copyright:本软件源代码版权归农丰时代科技有限公司及其研发团队所有,未经许可不得任意复制与传播.</B>
+ * <B>农丰时代科技有限公司</B>
+ *
+ * @author yuehongbo
+ * @date 2020/5/27 15:59
  */
 @Component
 public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor {
@@ -31,7 +36,7 @@ public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor
 
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
-    	Object queryParams = metaMap.get(QUERY_PARAMS_KEY);
+        Object queryParams = metaMap.get(QUERY_PARAMS_KEY);
         if (queryParams == null) {
             return Lists.newArrayList();
         }
@@ -40,7 +45,7 @@ public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor
         DataDictionaryValue dataDictionary = DTOUtils.newInstance(DataDictionaryValue.class);
         dataDictionary.setDdCode(code);
         dataDictionary.setFirmCode(market_code);
-        
+
         List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionary).getData();
         if (CollectionUtils.isEmpty(list)) {
             return null;

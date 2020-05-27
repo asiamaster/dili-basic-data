@@ -1,20 +1,14 @@
-package com.dili.ia.rpc;
+package com.dili.bd.rpc;
 
-import java.util.List;
-
+import com.alibaba.fastjson.JSONObject;
+import com.dili.assets.sdk.dto.*;
+import com.dili.ss.domain.BaseOutput;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.assets.sdk.dto.BoothDTO;
-import com.dili.assets.sdk.dto.BoothRentDTO;
-import com.dili.assets.sdk.dto.CarTypeDTO;
-import com.dili.assets.sdk.dto.CarTypePublicDTO;
-import com.dili.assets.sdk.dto.CategoryDTO;
-import com.dili.assets.sdk.dto.DistrictDTO;
-import com.dili.ss.domain.BaseOutput;
+import java.util.List;
 
 @FeignClient(name = "assets-service", url = "http://127.0.0.1:8182")
 public interface AssetsRpc {

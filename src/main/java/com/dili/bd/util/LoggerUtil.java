@@ -1,9 +1,7 @@
-package com.dili.ia.util;
+package com.dili.bd.util;
 
 import com.dili.logger.sdk.base.LoggerContext;
-import com.dili.logger.sdk.domain.BusinessLog;
 import com.dili.logger.sdk.glossary.LoggerConstant;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * <B>Description</B>

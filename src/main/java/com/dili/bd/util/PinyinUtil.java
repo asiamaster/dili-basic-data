@@ -1,4 +1,4 @@
-package com.dili.ia.util;
+package com.dili.bd.util;
 
 import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;

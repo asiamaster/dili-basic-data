@@ -1,4 +1,4 @@
-package com.dili.ia.util;
+package com.dili.bd.util;
 
 /**
  * <B>Description</B>

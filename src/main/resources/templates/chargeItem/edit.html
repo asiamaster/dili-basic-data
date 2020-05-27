@@ -1,0 +1,65 @@
+<#bs4Body>
+<div class="container-fluid">
+    <form id="addForm" role="form" novalidate>
+        <input type="hidden" id="id" name="id" value="${chargeItem.id!}">
+        <div class="row row-cols-1">
+            <div class="form-group col">
+                <label for="code" class="">收费项编码</label>
+                <input type="text" class="form-control" id="code" name="code" maxlength="20" value="${chargeItem.code!}"/>
+            </div>
+            <div class="form-group col">
+                <label for="" class="">收费项名称<i class="red">*</i></label>
+                <input type="text" class="form-control" id="name" name="name" maxlength="50" value="${chargeItem.name!}" required/>
+            </div>
+            <div class="form-group col">
+                <label for="" class="">备注</label>
+                <textarea type="text" class="form-control" id="notes" name="notes" maxlength="255">${chargeItem.notes!}</textarea>
+            </div>
+        </div>
+        <div class="text-right mt-2">
+            <button type="button" class="btn btn-secondary px-5" id="formCancel" onclick="javascript:parent.dia.hide()">取消</button>
+            <button type="button" class="btn btn-primary px-5" id="formSubmit">保存</button>
+        </div>
+    </form>
+</div>
+</#bs4Body>
+
+<script>
+
+    /**
+     * 保存数据
+     */
+    $('#formSubmit').on('click', function () {
+        if (!$('#addForm').valid()) {
+            return false;
+        } else {
+            bui.loading.show('努力提交中，请稍候。。。');
+            let _formData = $('#addForm').serialize();
+            let url = "${contextPath}/chargeItem/save.action";
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: _formData,
+                async: true,
+                success: function (ret) {
+                    bui.loading.hide();
+                    if (ret.success) {
+                        bs4pop.alert('保存成功', {type: 'success',width: 400}, function () {
+                            parent.dia.hide();
+                            parent.queryDataHandler();
+                        });
+                    } else {
+                        bs4pop.alert(ret.message, {width: 400,type: 'error'});
+                    }
+                },
+                error: function (error) {
+                    bui.loading.hide();
+                    bs4pop.alert(error.result, {width: 400,type: 'error'},function () {
+
+                    });
+                }
+            });
+        }
+    });
+
+</script>

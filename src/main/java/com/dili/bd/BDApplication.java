@@ -1,4 +1,4 @@
-package com.dili.ia;
+package com.dili.bd;
 
 
 import com.dili.ss.dto.DTOScan;
@@ -12,16 +12,14 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.client.RestTemplate;
-import tk.mybatis.spring.annotation.MapperScan;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"com.dili.ia.rpc", "com.dili.logger.sdk.rpc"})
-@MapperScan(basePackages = { "com.dili.ia.mapper", "com.dili.ss.dao"})
-@ComponentScan(basePackages={"com.dili.ss", "com.dili.ia", "com.dili.uap.sdk", "com.dili.logger.sdk"})
-@RestfulScan({"com.dili.ia.rpc","com.dili.uap.sdk.rpc"})
-@DTOScan(value={"com.dili.ss", "com.dili.ia.domain", "com.dili.uap.sdk.domain"})
-public class IAApplication  extends SpringBootServletInitializer {
+@EnableFeignClients(basePackages = {"com.dili.bd.rpc", "com.dili.logger.sdk.rpc"})
+@ComponentScan(basePackages={"com.dili.ss", "com.dili.bd", "com.dili.uap.sdk", "com.dili.logger.sdk"})
+@RestfulScan({"com.dili.bd.rpc","com.dili.uap.sdk.rpc"})
+@DTOScan(value={"com.dili.assets.sdk.dto"})
+public class BDApplication extends SpringBootServletInitializer {
 
 	@LoadBalanced
 	@Bean
@@ -30,7 +28,7 @@ public class IAApplication  extends SpringBootServletInitializer {
 	}
 
 	public static void main(String[] args) {
-		SpringApplication.run(IAApplication.class, args);
+		SpringApplication.run(BDApplication.class, args);
 	}
 
 

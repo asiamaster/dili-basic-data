@@ -1,25 +1,22 @@
-package com.dili.ia.controller;
+package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CategoryDTO;
 import com.dili.assets.sdk.dto.CustomCategoryDTO;
 import com.dili.commons.glossary.EnabledStateEnum;
-import com.dili.ia.rpc.AssetsRpc;
-import com.dili.ia.util.LogBizTypeConst;
-import com.dili.ia.util.LoggerUtil;
-import com.dili.ia.util.PinyinUtil;
+import com.dili.bd.rpc.AssetsRpc;
+import com.dili.bd.util.LogBizTypeConst;
+import com.dili.bd.util.LoggerUtil;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
 import com.dili.logger.sdk.glossary.LoggerConstant;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 

@@ -1,4 +1,4 @@
-package com.dili.ia.rpc;
+package com.dili.bd.rpc;
 
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.retrofitful.annotation.POST;

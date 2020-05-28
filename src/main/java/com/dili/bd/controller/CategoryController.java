@@ -1,11 +1,11 @@
-package com.dili.ia.controller;
+package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CategoryDTO;
 import com.dili.commons.glossary.EnabledStateEnum;
-import com.dili.ia.rpc.AssetsRpc;
-import com.dili.ia.util.LogBizTypeConst;
-import com.dili.ia.util.LoggerUtil;
-import com.dili.ia.util.PinyinUtil;
+import com.dili.bd.rpc.AssetsRpc;
+import com.dili.bd.util.LogBizTypeConst;
+import com.dili.bd.util.LoggerUtil;
+import com.dili.bd.util.PinyinUtil;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
 import com.dili.logger.sdk.glossary.LoggerConstant;

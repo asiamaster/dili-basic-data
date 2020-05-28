@@ -1,4 +1,4 @@
-package com.dili.ia.util;
+package com.dili.bd.util;
 
 public class LogBizTypeConst {
     //摊位租赁类型
@@ -13,7 +13,7 @@ public class LogBizTypeConst {
     public static final String BOOTH="booth";
     public static final String CATEGORY="category";
     public static final String DISTRICT="district";
-
+    public static final String CAR_TYPE="carType";
 
 
 }

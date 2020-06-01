@@ -228,35 +228,7 @@
         $(this).find('.invalid-feedback').css('display', 'none');
     });
 
-    $.ajax({
-        type: "POST",
-        url: "/district/search.action",
-        data: {parentId: 0},
-        success: function (data) {
-            if (data.code == "200") {
-                var array = [];
-                array.push({text:"-- 全部 --",id:""});
-                var data = $.map(data.data, function (obj) {
-                    obj.text = obj.text || obj.name;
-                    return obj;
-                });
-                for (var x in data) {
-                    array.push(data[x]);
-                }
-                if (data.length == 0) {
-                    $('#areaOneList').html("");
-                    $('#areaTwoList').html("");
-                } else {
-                    $("#areaOneList").select2({
-                        data: array,
-                        language:'zh-CN',
-                        width: "50%",
-                        minimumResultsForSearch: Infinity
-                    });
-                }
-            }
-        }
-    });
+    
     $("#areaOneList").change(function () {
         if ($(this).val() != "") {
             $.ajax({

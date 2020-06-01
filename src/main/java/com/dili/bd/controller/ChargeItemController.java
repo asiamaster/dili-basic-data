@@ -63,7 +63,7 @@ public class ChargeItemController {
             List results = true ? ValueProviderUtils.buildDataByProvider(chargeItem, listPage.getData()) : listPage.getData();
             return new EasyuiPageOutput(listPage.getTotal(), results).toString();
         } catch (Exception e) {
-            log.error(String.format("根据[%s]查询收费项列表异常,[%s]", chargeItem, e.getMessage()), e);
+//            log.error(String.format("根据[%s]查询收费项列表异常,[%s]", chargeItem, e.getMessage()), e);
             return new EasyuiPageOutput(0, Collections.emptyList()).toString();
         }
     }
@@ -117,7 +117,7 @@ public class ChargeItemController {
             }
             return BaseOutput.success();
         } catch (Exception e) {
-            log.error(String.format("保存收费项信息[$s]出现异常:[%s]", chargeItem.toString(), e.getMessage()), e);
+//            log.error(String.format("保存收费项信息[$s]出现异常:[%s]", chargeItem.toString(), e.getMessage()), e);
             return BaseOutput.failure();
         }
     }
@@ -172,7 +172,7 @@ public class ChargeItemController {
             }
             return BaseOutput.success("删除成功");
         } catch (Exception e) {
-            log.error(String.format("删除收费项[%d]异常:[%s]", id, e.getMessage()), e);
+//            log.error(String.format("删除收费项[%d]异常:[%s]", id, e.getMessage()), e);
             return BaseOutput.failure();
         }
     }

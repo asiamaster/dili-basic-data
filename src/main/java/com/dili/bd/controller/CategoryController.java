@@ -1,18 +1,17 @@
 package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CategoryDTO;
-import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.bd.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.bd.util.PinyinUtil;
+import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
 import com.dili.logger.sdk.glossary.LoggerConstant;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -178,7 +177,6 @@ public class CategoryController {
     /**
      * list Category
      */
-    @ApiOperation("list category")
     @RequestMapping(value = "/search.action", method = {RequestMethod.GET, RequestMethod.POST})
     public @ResponseBody
     BaseOutput<List<CategoryDTO>> search(String keyword) {

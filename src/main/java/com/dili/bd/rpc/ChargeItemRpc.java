@@ -18,7 +18,7 @@ import java.util.List;
  * @author yuehongbo
  * @date 2020/5/27 10:21
  */
-@FeignClient(name = "assets-service",contextId = "chargeItemRpc",url = "http://127.0.0.1:8182")
+@FeignClient(name = "assets-service", contextId = "chargeItemRpc")
 public interface ChargeItemRpc {
     /**
      * 获取收费项列表信息

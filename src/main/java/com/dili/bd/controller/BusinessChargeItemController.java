@@ -1,9 +1,9 @@
 package com.dili.bd.controller;
 
-import com.dili.assets.sdk.dto.ChargeItemDto;
-import com.dili.bd.rpc.ChargeItemRpc;
+import cn.hutool.core.collection.CollectionUtil;
+import com.dili.assets.sdk.dto.BusinessChargeItemDto;
+import com.dili.bd.rpc.BusinessChargeItemRpc;
 import com.dili.commons.glossary.YesOrNoEnum;
-import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;
 import com.dili.ss.domain.PageOutput;
@@ -29,41 +29,41 @@ import java.util.Optional;
  * <B>农丰时代科技有限公司</B>
  *
  * @author yuehongbo
- * @date 2020/5/27 10:34
+ * @date 2020/5/28 17:47
  */
 @Slf4j
 @Controller
-@RequestMapping("/chargeItem")
-public class ChargeItemController {
+@RequestMapping("/businessChargeItem")
+public class BusinessChargeItemController {
 
     @Autowired
-    private ChargeItemRpc chargeItemRpc;
+    private BusinessChargeItemRpc businessChargeItemRpc;
 
     /**
-     * 跳转到收费项管理首页面
+     * 跳转到业务费用项管理首页面
      * @param modelMap
      * @return String
      */
     @RequestMapping(value = "/index.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
-        return "chargeItem/list";
+        return "businessChargeItem/list";
     }
 
     /**
      * 分页查询收费项列表信息
-     * @param chargeItem
+     * @param businessChargeItemDto
      * @return
      * @throws Exception
      */
     @RequestMapping(value = "/listPage.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public String listPage(ChargeItemDto chargeItem) {
+    public String listPage(BusinessChargeItemDto businessChargeItemDto) {
         try {
-            PageOutput<List<ChargeItemDto>> listPage = chargeItemRpc.listPage(chargeItem);
-            List results = true ? ValueProviderUtils.buildDataByProvider(chargeItem, listPage.getData()) : listPage.getData();
+            PageOutput<List<BusinessChargeItemDto>> listPage = businessChargeItemRpc.listPage(businessChargeItemDto);
+            List results = true ? ValueProviderUtils.buildDataByProvider(businessChargeItemDto, listPage.getData()) : listPage.getData();
             return new EasyuiPageOutput(listPage.getTotal(), results).toString();
         } catch (Exception e) {
-            log.error(String.format("根据[%s]查询收费项列表异常,[%s]", chargeItem, e.getMessage()), e);
+            log.error(String.format("根据[%s]查询业务费用项列表异常,[%s]", businessChargeItemDto, e.getMessage()), e);
             return new EasyuiPageOutput(0, Collections.emptyList()).toString();
         }
     }
@@ -77,22 +77,23 @@ public class ChargeItemController {
     @RequestMapping(value = "/preSave.html", method = {RequestMethod.GET})
     public String preSave(Long id, ModelMap modelMap) {
         if (Objects.nonNull(id)) {
-            Optional<ChargeItemDto> item = this.getById(id);
+            Optional<BusinessChargeItemDto> item = this.getById(id);
             if (item.isPresent()) {
-                modelMap.put("chargeItem", item.get());
+                modelMap.put("businessChargeItem", item.get());
             }
         }
-        return "chargeItem/edit";
+        return "businessChargeItem/edit";
     }
 
+
     /**
-     * 保存收费项信息
+     * 保存业务收费项信息
      * @param chargeItem
      * @return
      */
     @RequestMapping(value = "/save.action", method = {RequestMethod.POST})
     @ResponseBody
-    public BaseOutput save(ChargeItemDto chargeItem) {
+    public BaseOutput save(BusinessChargeItemDto chargeItem) {
         if (Objects.isNull(chargeItem)) {
             return BaseOutput.failure("参数丢失");
         }
@@ -100,24 +101,27 @@ public class ChargeItemController {
             chargeItem.setModifyTime(LocalDateTime.now());
             chargeItem.setOperatorId(SessionContext.getSessionContext().getUserTicket().getId());
             if (Objects.isNull(chargeItem.getId())) {
+                Boolean notExist = this.checkNotExist(chargeItem);
+                if (!notExist){
+                    return BaseOutput.failure("对应关系已存在");
+                }
                 chargeItem.setCreateTime(chargeItem.getModifyTime());
                 chargeItem.setIsDelete(YesOrNoEnum.NO.getCode());
                 chargeItem.setIsEnable(YesOrNoEnum.YES.getCode());
-                chargeItemRpc.save(chargeItem);
+                businessChargeItemRpc.save(chargeItem);
             }else{
-                Optional<ChargeItemDto> item = this.getById(chargeItem.getId());
+                Optional<BusinessChargeItemDto> item = this.getById(chargeItem.getId());
                 if (item.isPresent()) {
-                    ChargeItemDto old = item.get();
-                    old.setName(chargeItem.getName());
+                    BusinessChargeItemDto old = item.get();
                     old.setNotes(chargeItem.getNotes());
-                    chargeItemRpc.save(old);
+                    businessChargeItemRpc.save(old);
                 }else{
                     return BaseOutput.failure("数据已不存在");
                 }
             }
             return BaseOutput.success();
         } catch (Exception e) {
-            log.error(String.format("保存收费项信息[%s]出现异常:[%s]", chargeItem.toString(), e.getMessage()), e);
+            log.error(String.format("保存业务费用项信息[%s]出现异常:[%s]", chargeItem.toString(), e.getMessage()), e);
             return BaseOutput.failure();
         }
     }
@@ -134,16 +138,16 @@ public class ChargeItemController {
         if (Objects.isNull(id) || Objects.isNull(enable)) {
             return BaseOutput.failure("必要参数丢失");
         }
-        Optional<ChargeItemDto> item = this.getById(id);
+        Optional<BusinessChargeItemDto> item = this.getById(id);
         if (item.isPresent()) {
-            ChargeItemDto chargeItem = item.get();
+            BusinessChargeItemDto chargeItem = item.get();
             if (enable) {
                 chargeItem.setIsEnable(YesOrNoEnum.YES.getCode());
             } else {
                 chargeItem.setIsEnable(YesOrNoEnum.NO.getCode());
             }
             chargeItem.setOperatorId(SessionContext.getSessionContext().getUserTicket().getId());
-            chargeItemRpc.save(chargeItem);
+            businessChargeItemRpc.save(chargeItem);
             return BaseOutput.success();
         } else {
             return BaseOutput.failure("数据不存在");
@@ -151,43 +155,43 @@ public class ChargeItemController {
     }
 
     /**
-     * 删除收费项
-     * @param id 收费项ID
+     * 远程获取业务收费项
+     * @param id 业务收费项ID
      * @return
      */
-    @RequestMapping(value = "/doDelete.action", method = {RequestMethod.POST})
-    @ResponseBody
-    public BaseOutput<Object> delete(Long id) {
-        if (Objects.isNull(id)) {
-            return BaseOutput.failure("参数丢失").setCode(ResultCode.PARAMS_ERROR);
-        }
-        try {
-            Optional<ChargeItemDto> item = this.getById(id);
-            if (item.isPresent()) {
-                ChargeItemDto chargeItem = item.get();
-                chargeItem.setIsEnable(YesOrNoEnum.NO.getCode());
-                chargeItem.setIsDelete(YesOrNoEnum.YES.getCode());
-                chargeItem.setOperatorId(SessionContext.getSessionContext().getUserTicket().getId());
-                chargeItemRpc.save(chargeItem);
-            }
-            return BaseOutput.success("删除成功");
-        } catch (Exception e) {
-            log.error(String.format("删除收费项[%d]异常:[%s]", id, e.getMessage()), e);
-            return BaseOutput.failure();
-        }
-    }
-
-
-    /**
-     * 远程获取收费项
-     * @param id 收费项ID
-     * @return
-     */
-    private Optional<ChargeItemDto> getById(Long id) {
-        BaseOutput<ChargeItemDto> output = chargeItemRpc.getById(id);
+    private Optional<BusinessChargeItemDto> getById(Long id) {
+        BaseOutput<BusinessChargeItemDto> output = businessChargeItemRpc.getById(id);
         if (Objects.nonNull(output) && output.isSuccess()) {
             return Optional.ofNullable(output.getData());
         }
         return Optional.empty();
     }
+
+    /**
+     * 检查市场-业务-费用项 关系是否不存在
+     * @param chargeItem
+     * @return
+     */
+    private Boolean checkNotExist(BusinessChargeItemDto chargeItem) {
+        BusinessChargeItemDto query = new BusinessChargeItemDto();
+        query.setMarketId(chargeItem.getMarketId());
+        query.setBusinessId(chargeItem.getBusinessId());
+        query.setChargeItem(chargeItem.getChargeItem());
+        PageOutput<List<BusinessChargeItemDto>> listPage = businessChargeItemRpc.listPage(query);
+        if (listPage.isSuccess()) {
+            List<BusinessChargeItemDto> list = listPage.getData();
+            if (CollectionUtil.isEmpty(list)) {
+                return true;
+            }
+            if (Objects.nonNull(chargeItem.getId())) {
+                //判断查询出来的数据 过滤掉当前数据之后，还剩余的数据记录
+                Long count = list.stream().filter(b -> !b.getId().equals(chargeItem.getId())).count();
+                if (count.equals(0L)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }

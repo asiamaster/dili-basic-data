@@ -26,7 +26,7 @@ public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor
 
 
     protected static final String DD_CODE_KEY = "dd_code";
-    protected static final String MARKET_CODE_KEY = "market_code";
+    protected static final String MARKET_CODE_KEY = "market_id";
     @Autowired
     DataDictionaryRpc dataDictionaryRpc;
 
@@ -37,12 +37,13 @@ public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor
             return Lists.newArrayList();
         }
         String code = JSONObject.parseObject(queryParams.toString()).getString(DD_CODE_KEY);
-        String market_code = JSONObject.parseObject(queryParams.toString()).getString(MARKET_CODE_KEY);
+        Long market_id = Long.valueOf(JSONObject.parseObject(queryParams.toString()).getString(MARKET_CODE_KEY));
         DataDictionaryValue dataDictionary = DTOUtils.newInstance(DataDictionaryValue.class);
         dataDictionary.setDdCode(code);
-        dataDictionary.setFirmCode(market_code);
+        dataDictionary.setFirmId(market_id);
         
         List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionary).getData();
+        System.err.println(list.size());
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }

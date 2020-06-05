@@ -1,7 +1,7 @@
 package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.ChargeItemDto;
-import com.dili.bd.rpc.ChargeItemRpc;
+import com.dili.assets.sdk.rpc.ChargeItemRpc;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.constant.ResultCode;
 import com.dili.ss.domain.BaseOutput;

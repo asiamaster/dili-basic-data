@@ -3,7 +3,7 @@ package com.dili.bd.provider;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSONPath;
 import com.dili.assets.sdk.dto.ChargeItemDto;
-import com.dili.bd.rpc.ChargeItemRpc;
+import com.dili.assets.sdk.rpc.ChargeItemRpc;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.PageOutput;
 import com.dili.ss.dto.DTOUtils;

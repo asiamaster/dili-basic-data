@@ -2,7 +2,7 @@ package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.dili.assets.sdk.dto.BusinessChargeItemDto;
-import com.dili.bd.rpc.BusinessChargeItemRpc;
+import com.dili.assets.sdk.rpc.BusinessChargeItemRpc;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.domain.EasyuiPageOutput;

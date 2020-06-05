@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-@EnableFeignClients(basePackages = {"com.dili.bd.rpc", "com.dili.logger.sdk.rpc"})
+@EnableFeignClients(basePackages = {"com.dili.assets.sdk.rpc", "com.dili.bd.rpc", "com.dili.logger.sdk.rpc"})
 @ComponentScan(basePackages={"com.dili.ss", "com.dili.bd", "com.dili.uap.sdk", "com.dili.logger.sdk"})
 @RestfulScan({"com.dili.bd.rpc","com.dili.uap.sdk.rpc"})
 @DTOScan(value={"com.dili.assets.sdk.dto"})

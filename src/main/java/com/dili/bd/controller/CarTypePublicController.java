@@ -46,9 +46,9 @@ public class CarTypePublicController {
     	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
     	DataDictionaryValue dataDictionaryValue = DTOUtils.newInstance(DataDictionaryValue.class);
     	dataDictionaryValue.setDdCode("cartype_tag");
-    	dataDictionaryValue.setFirmCode(userTicket.getFirmCode());
+    	dataDictionaryValue.setFirmId(userTicket.getFirmId());
     	List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionaryValue).getData();
-    	map.put("market_code", userTicket.getFirmCode());
+    	map.put("market_id", userTicket.getFirmId());
     	map.put("cartypeTags", list);
         return "carTypePublic/list";
     }
@@ -75,7 +75,7 @@ public class CarTypePublicController {
     	if(id != null) {
     		CarTypePublicDTO carTypePublic = new CarTypePublicDTO();
     		carTypePublic.setId(id);
-    		carTypePublic.setMarketCode(userTicket.getFirmCode());
+    		carTypePublic.setMarketId(userTicket.getFirmId());
     		Object data = assetsRpc.getCarTypePublicById(carTypePublic).getData();
     		map.put("obj", data);
     	}else{
@@ -83,7 +83,7 @@ public class CarTypePublicController {
     	}
     	DataDictionaryValue dataDictionaryValue = DTOUtils.newInstance(DataDictionaryValue.class);
     	dataDictionaryValue.setDdCode("cartype_tag");
-    	dataDictionaryValue.setFirmCode(userTicket.getFirmCode());
+    	dataDictionaryValue.setFirmId(userTicket.getFirmId());
     	
     	List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionaryValue).getData();
     	
@@ -103,7 +103,7 @@ public class CarTypePublicController {
     @RequestMapping(value="/listPage.action")
     public @ResponseBody String listPage(CarTypePublicDTO carTypePublic) throws Exception {
     	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-    	carTypePublic.setMarketCode(userTicket.getFirmCode());
+    	carTypePublic.setMarketId(userTicket.getFirmId());
     	String listPage = assetsRpc.listPage(carTypePublic);
     	return listPage;
     }
@@ -118,14 +118,14 @@ public class CarTypePublicController {
     	try {
     		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
     		if(carTypePublic.getId() != null) {
-    			carTypePublic.setMarketCode(userTicket.getFirmCode());
+    			carTypePublic.setMarketId(userTicket.getFirmId());
     			carTypePublic.setModifyTime(new Date());
     			assetsRpc.deleteTagExt(carTypePublic);
     			assetsRpc.update(carTypePublic);
     			LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, opType);
                 LoggerUtil.buildLoggerContext(carTypePublic.getId(), carTypePublic.getCarType().getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), carTypePublic.getRemark());
     		}else {
-    			carTypePublic.setMarketCode(userTicket.getFirmCode());
+    			carTypePublic.setMarketId(userTicket.getFirmId());
     	    	carTypePublic.setCreatorId(userTicket.getId());
     	    	carTypePublic.setStatus(EnabledStateEnum.ENABLED.getCode());
     	    	assetsRpc.save(carTypePublic);
@@ -148,7 +148,7 @@ public class CarTypePublicController {
     public @ResponseBody BaseOutput updateStatus(CarTypePublicDTO carTypePublic, String opType) {
     	try {
     		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-			carTypePublic.setMarketCode(userTicket.getFirmCode());
+			carTypePublic.setMarketId(userTicket.getFirmId());
 			carTypePublic.setModifyTime(new Date());
 			assetsRpc.updateStatus(carTypePublic);
 			LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, opType);

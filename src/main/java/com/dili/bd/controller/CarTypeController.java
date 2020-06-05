@@ -1,14 +1,5 @@
 package com.dili.bd.controller;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.dili.assets.sdk.dto.CarTypeDTO;
 import com.dili.bd.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
@@ -20,17 +11,19 @@ import com.dili.logger.sdk.glossary.LoggerConstant;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import java.util.Date;
 
 /**
  * 由MyBatis Generator工具自动生成
  * This file was generated on 2020-05-09 17:48:24.
  */
-@Api("/carType")
 @Controller
 @RequestMapping("/carType")
 public class CarTypeController {
@@ -43,7 +36,6 @@ public class CarTypeController {
      * @param modelMap
      * @return String
      */
-    @ApiOperation("跳转到CarType页面")
     @RequestMapping(value="/list.html", method = RequestMethod.GET)
     public String index(ModelMap modelMap) {
         return "carType/list";
@@ -72,14 +64,10 @@ public class CarTypeController {
 
     /**
      * 分页查询CarType，返回easyui分页信息
-     * @param carType
+     * @param input
      * @return String
      * @throws Exception
      */
-    @ApiOperation(value="分页查询CarType", notes = "分页查询CarType，返回easyui分页信息")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="CarType", paramType="form", value = "CarType的form信息", required = false, dataType = "string")
-	})
     @RequestMapping(value="/listPage.action")
     public @ResponseBody String listPage(CarTypeDTO input) throws Exception {
     	return assetsRpc.listPage(input);
@@ -90,10 +78,6 @@ public class CarTypeController {
      * @param carType
      * @return BaseOutput
      */
-    @ApiOperation("新增CarType")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="CarType", paramType="form", value = "CarType的form信息", required = true, dataType = "string")
-	})
     @RequestMapping(value="/save.action", method = {RequestMethod.GET, RequestMethod.POST})
     @BusinessLogger(businessType = LogBizTypeConst.CAR_TYPE, content = "${name!}", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
     public @ResponseBody BaseOutput insert(CarTypeDTO carType) {
@@ -117,10 +101,6 @@ public class CarTypeController {
      * @param carType
      * @return BaseOutput
      */
-    @ApiOperation("修改CarType")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="CarType", paramType="form", value = "CarType的form信息", required = true, dataType = "string")
-	})
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
     @BusinessLogger(businessType = LogBizTypeConst.CAR_TYPE, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
     public @ResponseBody BaseOutput update(CarTypeDTO carType, String opType) {
@@ -141,10 +121,6 @@ public class CarTypeController {
      * @param id
      * @return BaseOutput
      */
-    @ApiOperation("删除CarType")
-    @ApiImplicitParams({
-		@ApiImplicitParam(name="id", paramType="form", value = "CarType的主键", required = true, dataType = "long")
-	})
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
     @BusinessLogger(businessType = LogBizTypeConst.CAR_TYPE, operationType = "del", systemCode = "INTELLIGENT_ASSETS")
     public @ResponseBody BaseOutput delete(Long id) {
@@ -156,6 +132,5 @@ public class CarTypeController {
 		} catch (Exception e) {
 			return BaseOutput.failure("系统异常");
 		}
-    	
     }
 }

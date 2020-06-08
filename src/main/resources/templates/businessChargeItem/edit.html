@@ -24,8 +24,8 @@
             </div>
             <div class="form-group col">
                 <label for="" class="">所属业务<i class="red">*</i></label>
-                <select class="form-control edit" id="businessId" name="businessId" required></select>
-                <#bcomboProvider _log="所属业务" _id="businessId" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",required:true}'  _valueField="value" _textField="text" _value="${businessChargeItem.businessId!}" />
+                <select class="form-control edit" id="businessType" name="businessType" required></select>
+                <#bcomboProvider _log="所属业务" _id="businessType" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",required:true}'  _valueField="value" _textField="text" _value="${businessChargeItem.businessType!}" />
             </div>
             <div class="form-group col">
                 <%

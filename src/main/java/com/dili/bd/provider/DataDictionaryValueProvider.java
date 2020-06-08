@@ -3,7 +3,9 @@ package com.dili.bd.provider;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import com.alibaba.fastjson.JSONPath;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -32,24 +34,22 @@ public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor
 
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
-    	Object queryParams = metaMap.get(QUERY_PARAMS_KEY);
+        Object queryParams = metaMap.get(QUERY_PARAMS_KEY);
         if (queryParams == null) {
             return Lists.newArrayList();
         }
         String code = JSONObject.parseObject(queryParams.toString()).getString(DD_CODE_KEY);
-        Long market_id = Long.valueOf(JSONObject.parseObject(queryParams.toString()).getString(MARKET_CODE_KEY));
+        Object marketId = JSONPath.read(String.valueOf(metaMap.get(QUERY_PARAMS_KEY)), "/" + MARKET_CODE_KEY);
         DataDictionaryValue dataDictionary = DTOUtils.newInstance(DataDictionaryValue.class);
         dataDictionary.setDdCode(code);
-        dataDictionary.setFirmId(market_id);
-        
+        if (Objects.nonNull(marketId)) {
+            dataDictionary.setFirmId(Long.valueOf(marketId.toString()));
+        }
         List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionary).getData();
-        System.err.println(list.size());
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
-
         List<ValuePair<?>> valuePairs = Lists.newArrayList();
-
         for (int i = 0; i < list.size(); i++) {
             DataDictionaryValue dataDictionaryValue = list.get(i);
             valuePairs.add(new ValuePairImpl(dataDictionaryValue.getName(), dataDictionaryValue.getCode()));

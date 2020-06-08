@@ -43,7 +43,7 @@ public class ChargeItemProvider extends BatchDisplayTextProviderSupport {
         if (Objects.nonNull(obj)){
             condition.setName(obj.toString());
         }
-        //获取参数中传入的dataId，如果id
+        //获取参数中传入的isEnable
         Object isEnable = JSONPath.read(String.valueOf(metaMap.get(QUERY_PARAMS_KEY)), "/isEnable");
         if (Objects.nonNull(isEnable) && Boolean.valueOf(isEnable.toString())) {
             condition.setIsEnable(YesOrNoEnum.YES.getCode());

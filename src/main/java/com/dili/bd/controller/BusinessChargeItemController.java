@@ -175,7 +175,7 @@ public class BusinessChargeItemController {
     private Boolean checkNotExist(BusinessChargeItemDto chargeItem) {
         BusinessChargeItemDto query = new BusinessChargeItemDto();
         query.setMarketId(chargeItem.getMarketId());
-        query.setBusinessId(chargeItem.getBusinessId());
+        query.setBusinessType(chargeItem.getBusinessType());
         query.setChargeItem(chargeItem.getChargeItem());
         PageOutput<List<BusinessChargeItemDto>> listPage = businessChargeItemRpc.listPage(query);
         if (listPage.isSuccess()) {

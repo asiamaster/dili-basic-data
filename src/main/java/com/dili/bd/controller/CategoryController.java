@@ -1,5 +1,6 @@
 package com.dili.bd.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.dili.assets.sdk.dto.CategoryDTO;
 import com.dili.bd.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
@@ -54,6 +55,7 @@ public class CategoryController {
             map.put("pid", pid);
             CategoryDTO data = assetsRpc.get(pid).getData();
             map.put("parentName", data.getName());
+            map.put("parentCode", data.getCode());
         }
         return "category/add";
     }
@@ -63,7 +65,13 @@ public class CategoryController {
      */
     @RequestMapping("editView.html")
     public String toEdit(Long id, ModelMap map) {
-        map.put("obj", assetsRpc.get(id).getData());
+        CategoryDTO categoryDTO = assetsRpc.get(id).getData();
+        map.put("obj", categoryDTO);
+        if (categoryDTO != null) {
+            String substring = categoryDTO.getCode().substring(categoryDTO.getCode().length() - 2);
+            map.put("code", substring);
+            map.put("parentCode",categoryDTO.getCode().substring(0,categoryDTO.getCode().length() - 2));
+        }
         return "category/edit";
     }
 
@@ -181,9 +189,9 @@ public class CategoryController {
     public @ResponseBody
     BaseOutput<List<CategoryDTO>> search(String keyword) {
         CategoryDTO categoryDTO = new CategoryDTO();
-        if(null == keyword){
+        if (null == keyword) {
             categoryDTO.setParent(0L);
-        }else{
+        } else {
             categoryDTO.setKeyword(keyword.toString());
         }
         try {

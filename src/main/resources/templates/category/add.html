@@ -1,11 +1,8 @@
 <form id="addForm">
     <div class="form-group row">
         <label for="code" class="col-sm-2 col-form-label">品类代码</label>
-        <div class="col-sm-5">
-            <input type="text" class="form-control" readonly value="${parentCode!}"/>
-        </div>
-        <div class="col-sm-5">
-            <input type="text" class="form-control" name="code" id="code" digits="true" minlength="2" maxlength="2"/>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" name="code" id="code" data-inputmask="'mask': '${parentCode!}99'" required/>
         </div>
     </div>
     <div class="form-group row">
@@ -96,5 +93,7 @@
                 $("#addForm_pyInitials").val("");
             }
         });
+
+        $("#code").inputmask();
     });
 </script>

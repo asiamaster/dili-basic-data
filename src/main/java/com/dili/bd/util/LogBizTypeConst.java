@@ -12,6 +12,7 @@ public class LogBizTypeConst {
 
     public static final String BOOTH="booth";
     public static final String CATEGORY="category";
+    public static final String CUS_CATEGORY="cus_category";
     public static final String DISTRICT="district";
     public static final String CAR_TYPE="carType";
 

@@ -70,11 +70,13 @@ public class CustomCategoryController {
      */
     @RequestMapping(value = "/save.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.CUS_CATEGORY, content = "", operationType = "settings", systemCode = "INTELLIGENT_ASSETS")
     public BaseOutput save(CustomCategoryDTO input) {
         try {
             input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
             BaseOutput save = assetsRpc.saveCusCategory(input);
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            LoggerUtil.buildLoggerContext(input.getId(), input.getCategory().toString(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return save;
         } catch (Exception e) {
             return BaseOutput.failure("系统异常");
@@ -120,7 +122,7 @@ public class CustomCategoryController {
      */
     @RequestMapping(value = "/batchUpdate.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.CUS_CATEGORY, content = "", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
     public BaseOutput batchUpdate(Long id, Integer value) {
         try {
             BaseOutput baseOutput = assetsRpc.batchCusCategoryUpdate(id, value, SessionContext.getSessionContext().getUserTicket().getFirmId());

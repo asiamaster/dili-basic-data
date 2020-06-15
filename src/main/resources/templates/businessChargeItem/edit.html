@@ -39,6 +39,11 @@
                 <#bcomboProvider _id="chargeItem" _provider="chargeItemProvider"  _valueField="value" _textField="text" _value="${businessChargeItem.chargeItem!}" _queryParams='{required:true,isEnable:${isEnable} }' />
             </div>
             <div class="form-group col">
+                <label for="" class="">是否必填<i class="red">*</i></label>
+                <select class="form-control" id="isRequired" name="isRequired" required></select>
+                <#bcomboProvider _id="isRequired" _provider="yesOrNoProvider" _valueField="value" _textField="text" _value="${businessChargeItem.isRequired!}" _queryParams='{required:true}' />
+            </div>
+            <div class="form-group col">
                 <label for="" class="">备注</label>
                 <textarea type="text" class="form-control" id="notes" name="notes" maxlength="255">${chargeItem.notes!}</textarea>
             </div>

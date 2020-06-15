@@ -78,6 +78,10 @@
                         <th data-width-unit="%" data-width="20" data-field="chargeItem" data-sortable="true" data-sort-name="charge_item" data-align="center" data-provider="chargeItemProvider">
                             费用项
                         </th>
+                        <th data-width-unit="%" data-width="10" data-field="isRequired" data-align="center" data-sortable="true" data-sort-name="is_required"
+                            data-provider="yesOrNoProvider">
+                            是否必填
+                        </th>
                         <th data-width-unit="%" data-width="10" data-field="isEnable" data-align="center" data-sortable="true" data-sort-name="is_enable"
                             data-provider="yesOrNoProvider">
                             是否可用
@@ -167,7 +171,7 @@
             closeBtn: true,
             backdrop: 'static',
             width: '550',
-            height: '400',
+            height: '500',
             btns: []
         });
     }

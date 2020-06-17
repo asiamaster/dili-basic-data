@@ -1,6 +1,6 @@
 package com.dili.bd.provider;
 
-import com.dili.commons.glossary.YesOrNoEnum;
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,16 +20,16 @@ import java.util.stream.Stream;
  * <B>农丰时代科技有限公司</B>
  *
  * @author yuehongbo
- * @date 2020/5/27 14:47
+ * @date 2020/6/17 10:43
  */
 @Component
 @Scope("prototype")
-public class YesOrNoProvider implements ValueProvider {
+public class BusinessChargeTypeProvider implements ValueProvider {
 
     @Override
     public List<ValuePair<?>> getLookupList(Object obj, Map metaMap, FieldMeta fieldMeta) {
-        return Stream.of(YesOrNoEnum.values())
-                .map(e -> new ValuePairImpl<>(e.getName(), String.valueOf(e.getCode())))
+        return Stream.of(BusinessChargeItemEnum.ChargeType.values())
+                .map(e -> new ValuePairImpl<>(e.getValue(), String.valueOf(e.getCode())))
                 .collect(Collectors.toList());
     }
 
@@ -38,9 +38,9 @@ public class YesOrNoProvider implements ValueProvider {
         if (obj == null || "".equals(obj)) {
             return null;
         }
-        YesOrNoEnum instance = YesOrNoEnum.getYesOrNoEnum(Integer.valueOf(obj.toString()));
-        if (Objects.nonNull(instance)) {
-            return instance.getName();
+        Optional<BusinessChargeItemEnum.ChargeType> instance = BusinessChargeItemEnum.ChargeType.getInstance(Integer.valueOf(obj.toString()));
+        if (instance.isPresent()) {
+            return instance.get().getValue();
         }
         return null;
     }

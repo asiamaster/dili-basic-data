@@ -20,32 +20,47 @@
             <div class="form-group col">
                 <label for="" class="">归属市场<i class="red">*</i></label>
                 <select class="form-control edit" id="marketId" name="marketId" required></select>
-                <#bcomboProvider _id="marketId" _provider="marketProvider"  _valueField="value" _textField="text" _value="${businessChargeItem.marketId!}" _queryParams='{required:true}' />
+                <#bcomboProvider _id="marketId" _provider="marketProvider"  _valueField="value" _textField="text" _value="${businessChargeItem.marketId!}" _queryParams='{required:true}' _option='async:false'/>
             </div>
             <div class="form-group col">
                 <label for="" class="">所属业务<i class="red">*</i></label>
                 <select class="form-control edit" id="businessType" name="businessType" required></select>
-                <#bcomboProvider _log="所属业务" _id="businessType" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",required:true}'  _valueField="value" _textField="text" _value="${businessChargeItem.businessType!}" />
+                <#bcomboProvider _log="所属业务" _id="businessType" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",required:true}'  _valueField="value" _textField="text" _value="${businessChargeItem.businessType!}" _option='async:false'/>
             </div>
             <div class="form-group col">
-                <%
-                    var isEnable = false;
-                    if(isEmpty(businessChargeItem.id)){
-                        isEnable = true;
-                    }
-                %>
                 <label for="chargeItem" class="">费用项<i class="red">*</i></label>
-                <select class="form-control edit" id="chargeItem" name="chargeItem" required></select>
-                <#bcomboProvider _id="chargeItem" _provider="chargeItemProvider"  _valueField="value" _textField="text" _value="${businessChargeItem.chargeItem!}" _queryParams='{required:true,isEnable:${isEnable} }' />
+                <input class="form-control edit" id="chargeItem" name="chargeItem" required value="${businessChargeItem.chargeItem!}">
+            </div>
+            <div class="form-group col">
+                <label for="chargeType">项目类型<i class="red">*</i></label>
+                <select class="form-control edit" id="chargeType" name="chargeType" required onchange="getParentItem()">
+                    <%if (has(chargeTypeList) && isNotEmpty(chargeTypeList) && chargeTypeList.~size >0 ){
+                    for(ct in chargeTypeList){
+                    %>
+                    <option  value="${ct.code!}" data-query="${ct.query!}" <%if(ct.code==businessChargeItem.chargeType){%> selected <%}%> >${ct.value!}</option>
+                    <%}}%>
+                </select>
             </div>
             <div class="form-group col">
                 <label for="" class="">是否必填<i class="red">*</i></label>
                 <select class="form-control" id="isRequired" name="isRequired" required></select>
                 <#bcomboProvider _id="isRequired" _provider="yesOrNoProvider" _valueField="value" _textField="text" _value="${businessChargeItem.isRequired!}" _queryParams='{required:true}' />
             </div>
+            <div id="parentIdDiv" style="display: none;" class="form-group col">
+                <label for="parentId" class="">关联项目</label>
+                <input type="hidden" id="oldParentId" value="${businessChargeItem.parentId!}">
+                <select class="form-control edit" id="parentId" name="parentId">
+                </select>
+            </div>
+            <div class="form-group col">
+                <label for="parentId" class="">财务科目</label>
+                <select class="form-control" id="chargeSubject" name="chargeSubject">
+                    <option value="">暂无数据来源</option>
+                </select>
+            </div>
             <div class="form-group col">
                 <label for="" class="">备注</label>
-                <textarea type="text" class="form-control" id="notes" name="notes" maxlength="255">${chargeItem.notes!}</textarea>
+                <textarea type="text" class="form-control" id="notes" name="notes" maxlength="255">${businessChargeItem.notes!}</textarea>
             </div>
         </div>
         <div class="text-right mt-2">
@@ -63,8 +78,47 @@
         if (id){
             $('.edit').attr("disabled","disabled");
             $("select:disabled").addClass("select-no-down");
+            getParentItem($("#oldParentId").val());
         }
     });
+
+    /**
+     * 项目类型改变时，检查是否需要加载关联项目
+     * @param _defaultValue 默认值
+     */
+    function getParentItem(_defaultValue) {
+        let query = $('#chargeType').find("option:selected").data("query");
+        let targetId = $('#parentId');
+        targetId.empty();
+        if (query && query == true) {
+            let marketId = $('#marketId').val();
+            let businessType = $('#businessType').val();
+            let datas = ["<option value=''>-- 请选择 --</option>"];
+            if (typeof (marketId) != "undefined" && typeof (businessType) != "undefined" && marketId && businessType) {
+                $.ajax({
+                    type: 'post',
+                    url: '${contextPath}/businessChargeItem/getParentItem.action',
+                    data: {marketId: marketId, businessType: businessType},
+                    async: false,
+                    success: function (ret) {
+                        if (ret.success) {
+                            $.each(ret.data, function (i, item) {
+                                if (typeof (_defaultValue) != "undefined" && null != _defaultValue && '' != _defaultValue && _defaultValue == item.id) {
+                                    datas.push('<option selected value="' + item.id + '">' + item.chargeItem + '</option>');
+                                } else {
+                                    datas.push('<option value="' + item.id + '">' + item.chargeItem + '</option>');
+                                }
+                            });
+                        }
+                    }
+                });
+                targetId.html(datas.join(''));
+            }
+            $("#parentIdDiv").show();
+        } else {
+            $("#parentIdDiv").hide();
+        }
+    }
 
     /**
      * 保存数据

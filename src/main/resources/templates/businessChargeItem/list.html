@@ -7,16 +7,12 @@
                 <div class="form-group col">
                     <label for="">所属市场</label>
                     <select class="form-control" id="marketId" name="marketId"></select>
-                    <#bcomboProvider _id="marketId" _provider="marketProvider"  _valueField="value" _textField="text" _value="" _queryParams='{emptyText:"-- 全部 --"}' />
+                    <#bcomboProvider _id="marketId" _provider="marketProvider"  _valueField="value" _textField="text" _value="" _queryParams='{required:true}' _option='async:false' />
                 </div>
                 <div class="form-group col">
                     <label for="businessType">业务类型</label>
                     <select class="form-control" id="businessType" name="businessType"></select>
-                    <#bcomboProvider  _id="businessType" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",emptyText:"-- 全部 --"}'  _valueField="value" _textField="text" />
-                </div>
-                <div class="form-group col">
-                    <label for="_chargeItem" class="">收费项</label>
-                    <#bautoCompleteProvider _hiddenDomainClass="form-control" _hiddenDomainId="chargeItem" _hiddenDomainName="chargeItem" _displayDomainId="_chargeItem" _displayDomainName="_chargeItem" _placeholder="请输入费用项信息" _provider="chargeItemProvider"  _validatorMethod="isSelected" _value="" _text="" />
+                    <#bcomboProvider  _id="businessType" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",required:true}' _option='async:false' _valueField="value" _textField="text" />
                 </div>
                 <div class="form-group col">
                     <label for="">是否可用</label>
@@ -69,14 +65,17 @@
                     <thead>
                     <tr>
                         <th data-width-unit="%" data-width="2" data-radio="true"></th>
-                        <th data-width-unit="%" data-width="20" data-field="marketId" data-sortable="true" data-sort-name="market_id" data-align="center" data-provider="marketProvider">
+                        <th data-width-unit="%" data-width="10" data-field="marketId" data-sortable="true" data-sort-name="market_id" data-align="center" data-provider="marketProvider">
                             所属市场
                         </th>
-                        <th data-width-unit="%" data-width="20" data-field="businessType" data-sortable="true" data-sort-name="business_type" data-align="center" data-provider="dataDictionaryValueProvider" data-query-params='{dd_code:"base_business_type"}'>
+                        <th data-width-unit="%" data-width="15" data-field="businessType" data-sortable="true" data-sort-name="business_type" data-align="center" data-provider="dataDictionaryValueProvider" data-query-params='{dd_code:"base_business_type"}'>
                             所属业务
                         </th>
-                        <th data-width-unit="%" data-width="20" data-field="chargeItem" data-sortable="true" data-sort-name="charge_item" data-align="center" data-provider="chargeItemProvider">
+                        <th data-width-unit="%" data-width="10" data-field="chargeItem" data-sortable="true" data-sort-name="convert(charge_item using gbk)" data-align="center">
                             费用项
+                        </th>
+                        <th data-width-unit="%" data-width="10" data-field="chargeType" data-sortable="true" data-sort-name="charge_type" data-align="center" data-provider="businessChargeTypeProvider">
+                            项目类型
                         </th>
                         <th data-width-unit="%" data-width="10" data-field="isRequired" data-align="center" data-sortable="true" data-sort-name="is_required"
                             data-provider="yesOrNoProvider">
@@ -85,6 +84,10 @@
                         <th data-width-unit="%" data-width="10" data-field="isEnable" data-align="center" data-sortable="true" data-sort-name="is_enable"
                             data-provider="yesOrNoProvider">
                             是否可用
+                        </th>
+                        <th data-width-unit="%" data-width="10" data-field="parentId" data-align="center" data-sortable="true" data-sort-name="parent_id"
+                            data-provider="businessChargeItemProvider">
+                            关联费用项
                         </th>
                         <th data-width-unit="%" data-width="50" data-field="notes" data-align="center" data-formatter="dataFormatterTip">
                             备注
@@ -140,13 +143,13 @@
     function openInsertHandler() {
         let url = "/businessChargeItem/preSave.html";
         dia = bs4pop.dialog({
-            title: '关联业务费用项',
+            title: '新增费用项',
             content: url,
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '550',
-            height: '500',
+            width: '600',
+            height: '650',
             btns: []
         });
     }
@@ -165,13 +168,13 @@
         let selectedRow = rows[0];
         let url = "/businessChargeItem/preSave.html?id=" + selectedRow.id;
         dia = bs4pop.dialog({
-            title: '更新费用项关系',
+            title: '修改费用项',
             content: url,
             isIframe: true,
             closeBtn: true,
             backdrop: 'static',
-            width: '550',
-            height: '500',
+            width: '600',
+            height: '650',
             btns: []
         });
     }

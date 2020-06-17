@@ -2,6 +2,7 @@ package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.dili.assets.sdk.dto.BusinessChargeItemDto;
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.assets.sdk.rpc.BusinessChargeItemRpc;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.ss.domain.BaseOutput;
@@ -76,12 +77,12 @@ public class BusinessChargeItemController {
      */
     @RequestMapping(value = "/preSave.html", method = {RequestMethod.GET})
     public String preSave(Long id, ModelMap modelMap) {
+        Optional<BusinessChargeItemDto> item = Optional.empty();
         if (Objects.nonNull(id)) {
-            Optional<BusinessChargeItemDto> item = this.getById(id);
-            if (item.isPresent()) {
-                modelMap.put("businessChargeItem", item.get());
-            }
+            item = this.getById(id);
         }
+        modelMap.put("businessChargeItem", item.orElse(new BusinessChargeItemDto()));
+        modelMap.put("chargeTypeList", BusinessChargeItemEnum.ChargeType.values());
         return "businessChargeItem/edit";
     }
 
@@ -103,7 +104,7 @@ public class BusinessChargeItemController {
             if (Objects.isNull(chargeItem.getId())) {
                 Boolean notExist = this.checkNotExist(chargeItem);
                 if (!notExist){
-                    return BaseOutput.failure("对应关系已存在");
+                    return BaseOutput.failure("已存在相同名称的收费项");
                 }
                 chargeItem.setCreateTime(chargeItem.getModifyTime());
                 chargeItem.setIsDelete(YesOrNoEnum.NO.getCode());
@@ -114,6 +115,8 @@ public class BusinessChargeItemController {
                 if (item.isPresent()) {
                     BusinessChargeItemDto old = item.get();
                     old.setNotes(chargeItem.getNotes());
+                    old.setIsRequired(chargeItem.getIsRequired());
+                    old.setChargeSubject(chargeItem.getChargeSubject());
                     businessChargeItemRpc.save(old);
                 }else{
                     return BaseOutput.failure("数据已不存在");
@@ -152,6 +155,24 @@ public class BusinessChargeItemController {
         } else {
             return BaseOutput.failure("数据不存在");
         }
+    }
+
+    /**
+     * 根据条件获取父项目信息
+     * @return BaseOutput
+     */
+    @RequestMapping(value = "/getParentItem.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @ResponseBody
+    public BaseOutput getParentItem(BusinessChargeItemDto chargeItem) {
+        if (Objects.isNull(chargeItem)){
+            return BaseOutput.failure("必要参数丢失");
+        }
+        chargeItem.setChargeType(BusinessChargeItemEnum.ChargeType.收费.getCode());
+        PageOutput<List<BusinessChargeItemDto>> output = businessChargeItemRpc.listPage(chargeItem);
+        if (output.isSuccess()) {
+            return BaseOutput.success().setData(output.getData());
+        }
+        return BaseOutput.failure("数据查询失败");
     }
 
     /**

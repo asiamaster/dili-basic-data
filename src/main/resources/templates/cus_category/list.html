@@ -6,7 +6,7 @@
     <#bs4nav>
     <div class="row row-cols-4" id="queryForm">
         <div class="form-group col">
-            <label for="category_status">状态</label>
+            <label for="category_status">状态0</label>
             <select id="category_status" class="form-control input-sm">
                 <option value="">-- 全部 --</option>
                 <option value="1">已启用</option>
@@ -18,7 +18,7 @@
             <input id="category_text" type="text" class="form-control input-sm input-control len224"
                    placeholder="品类名称/品类别名">
         </div>
-        <div class="col align-self-center mt-3">
+        <div class="col-auto align-self-center mt-3">
             <button type="button" onclick="queryClickHandler();return false;" class="btn btn-outline-primary mr-2"><i class="fa fa-search"></i> 查询</button>
             <button type="button" class="btn btn-outline-primary mr-2"onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
         </div>
@@ -26,12 +26,12 @@
 </#bs4nav>
 
     <div class="row">
-        <div class="col-2">
+        <div class="col-3">
             <!-- treeView1 start -->
             <div id="treeView1" class="pull-left ztree"></div>
             <!-- treeView1 end -->
         </div>
-        <div class="col">
+        <div class="col-9">
             <!-- table-showlist start -->
             <div id="tablelist" class="table-showlist">
 

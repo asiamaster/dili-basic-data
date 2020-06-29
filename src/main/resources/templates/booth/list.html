@@ -133,10 +133,12 @@
                                                     method: 'get',
                                                     idField: 'id',
                                                     treeField: 'name',
-                                                    showFooter:true,
                                                     singleSelect:true,
                                                     remoteSort:false,
                                                     multiSort:false,
+                                                    pagination: true,
+                                                    pageSize: 10,
+                                                    pageList: [10,20,50],
                                                     _parentIdField: 'parentId',
                                                     loadFilter:treegridLoadFilter
                                                 ">

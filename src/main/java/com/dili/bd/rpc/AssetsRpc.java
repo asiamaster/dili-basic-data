@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient(name = "assets-service")
+@FeignClient(name = "assets-service" , url = "http://127.0.0.1:8182")
 public interface AssetsRpc {
 
     /**
@@ -65,13 +65,13 @@ public interface AssetsRpc {
      * 新增摊位
      */
     @RequestMapping(value = "/api/booth/save", method = RequestMethod.POST)
-    BaseOutput save(BoothDTO input);
+    BaseOutput save(AssetsDTO input);
 
     /**
      * 获取摊位列表
      */
     @RequestMapping(value = "/api/booth/list", method = RequestMethod.GET)
-    String listPage(BoothDTO input);
+    String listPage(AssetsDTO input);
 
     /**
      * 新增区域
@@ -119,13 +119,13 @@ public interface AssetsRpc {
      * 获取单个摊位
      */
     @RequestMapping(value = "/api/booth/get", method = RequestMethod.POST)
-    BaseOutput<BoothDTO> getBoothById(Long id);
+    BaseOutput<AssetsDTO> getBoothById(Long id);
 
     /**
      * 修改摊位
      */
     @RequestMapping(value = "/api/booth/update", method = RequestMethod.POST)
-    BaseOutput updateBooth(BoothDTO input);
+    BaseOutput updateBooth(AssetsDTO input);
 
     /**
      * 删除摊位
@@ -149,7 +149,7 @@ public interface AssetsRpc {
      * 搜索摊位
      */
     @RequestMapping(value = "/api/booth/search", method = RequestMethod.POST)
-    BaseOutput<List<BoothDTO>> searchBooth(JSONObject query);
+    BaseOutput<List<AssetsDTO>> searchBooth(JSONObject query);
 
     /**
      * 新增摊位租赁时间，默认为冻结

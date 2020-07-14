@@ -180,41 +180,49 @@ public interface AssetsRpc {
      */
     @RequestMapping(value = "/api/carType/listPage", method = RequestMethod.GET)
     String listPage(CarTypeDTO input);
+
     /**
      * 新增车型
      */
     @RequestMapping(value = "/api/carType/save", method = RequestMethod.POST)
     BaseOutput save(CarTypeDTO dto);
+
     /**
      * 根据@param{车型id}获取车型
      */
     @RequestMapping(value = "/api/carType/get", method = RequestMethod.POST)
-	BaseOutput<CarTypeDTO> getCarTypeById(Long id);
+    BaseOutput<CarTypeDTO> getCarTypeById(Long id);
+
     /**
      * 修改车型
      */
     @RequestMapping(value = "/api/carType/update", method = RequestMethod.POST)
     BaseOutput update(CarTypeDTO carType);
+
     /**
      * 删除车型
      */
     @RequestMapping(value = "/api/carType/delete", method = RequestMethod.POST)
     BaseOutput delete(Long id);
+
     /**
      * 获取车型列表
      */
     @RequestMapping(value = "/api/carTypePublic/listPage", method = RequestMethod.GET)
     String listPage(CarTypePublicDTO input);
+
     /**
      * 根据@param{车型id}获取车型
      */
     @RequestMapping(value = "/api/carTypePublic/get", method = RequestMethod.POST)
     BaseOutput getCarTypePublicById(CarTypePublicDTO carTypePublic);
+
     /**
      * 新增车型
      */
     @RequestMapping(value = "/api/carTypePublic/save", method = RequestMethod.POST)
     BaseOutput save(CarTypePublicDTO dto);
+
     /**
      * 修改车型
      */
@@ -225,11 +233,41 @@ public interface AssetsRpc {
      * 修改车型状态
      */
     @RequestMapping(value = "/api/carTypePublic/updateStatus", method = RequestMethod.POST)
-	BaseOutput updateStatus(CarTypePublicDTO carTypePublic);
-    
+    BaseOutput updateStatus(CarTypePublicDTO carTypePublic);
+
     /**
      * 删除车型
      */
     @RequestMapping(value = "/api/carTypePublic/deleteTagExt", method = RequestMethod.POST)
     BaseOutput deleteTagExt(CarTypePublicDTO carTypePublic);
+
+    /**
+     * 获取客户列表信息
+     */
+    @RequestMapping(value = "/api/subject/getTree", method = RequestMethod.POST)
+    BaseOutput<List<SubjectDTO>> listSubject(SubjectQuery query);
+
+    /**
+     * 获取客户列表信息
+     */
+    @RequestMapping(value = "/api/subject/getTree", method = RequestMethod.POST)
+    BaseOutput<List<SubjectDTO>> listSubject(SubjectDTO query);
+
+    /**
+     * 获取单个品类
+     */
+    @RequestMapping(value = "/api/subject/get", method = RequestMethod.POST)
+    BaseOutput<SubjectDTO> getSubject(Long id);
+
+    /**
+     * 新增品类
+     */
+    @RequestMapping(value = "/api/subject/save", method = RequestMethod.POST)
+    BaseOutput save(SubjectDTO dto);
+
+    /**
+     * 删除品类
+     */
+    @RequestMapping(value = "/api/subject/batchUpdate", method = RequestMethod.POST)
+    BaseOutput batchUpdateSubject(@RequestParam("id") Long id, @RequestParam("value") Integer value);
 }

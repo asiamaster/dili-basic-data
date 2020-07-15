@@ -15,6 +15,7 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -181,7 +182,7 @@ public class DistrictController {
      */
     @RequestMapping("search.action")
     @ResponseBody
-    public BaseOutput<List<DistrictDTO>> search(DistrictDTO input) {
+    public BaseOutput<List<DistrictDTO>> search(@RequestBody DistrictDTO input) {
         if (input == null) {
             input = new DistrictDTO();
         }

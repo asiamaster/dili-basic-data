@@ -2,6 +2,9 @@ package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.json.JSON;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
 import com.dili.bd.rpc.AssetsRpc;
@@ -22,6 +25,7 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -75,7 +79,7 @@ public class BoothController {
         if (input.getDepartmentId() == null) {
             List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
             long[] ids = departments.stream().mapToLong(Department::getId).toArray();
-            if(ids.length > 0){
+            if (ids.length > 0) {
                 input.setDeps(ArrayUtil.join(ids, ","));
             }
         }
@@ -126,7 +130,14 @@ public class BoothController {
                 data.setCreatorUser(userBaseOutput.getData().getRealName());
             }
         }
-        map.put("obj", data);
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        JSONArray array = new JSONArray();
+        array.put(data.getArea());
+        if (data.getSecondArea() != null) {
+            array.put(data.getSecondArea());
+        }
+        jsonObject.put("areaArray", array);
+        map.put("data", jsonObject);
         return "booth/edit";
     }
 
@@ -157,12 +168,14 @@ public class BoothController {
     @RequestMapping("/save.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput save(AssetsDTO input) {
+    public BaseOutput save(@RequestBody AssetsDTO input) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setCreatorId(userTicket.getId());
             input.setMarketId(userTicket.getFirmId());
             input.setState(EnabledStateEnum.DISABLED.getCode());
+            input.setParentId(0L);
+            input.setBusinessType(1);
             LoggerUtil.buildLoggerContext(null, input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
             BaseOutput save = assetsRpc.save(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());

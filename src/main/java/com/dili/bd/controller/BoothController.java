@@ -25,10 +25,7 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -131,6 +128,7 @@ public class BoothController {
             }
         }
         cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.setDateFormat("yyyy-MM-dd HH:mm:ss");
         JSONArray array = new JSONArray();
         array.put(data.getArea());
         if (data.getSecondArea() != null) {
@@ -194,7 +192,28 @@ public class BoothController {
     @RequestMapping("/update.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput update(AssetsDTO input, String opType) {
+    public BaseOutput update(@RequestBody AssetsDTO input) {
+        try {
+            input.setModifyTime(new Date());
+            BaseOutput baseOutput = assetsRpc.updateBooth(input);
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
+            return baseOutput;
+        } catch (Exception e) {
+            return BaseOutput.failure("系统异常");
+        }
+    }
+
+    /**
+     * insert
+     *
+     * @param input
+     * @return
+     */
+    @PostMapping("/changeStatus.action")
+    @ResponseBody
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
+    public BaseOutput changeStatus(AssetsDTO input, String opType) {
         try {
             input.setModifyTime(new Date());
             BaseOutput baseOutput = assetsRpc.updateBooth(input);

@@ -135,6 +135,28 @@
                             }
                         },
                         layout: 24
+                    },
+                    creatorUser: {
+                        label: "创建人",
+                        type: "input",
+                        attrs: {
+                            disabled: true
+                        },
+                        vif (data) {
+                            return data.creatorUser
+                        },
+                        layout: 6
+                    },
+                    createTime: {
+                        label: "创建时间",
+                        type: "input",
+                        attrs: {
+                            disabled: true
+                        },
+                        vif (data) {
+                            return data.createTime
+                        },
+                        layout: 18
                     }
                 }
             };
@@ -148,7 +170,7 @@
                     data.secondArea = areaArray[1];
                 }
 
-                axios.post(rootPath + "/booth/save.action", data)
+                axios.post(rootPath + "${_url}", data)
                     .then(function (response) {
                         $.operate.saveSuccess(response.data);
                     })

@@ -1,22 +1,22 @@
 <div id="toolbar" class="btn-group" role="group" aria-label="Toolbar with button groups">
 
-    <#resource code="editCategory">
+    <#resource code="sub_edit">
         <button type="button" class="btn btn-primary" onclick="tableUpdateClickHandler()">
             <i class="fa fa-pencil-square-o"></i> 修改
         </button>
     </#resource>
 
-<#resource code="delCategory">
+<#resource code="sub_del">
     <button type="button" class="btn btn-primary" onclick="tableDeleteClickHandler()">
         <i class="fa fa-trash-o"></i> 删除
     </button>
 </#resource>
-<#resource code="enableCategory">
+<#resource code="sub_on">
     <button type="button" class="btn btn-primary" onclick="tableUnFreezeClickHandler()">
         <i class="fa fa-play"></i> 启用
     </button>
 </#resource>
-<#resource code="disableCategory">
+<#resource code="sub_off">
     <button type="button" class="btn btn-primary" onclick="tableFreezeClickHandler()">
         <i class="fa fa-stop"></i> 禁用
     </button>
@@ -67,7 +67,7 @@
         }
         id = $("input[name='ck']:checked").val();
         name = $("input[name='ck']:checked").closest('tr').attr("data-name");
-        var msg = '删除后，其下关联的子品类将一并删除！确定' + '<span class="red">删除</span>品类<span class="red">' + name + '</span>' + '？';
+        var msg = '删除后，其下关联的子科目将一并删除！确定' + '<span class="red">删除</span>科目<span class="red">' + name + '</span>' + '？';
 
         bs4pop.confirm(msg, {title: "确认提示"}, function (sure) {
             if (sure) {
@@ -87,11 +87,11 @@
                         loadTable();
                         removeTreeNode(id);
                         $("#parentId").val(0);
-                        tips("提示", "删除品类成功!");
+                        tips("提示", "删除科目成功!");
                         bui.loading.hide();
                     },
                     error: function () {
-                        tips("提示", "删除品类失败!");
+                        tips("提示", "删除科目失败!");
                     }
                 });
             }
@@ -105,7 +105,7 @@
             return;
         }
         id = $("input[name='ck']:checked").val();
-        var msg = '该操作将禁用所有子品类,请确定?';
+        var msg = '该操作将禁用所有子科目,请确定?';
         bs4pop.confirm(msg, {title: "确认提示"}, function (sure) {
             if (sure) {
                 $.ajax({
@@ -122,11 +122,11 @@
                             return;
                         }
                         loadTable();
-                        tips("提示", "禁用品类成功!");
+                        tips("提示", "禁用科目成功!");
                         bui.loading.hide();
                     },
                     error: function () {
-                        tips("提示", "禁用品类失败!");
+                        tips("提示", "禁用科目失败!");
                     }
                 });
             }
@@ -140,7 +140,7 @@
             return;
         }
         id = $("input[name='ck']:checked").val();
-        var msg = '该操作将启用所有子品类,请确定?';
+        var msg = '该操作将启用所有子科目,请确定?';
         bs4pop.confirm(msg, {title: "确认提示"}, function (sure) {
             if (sure) {
                 $.ajax({
@@ -157,11 +157,11 @@
                             return;
                         }
                         loadTable();
-                        tips("提示", "启用品类成功!");
+                        tips("提示", "启用科目成功!");
                         bui.loading.hide();
                     },
                     error: function () {
-                        tips("提示", "启用品类失败!");
+                        tips("提示", "启用科目失败!");
                     }
                 });
             }

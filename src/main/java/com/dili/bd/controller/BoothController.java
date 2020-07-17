@@ -2,7 +2,6 @@ package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.json.JSON;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -73,6 +72,7 @@ public class BoothController {
         UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
         input.setIsDelete(YesOrNoEnum.NO.getCode());
         input.setMarketId(userTicket.getFirmId());
+        // 部门过滤
         if (input.getDepartmentId() == null) {
             List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
             long[] ids = departments.stream().mapToLong(Department::getId).toArray();
@@ -107,7 +107,15 @@ public class BoothController {
                 data.setCreatorUser(userBaseOutput.getData().getRealName());
             }
         }
-        map.put("obj", data);
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        JSONArray array = new JSONArray();
+        array.put(data.getArea());
+        if (data.getSecondArea() != null) {
+            array.put(data.getSecondArea());
+        }
+        jsonObject.put("areaArray", array);
+        map.put("data", jsonObject);
         BaseOutput<Double> boothBalance = assetsRpc.getBoothBalance(id);
         map.put("number", boothBalance.getData());
         return "booth/split";
@@ -232,10 +240,21 @@ public class BoothController {
     @RequestMapping("/split.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.BOOTH, operationType = "split", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput split(Long parentId, String[] names, String notes, String[] numbers) {
+    public BaseOutput split(@RequestBody JSONObject json) {
         try {
+            Long parentId = json.getLong("id");
+            String notes = json.getString("notes");
+            var names = new ArrayList<String>();
+            var numbers = new ArrayList<String>();
+            com.alibaba.fastjson.JSONArray splitList = json.getJSONArray("splitList");
+            splitList.forEach(split ->{
+               if(split instanceof JSONObject){
+                   names.add(((JSONObject) split).getString("names"));
+                   numbers.add(((JSONObject) split).getString("numbers"));
+               }
+            });
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            BaseOutput baseOutput = assetsRpc.boothSplit(parentId, names, notes, numbers);
+            BaseOutput baseOutput = assetsRpc.boothSplit(parentId, names.toArray(new String[names.size()]), notes, numbers.toArray(new String[numbers.size()]));
             LoggerUtil.buildLoggerContext(parentId, null, userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;
         } catch (Exception e) {

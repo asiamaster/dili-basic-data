@@ -157,7 +157,7 @@
                             type: 'warning'
                         });
                     } else {
-                        split.splitTemp.splitList.push({names: app.formData.name + "_" + ++itemIndex, numbers: total.sub(split.number)})
+                        split.splitTemp.splitList.push({names: app.formData.name + "_" + ++itemIndex, numbers: Number(split.number).sub(total)})
                     }
                 }
             },

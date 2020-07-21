@@ -2,6 +2,8 @@ package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
 import com.dili.bd.rpc.AssetsRpc;
@@ -22,9 +24,7 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,7 +106,15 @@ public class FreezerController {
                 data.setCreatorUser(userBaseOutput.getData().getRealName());
             }
         }
-        map.put("obj", data);
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        JSONArray array = new JSONArray();
+        array.put(data.getArea());
+        if (data.getSecondArea() != null) {
+            array.put(data.getSecondArea());
+        }
+        jsonObject.put("areaArray", array);
+        map.put("data", jsonObject);
         BaseOutput<Double> boothBalance = assetsRpc.getBoothBalance(id);
         map.put("number", boothBalance.getData());
         return "freezer/split";
@@ -126,7 +134,15 @@ public class FreezerController {
                 data.setCreatorUser(userBaseOutput.getData().getRealName());
             }
         }
-        map.put("obj", data);
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        JSONArray array = new JSONArray();
+        array.put(data.getArea());
+        if (data.getSecondArea() != null) {
+            array.put(data.getSecondArea());
+        }
+        jsonObject.put("areaArray", array);
+        map.put("data", jsonObject);
         return "freezer/edit";
     }
 
@@ -157,12 +173,14 @@ public class FreezerController {
     @RequestMapping("/save.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput save(AssetsDTO input) {
+    public BaseOutput save(@RequestBody AssetsDTO input) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setCreatorId(userTicket.getId());
             input.setMarketId(userTicket.getFirmId());
             input.setState(EnabledStateEnum.DISABLED.getCode());
+            input.setParentId(0L);
+            input.setBusinessType(2);
             LoggerUtil.buildLoggerContext(null, input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
             BaseOutput save = assetsRpc.save(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
@@ -178,10 +196,10 @@ public class FreezerController {
      * @param input
      * @return
      */
-    @RequestMapping("/update.action")
+    @PostMapping("/changeStatus.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput update(AssetsDTO input, String opType) {
+    public BaseOutput changeStatus(AssetsDTO input, String opType) {
         try {
             input.setModifyTime(new Date());
             BaseOutput baseOutput = assetsRpc.updateBooth(input);
@@ -195,15 +213,47 @@ public class FreezerController {
     }
 
     /**
+     * insert
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping("/update.action")
+    @ResponseBody
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
+    public BaseOutput update(@RequestBody AssetsDTO input) {
+        try {
+            input.setModifyTime(new Date());
+            BaseOutput baseOutput = assetsRpc.updateBooth(input);
+            UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
+            return baseOutput;
+        } catch (Exception e) {
+            return BaseOutput.failure("系统异常");
+        }
+    }
+
+    /**
      * split
      */
     @RequestMapping("/split.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.BOOTH, operationType = "split", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput split(Long parentId, String[] names, String notes, String[] numbers) {
+    public BaseOutput split(@RequestBody JSONObject json) {
         try {
+            Long parentId = json.getLong("id");
+            String notes = json.getString("notes");
+            var names = new ArrayList<String>();
+            var numbers = new ArrayList<String>();
+            com.alibaba.fastjson.JSONArray splitList = json.getJSONArray("splitList");
+            splitList.forEach(split ->{
+                if(split instanceof JSONObject){
+                    names.add(((JSONObject) split).getString("names"));
+                    numbers.add(((JSONObject) split).getString("numbers"));
+                }
+            });
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            BaseOutput baseOutput = assetsRpc.boothSplit(parentId, names, notes, numbers);
+            BaseOutput baseOutput = assetsRpc.boothSplit(parentId, names.toArray(new String[names.size()]), notes, numbers.toArray(new String[numbers.size()]));
             LoggerUtil.buildLoggerContext(parentId, null, userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;
         } catch (Exception e) {

@@ -95,41 +95,41 @@
                 <button type="button" class="btn btn-primary" onclick="$.operate.view()">
                     <i class="fa fa-eye"></i>查看
                 </button>
-                </#resource>
-                <#resource code="booth_add">
-                <button id="btn_add" type="button" class="btn btn-primary" onclick="$.operate.add()"><i class="fa fa-plus"></i> 新增
-                </button>
-                </#resource>
-                <#resource code="booth_edit">
-                <button type="button" class="btn btn-primary" onclick="$.operate.edit()">
-                    <i class="fa fa-pencil-square-o"></i> 修改
-                </button>
-                </#resource>
-                <#resource code="booth_split">
-                <button type="button" id="btn_split" class="btn btn-primary" onclick="$.operate.split()">
-                    <i class="fa fa-pencil-square-o"></i> 拆分冷库
-                </button>
-                </#resource>
-                <#resource code="booth_del">
-                <button type="button" class="btn btn-primary" onclick="$.operate.remove()">
-                    <i class="fa fa-trash-o"></i> 删除
-                </button>
-                </#resource>
-                <#resource code="booth_on">
-                <button type="button" class="btn btn-primary" onclick="$.operate.changeStatus(1)">
-                    <i class="fa fa-play"></i> 启用
-                </button>
-                </#resource>
-                <#resource code="booth_off">
-                <button type="button" class="btn btn-primary" onclick="$.operate.changeStatus(2)">
-                    <i class="fa fa-stop"></i> 禁用
-                </button>
-                </#resource>
-            </div>
+            </#resource>
+            <#resource code="booth_add">
+            <button id="btn_add" type="button" class="btn btn-primary" onclick="$.operate.add()"><i class="fa fa-plus"></i> 新增
+            </button>
+        </#resource>
+        <#resource code="booth_edit">
+        <button type="button" class="btn btn-primary" onclick="$.operate.edit()">
+            <i class="fa fa-pencil-square-o"></i> 修改
+        </button>
+    </#resource>
+    <#resource code="booth_split">
+    <button type="button" id="btn_split" class="btn btn-primary" onclick="$.operate.split()">
+        <i class="fa fa-pencil-square-o"></i> 拆分摊位
+    </button>
+</#resource>
+<#resource code="booth_del">
+<button type="button" class="btn btn-primary" onclick="$.operate.remove()">
+    <i class="fa fa-trash-o"></i> 删除
+</button>
+</#resource>
+<#resource code="booth_on">
+<button type="button" class="btn btn-primary" onclick="$.operate.changeStatus(1)">
+    <i class="fa fa-play"></i> 启用
+</button>
+</#resource>
+<#resource code="booth_off">
+<button type="button" class="btn btn-primary" onclick="$.operate.changeStatus(2)">
+    <i class="fa fa-stop"></i> 禁用
+</button>
+</#resource>
+</div>
 
-            <table title="" id="grid" class="easyui-treegrid" idField="id"
-                   treeField="name"
-                   data-options="
+<table title="" id="grid" class="easyui-treegrid" idField="id"
+       treeField="name"
+       data-options="
                                                     method: 'get',
                                                     idField: 'id',
                                                     treeField: 'name',
@@ -142,22 +142,22 @@
                                                     _parentIdField: 'parentId',
                                                     loadFilter:treegridLoadFilter
                                                 ">
-                <thead>
-                <tr>
-                    <th data-options="field:'ck',checkbox:true"></th>
-                    <th data-options="field:'name',sortable:true,formatter:formatterView" width="20%">冷库编号</th>
-                    <th data-options="field:'number',sortable:true" width="10%">数量</th>
-                    <th data-options="field:'unit',_provider:'dataDictionaryValueProvider'" width="10%">单位</th>
-                    <th data-options="field:'area',_provider:'districtProvider'" width="10%">区域</th>
-                    <th data-options="field:'departmentId',_provider:'departmentProvider'" width="10%">部门</th>
-                    <th data-options="field:'createTime',_provider:'datetimeProvider'" width="10%">创建时间</th>
-                    <th data-options="field:'state',_provider:'boothStateProvider',formatter:stateFormatter" width="10%">状态</th>
-                    <th data-options="field:'bb',_provider:'boothPathProvider'" width="20%">路径</th>
-                </tr>
-                </thead>
-            </table>
-        </div>
-    </div>
+    <thead>
+    <tr>
+        <th data-options="field:'ck',checkbox:true"></th>
+        <th data-options="field:'name',sortable:true,formatter:formatterView" width="20%">冷库编号</th>
+        <th data-options="field:'number',sortable:true" width="10%">数量</th>
+        <th data-options="field:'unit',_provider:'dataDictionaryValueProvider'" width="10%">单位</th>
+        <th data-options="field:'area',_provider:'districtProvider'" width="10%">区域</th>
+        <th data-options="field:'departmentId',_provider:'departmentProvider'" width="10%">部门</th>
+        <th data-options="field:'createTime',_provider:'datetimeProvider'" width="10%">创建时间</th>
+        <th data-options="field:'state',_provider:'boothStateProvider',formatter:stateFormatter" width="10%">状态</th>
+        <th data-options="field:'bb',_provider:'boothPathProvider'" width="20%">路径</th>
+    </tr>
+    </thead>
+</table>
+</div>
+</div>
 </div>
 
 
@@ -165,8 +165,8 @@
 
 </#bs4Body>
 
-<script type="text/javascript" src="${contextPath}/resources/bui/js/base_treegrid.js"></script>
 <script type="text/javascript" src="${contextPath}/resources/blockUI/jquery.blockUI.js"></script>
+<script type="text/javascript" src="${contextPath}/resources/bui/js/base_treegrid.js"></script>
 <script type="text/javascript">
     var hasView = false;
     <#resource code="booth_view">
@@ -177,13 +177,13 @@
 
     window.rootPath = '${contextPath}';
 
-    var dataUrl = window.rootPath + "/booth/listPage.action";
-    var removeUrl = window.rootPath + "/booth/delete.action";
-    var changeStatusUrl = window.rootPath + "/booth/update.action";
-    var createUrl = window.rootPath + "/booth/add.html";
-    var viewUrl = window.rootPath + "/booth/view.html?id={id}";
-    var updateUrl = window.rootPath + "/booth/update.html?id={id}";
-    var splitUrl = window.rootPath + "/booth/split.html?id={id}";
+    var dataUrl = window.rootPath + "/freezer/listPage.action";
+    var removeUrl = window.rootPath + "/freezer/delete.action";
+    var changeStatusUrl = window.rootPath + "/freezer/changeStatus.action";
+    var createUrl = window.rootPath + "/freezer/add.html";
+    var viewUrl = window.rootPath + "/freezer/view.html?id={id}";
+    var updateUrl = window.rootPath + "/freezer/update.html?id={id}";
+    var splitUrl = window.rootPath + "/freezer/split.html?id={id}";
     var exportUrl = window.rootPath + "/BoothController/export";
     var options = {
         dataUrl: dataUrl,
@@ -195,7 +195,7 @@
         removeUrl: removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",
-        businessType: 1, // 冷库
+        businessType: 2, // 摊位
         modalName: "冷库管理"
     };
     $(function () {
@@ -204,7 +204,8 @@
         $.ajax({
             type: "POST",
             url: "/district/search.action",
-            data: {parentId: 0},
+            data: JSON.stringify({parentId: 0}),
+            contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if (data.code == "200") {
                     var array = [];
@@ -235,7 +236,8 @@
                 $.ajax({
                     type: "POST",
                     url: "/district/search.action",
-                    data: {parentId: $(this).val()},
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({parentId: $(this).val()}),
                     success: function (data) {
                         if (data.code == "200") {
                             var array = [];
@@ -291,7 +293,8 @@
         $.ajax({
             type: "POST",
             url: "/district/search.action",
-            data: {parentId: 0},
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({parentId: 0}),
             success: function (data) {
                 if (data.code == "200") {
                     var array = [];

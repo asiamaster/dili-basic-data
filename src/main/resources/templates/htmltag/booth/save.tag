@@ -11,16 +11,18 @@
                         }
                     }
                 ],
-                formData: {},
+                formData: {
+                    businessType:1
+                },
                 formDesc: {
                     type: {
                         options: function (data) {
                             return loadProvider({
                                 provider: 'dataDictionaryValueProvider',
-                                queryParams: {dd_code: "booth_type", required: true}
+                                queryParams: {dd_code: "${_type}", required: true}
                             })
                         },
-                        label: "摊位类型",
+                        label: "类型",
                         type: "select",
                         layout: 6,
                         required: true
@@ -78,7 +80,7 @@
                         required: true
                     },
                     name: {
-                        label: "摊位编号",
+                        label: "编号",
                         type: "input",
                         attrs: {
                             maxlength: 20,
@@ -97,7 +99,10 @@
                         label: "是否转角",
                         type: "select",
                         layout: 6,
-                        required: true
+                        required: true,
+                        vif (data) {
+                            return data.businessType === 1
+                        }
                     },
                     unit: {
                         options: function (data) {

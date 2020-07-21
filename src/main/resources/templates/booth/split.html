@@ -112,7 +112,7 @@
 <script src="${contextPath}/resources/bui/js/base_treegrid.js" type="text/javascript"></script>
 
 <script src="${contextPath}/resources/design/vue-ele-form-generator.umd.js"></script>
-<#booth_save _url="" />
+<#booth_save _url="" _type="booth_type" />
 <script>
     app.formData = ${data!};
 </script>
@@ -179,7 +179,7 @@
                             total = total.add(Number(split.splitTemp.splitList[i].numbers));
                         }
 
-                        if (total >= split.number) {
+                        if (total > split.number) {
                             split.$message({
                                 message: '可拆分数量不足',
                                 type: 'warning'

@@ -204,7 +204,8 @@
         $.ajax({
             type: "POST",
             url: "/district/search.action",
-            data: {parentId: 0},
+            data: JSON.stringify({parentId: 0}),
+            contentType: "application/json; charset=utf-8",
             success: function (data) {
                 if (data.code == "200") {
                     var array = [];
@@ -235,7 +236,8 @@
                 $.ajax({
                     type: "POST",
                     url: "/district/search.action",
-                    data: {parentId: $(this).val()},
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify({parentId: $(this).val()}),
                     success: function (data) {
                         if (data.code == "200") {
                             var array = [];
@@ -291,7 +293,8 @@
         $.ajax({
             type: "POST",
             url: "/district/search.action",
-            data: {parentId: 0},
+            contentType: "application/json; charset=utf-8",
+            data: JSON.stringify({parentId: 0}),
             success: function (data) {
                 if (data.code == "200") {
                     var array = [];

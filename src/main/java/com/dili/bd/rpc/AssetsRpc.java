@@ -64,13 +64,13 @@ public interface AssetsRpc {
     /**
      * 新增摊位
      */
-    @RequestMapping(value = "/api/booth/save", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/save", method = RequestMethod.POST)
     BaseOutput save(AssetsDTO input);
 
     /**
      * 获取摊位列表
      */
-    @RequestMapping(value = "/api/booth/list", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/assets/list", method = RequestMethod.GET)
     String listPage(AssetsDTO input);
 
     /**
@@ -118,37 +118,37 @@ public interface AssetsRpc {
     /**
      * 获取单个摊位
      */
-    @RequestMapping(value = "/api/booth/get", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/get", method = RequestMethod.POST)
     BaseOutput<AssetsDTO> getBoothById(Long id);
 
     /**
      * 修改摊位
      */
-    @RequestMapping(value = "/api/booth/update", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/update", method = RequestMethod.POST)
     BaseOutput updateBooth(AssetsDTO input);
 
     /**
      * 删除摊位
      */
-    @RequestMapping(value = "/api/booth/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/delete", method = RequestMethod.POST)
     BaseOutput delBoothById(Long id);
 
     /**
      * 删除摊位
      */
-    @RequestMapping(value = "/api/booth/getBoothBalance", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/getBoothBalance", method = RequestMethod.POST)
     BaseOutput<Double> getBoothBalance(Long id);
 
     /**
      * 拆分摊位
      */
-    @RequestMapping(value = "/api/booth/split", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/split", method = RequestMethod.POST)
     BaseOutput boothSplit(@RequestParam("parentId") Long parentId, @RequestParam("names") String[] names, @RequestParam("notes") String notes, @RequestParam("numbers") String[] numbers);
 
     /**
      * 搜索摊位
      */
-    @RequestMapping(value = "/api/booth/search", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/assets/search", method = RequestMethod.POST)
     BaseOutput<List<AssetsDTO>> searchBooth(JSONObject query);
 
     /**

@@ -1,16 +1,27 @@
 package com.dili.bd.rpc;
 
-import com.alibaba.fastjson.JSONObject;
-import com.dili.assets.sdk.dto.*;
-import com.dili.ss.domain.BaseOutput;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.alibaba.fastjson.JSONObject;
+import com.dili.assets.sdk.dto.AssetsDTO;
+import com.dili.assets.sdk.dto.BoothRentDTO;
+import com.dili.assets.sdk.dto.CarTypeDTO;
+import com.dili.assets.sdk.dto.CarTypePublicDTO;
+import com.dili.assets.sdk.dto.CategoryDTO;
+import com.dili.assets.sdk.dto.CustomCategoryDTO;
+import com.dili.assets.sdk.dto.DistrictDTO;
+import com.dili.assets.sdk.dto.SubjectDTO;
+import com.dili.assets.sdk.dto.SubjectQuery;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.PageOutput;
 
-@FeignClient(name = "assets-service")
+@FeignClient(name = "assets-service", contextId = "1111", url = "http://127.0.0.1:8182")
 public interface AssetsRpc {
 
     /**
@@ -209,7 +220,7 @@ public interface AssetsRpc {
      * 获取车型列表
      */
     @RequestMapping(value = "/api/carTypePublic/listPage", method = RequestMethod.GET)
-    String listPage(CarTypePublicDTO input);
+    PageOutput<List<Map<String, Object>>> listPage(CarTypePublicDTO input);
 
     /**
      * 根据@param{车型id}获取车型

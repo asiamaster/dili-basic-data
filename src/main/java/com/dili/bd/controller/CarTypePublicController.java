@@ -1,17 +1,9 @@
 package com.dili.bd.controller;
 
-import com.dili.assets.sdk.dto.CarTypePublicDTO;
-import com.dili.bd.rpc.AssetsRpc;
-import com.dili.bd.util.LoggerUtil;
-import com.dili.commons.glossary.EnabledStateEnum;
-import com.dili.logger.sdk.base.LoggerContext;
-import com.dili.logger.sdk.glossary.LoggerConstant;
-import com.dili.ss.domain.BaseOutput;
-import com.dili.ss.dto.DTOUtils;
-import com.dili.uap.sdk.domain.DataDictionaryValue;
-import com.dili.uap.sdk.domain.UserTicket;
-import com.dili.uap.sdk.rpc.DataDictionaryRpc;
-import com.dili.uap.sdk.session.SessionContext;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,8 +11,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Date;
-import java.util.List;
+import com.dili.assets.sdk.dto.CarTypePublicDTO;
+import com.dili.bd.rpc.AssetsRpc;
+import com.dili.bd.util.LoggerUtil;
+import com.dili.commons.glossary.EnabledStateEnum;
+import com.dili.logger.sdk.base.LoggerContext;
+import com.dili.logger.sdk.glossary.LoggerConstant;
+import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.domain.EasyuiPageOutput;
+import com.dili.ss.domain.PageOutput;
+import com.dili.ss.dto.DTOUtils;
+import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.domain.DataDictionaryValue;
+import com.dili.uap.sdk.domain.UserTicket;
+import com.dili.uap.sdk.rpc.DataDictionaryRpc;
+import com.dili.uap.sdk.session.SessionContext;
 
 /**
  * 由MyBatis Generator工具自动生成
@@ -104,8 +109,9 @@ public class CarTypePublicController {
     public @ResponseBody String listPage(CarTypePublicDTO carTypePublic) throws Exception {
     	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
     	carTypePublic.setMarketId(userTicket.getFirmId());
-    	String listPage = assetsRpc.listPage(carTypePublic);
-    	return listPage;
+    	PageOutput<List<Map<String, Object>>> listPage = assetsRpc.listPage(carTypePublic);
+        List results = true ? ValueProviderUtils.buildDataByProvider(carTypePublic, listPage.getData()) : listPage.getData();
+        return new EasyuiPageOutput(listPage.getTotal(), results).toString();
     }
 
     /**

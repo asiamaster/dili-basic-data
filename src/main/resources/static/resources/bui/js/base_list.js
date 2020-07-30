@@ -319,10 +319,10 @@
             },
             ajaxSuccess: function (result) {
                 if (result.code == web_status.SUCCESS) {
-                    $.modal.msgSuccess(result.msg);
+                    $.modal.msgSuccess(result.message);
                     $.table.refresh();
                 } else {
-                    $.modal.alertError(result.msg);
+                    $.modal.alertError(result.message);
                 }
                 $.modal.closeLoading();
             },
@@ -330,7 +330,7 @@
                 if (result.code == web_status.SUCCESS) {
                     $.modal.msgReload("保存成功,正在刷新数据请稍后……", modal_status.SUCCESS)
                 } else {
-                    $.modal.alertError(result.msg);
+                    $.modal.alertError(result.message);
                 }
                 $.modal.closeLoading();
             }, // post请求传输

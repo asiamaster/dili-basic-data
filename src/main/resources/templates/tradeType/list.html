@@ -1,0 +1,172 @@
+<#bs4Body>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<div class="container-fluid">
+    <#bs4nav>
+    <div id=app>
+        <ele-form
+                :form-attrs="{
+            size: 'medium'
+            }"
+                :inline="true"
+                :is-show-reset-btn="true"
+                form-btn-size="medium"
+                :form-desc="formDesc"
+                v-model="formData"
+                :request-fn="handleRequest">
+        </ele-form>
+    </div>
+    </#bs4nav>
+<hr>
+    <div class="row">
+        <div class="col-12">
+            <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+               <button onclick="$.operate.add()" type="button" class="btn btn-primary">
+                    <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
+               </button>
+               <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
+                    <i class="fa fa-plus"></i>&nbsp;&nbsp;修改
+               </button>
+               <button onclick="$.operate.batRemove()" type="button" class="btn btn-primary">
+                    <i class="fa fa-remove"></i>&nbsp;&nbsp;删除
+               </button>
+
+            </div>
+
+            <table id="dataTable" class="table" data-page-size="6" data-icons="bui.variable.icons">
+
+            </table>
+        </div>
+    </div>
+</div>
+
+</#bs4Body>
+<script type="text/javascript">
+    window.rootPath='${contextPath}';
+</script>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_list.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/vue-ele-form-generator.umd.js"></script>
+<script type="text/javascript">
+
+
+/**  请求URL配置   **/
+var dataUrl=window.rootPath+"/tradeTypeController/query.action";
+var removeUrl=window.rootPath+"/tradeTypeController/deleteAll.action";
+var createUrl=window.rootPath+"/tradeTypeController/add.action";
+var updateUrl=window.rootPath+"/tradeTypeController/edit.action?id={id}";
+var viewUrl=window.rootPath+"/tradeTypeController/view?id={id}";
+var exportUrl=window.rootPath+"/tradeTypeController/export";
+  var options = {
+		dataUrl: dataUrl,
+        createUrl: createUrl,
+        updateUrl: updateUrl,
+        viewUrl: viewUrl,
+        removeUrl:removeUrl,
+        exportUrl: exportUrl,
+        sortName: "roleSort",
+        modalName: "",
+        search: false,
+	   dataColumns: [
+			{
+			    checkbox: true
+			},
+            {
+			    field: 'id',
+			    title: 'ID'
+			},
+            {
+			    field: 'name',
+			    title: '类型名称'
+			},
+            {
+			    field: 'creatorId',
+			    title: '创建人'
+			},
+            {
+			    field: 'createdTime',
+			    title: '创建时间'
+			},
+            {
+			    field: 'modifyTime',
+			    title: '更新时间'
+			},
+/*
+参照修改注释
+		{
+			    field: 'xxstate',
+			    title: 'xx状态',
+			    visible: false, //隐藏
+			    searchable: false,//搜索
+			   	sortable:false,//设置true为允许列可以排序
+			    order: 'asc', //排序顺序
+		    	formatter: function (value, row, index) {
+			        var actions = [];
+			        if(value==0){
+			        	 actions.push('<span class="label label-primary">关闭</span>');
+			        }else if(value==1){
+			        	 actions.push('<span class="label label-danger">开启</span>');
+			        }
+			      	return actions.join('');
+				 }
+			}
+*/
+			]
+  };
+$(function(){
+	var oTab=$.table.oTableInit(options);
+	oTab.Init();
+})
+</script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                formData: {},
+                formDesc: {
+                name: {
+                    type: 'input',
+                        label: '类型名称',
+                        rules: [ { required: true, message: '请输入类型名称', trigger: 'blur' }]
+                },
+                createdTime: {
+                label: '创建时间',
+                type: 'datetimerange',
+                attrs: {
+                    valueFormat: "yyyy-MM-dd HH:mm:ss"
+                }
+                },
+                }
+        };
+        },
+        methods: {
+            handleRequest(data) {
+                $.table.search(data);
+            }
+        }
+    })
+    function loadProvider(data) {
+        return new Promise((resolve, reject) => {
+            axios.post('/convert/list.action', data)
+                .then((res) => {
+                    resolve(res.data);
+                    // console.log(res);
+                })
+                .catch(function (error) {
+                    reject(error);
+                    // console.log(error);
+                });
+        });
+    }
+</script>

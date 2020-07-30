@@ -1,8 +1,7 @@
 package com.dili.bd.controller;
 
-import cn.hutool.core.util.StrUtil;
 import com.dili.assets.sdk.dto.CategoryDTO;
-import com.dili.bd.rpc.AssetsRpc;
+import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.bd.util.PinyinUtil;

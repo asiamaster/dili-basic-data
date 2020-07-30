@@ -6,7 +6,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
-import com.dili.bd.rpc.AssetsRpc;
+import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.commons.glossary.EnabledStateEnum;

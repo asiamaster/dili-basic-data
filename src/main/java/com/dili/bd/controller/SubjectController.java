@@ -1,12 +1,10 @@
 package com.dili.bd.controller;
 
-import com.dili.assets.sdk.dto.CategoryDTO;
 import com.dili.assets.sdk.dto.SubjectDTO;
 import com.dili.assets.sdk.dto.SubjectQuery;
-import com.dili.bd.rpc.AssetsRpc;
+import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
-import com.dili.bd.util.PinyinUtil;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 

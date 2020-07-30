@@ -1,7 +1,7 @@
 package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CarTypeDTO;
-import com.dili.bd.rpc.AssetsRpc;
+import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.commons.glossary.EnabledStateEnum;

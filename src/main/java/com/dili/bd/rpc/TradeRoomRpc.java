@@ -15,8 +15,8 @@
 */
 package com.dili.bd.rpc;
 
-import com.dili.assets.sdk.dto.TradeTypeDto;
-import com.dili.assets.sdk.dto.TradeTypeQuery;
+import com.dili.assets.sdk.dto.TradeRoomDto;
+import com.dili.assets.sdk.dto.TradeRoomQuery;
 import com.dili.bd.common.TableResult;
 import com.dili.ss.domain.BaseOutput;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -28,37 +28,37 @@ import org.springframework.web.bind.annotation.RequestMethod;
 * @author shaofan
 * @date 2020-07-30
 **/
-@FeignClient(name = "tradeType-service", url = "http://127.0.0.1:8182")
-public interface TradeTypeRpc {
+@FeignClient(name = "tradeRoom-service", url = "http://127.0.0.1:8182")
+public interface TradeRoomRpc {
 
     /**
-    * 查询交易类型数据分页
+    * 查询交易厅数据分页
     */
-    @RequestMapping(value = "/api/tradeType/query", method = RequestMethod.POST)
-    TableResult<TradeTypeDto> query(TradeTypeQuery query);
+    @RequestMapping(value = "/api/tradeRoom/query", method = RequestMethod.POST)
+    TableResult<TradeRoomDto> query(TradeRoomQuery query);
 
     /**
-    * 新增交易类型
+    * 新增交易厅
     */
-    @RequestMapping(value = "/api/tradeType/add", method = RequestMethod.POST)
-    BaseOutput add(TradeTypeDto dto);
+    @RequestMapping(value = "/api/tradeRoom/add", method = RequestMethod.POST)
+    BaseOutput add(TradeRoomDto dto);
 
     /**
-    * 修改交易类型
+    * 修改交易厅
     */
-    @RequestMapping(value = "/api/tradeType/update", method = RequestMethod.POST)
-    BaseOutput update(TradeTypeDto dto);
+    @RequestMapping(value = "/api/tradeRoom/update", method = RequestMethod.POST)
+    BaseOutput update(TradeRoomDto dto);
 
     /**
-     * 多选删除交易类型
-     */
-    @RequestMapping(value = "/api/tradeType/deleteAll", method = RequestMethod.POST)
+    * 多选删除交易厅
+    */
+    @RequestMapping(value = "/api/tradeRoom/deleteAll", method = RequestMethod.POST)
     BaseOutput deleteAll(Long[] ids);
 
     /**
-    * 获取交易类型
+    * 获取交易厅
     */
-    @RequestMapping(value = "/api/tradeType/get", method = RequestMethod.POST)
-    BaseOutput<TradeTypeDto> get(Long id);
+    @RequestMapping(value = "/api/tradeRoom/get", method = RequestMethod.POST)
+    BaseOutput<TradeRoomDto> get(Long id);
 
 }

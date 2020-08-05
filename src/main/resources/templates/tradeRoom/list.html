@@ -60,12 +60,12 @@
 
 
 /**  请求URL配置   **/
-var dataUrl=window.rootPath+"/tradeTypeController/query.action";
-var removeUrl=window.rootPath+"/tradeTypeController/deleteAll.action";
-var createUrl=window.rootPath+"/tradeTypeController/add.action";
-var updateUrl=window.rootPath+"/tradeTypeController/edit.action?id={id}";
-var viewUrl=window.rootPath+"/tradeTypeController/view?id={id}";
-var exportUrl=window.rootPath+"/tradeTypeController/export";
+var dataUrl=window.rootPath+"/tradeRoomController/query.action";
+var removeUrl=window.rootPath+"/tradeRoomController/deleteAll.action";
+var createUrl=window.rootPath+"/tradeRoomController/add.action";
+var updateUrl=window.rootPath+"/tradeRoomController/edit.action?id={id}";
+var viewUrl=window.rootPath+"/tradeRoomController/view?id={id}";
+var exportUrl=window.rootPath+"/tradeRoomController/export";
   var options = {
 		dataUrl: dataUrl,
         createUrl: createUrl,
@@ -74,7 +74,7 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
         removeUrl:removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",
-        modalName: "",
+        modalName: "交易厅",
         search: false,
 	   dataColumns: [
 			{
@@ -86,20 +86,20 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
 			},
             {
 			    field: 'name',
-			    title: '类型名称'
+			    title: '交易厅名称'
+			},
+            {
+			    field: 'tradeType',
+			    title: '关联交易类型',
+                provider: 'tradeTypeProvider'
 			},
             {
 			    field: 'creatorUser',
-			    title: '创建人',
-                provider: ''
+			    title: '创建人'
 			},
             {
 			    field: 'createdTime',
 			    title: '创建时间'
-			},
-            {
-			    field: 'modifyTime',
-			    title: '更新时间'
 			},
 /*
 参照修改注释
@@ -138,9 +138,9 @@ $(function(){
                 formDesc: {
                 name: {
                     type: 'input',
-                        label: '类型名称',
-                        rules: [ { required: true, message: '请输入类型名称', trigger: 'blur' }]
-                }
+                        label: '交易厅名称',
+                        rules: [ { required: true, message: '请输入交易厅名称', trigger: 'blur' }]
+                },
                 }
         };
         },

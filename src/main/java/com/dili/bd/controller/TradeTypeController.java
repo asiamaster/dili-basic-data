@@ -21,10 +21,13 @@ import com.dili.assets.sdk.dto.TradeTypeDto;
 import com.dili.assets.sdk.dto.TradeTypeQuery;
 import com.dili.bd.rpc.TradeTypeRpc;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.uap.sdk.session.SessionContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 /**
 * @website http://shaofan.org
@@ -87,6 +90,10 @@ public class TradeTypeController {
     @PostMapping("/add.action")
     @ResponseBody
     public Object add(@RequestBody TradeTypeDto dto) {
+        dto.setCreatedTime(LocalDateTime.now());
+        dto.setModifyTime(LocalDateTime.now());
+        dto.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
+        dto.setCreatorUser(SessionContext.getSessionContext().getUserTicket().getRealName());
         return tradeTypeRpc.add(dto);
     }
 
@@ -96,6 +103,7 @@ public class TradeTypeController {
     @PostMapping("/edit.action")
     @ResponseBody
     public Object edit(@RequestBody TradeTypeDto dto) {
+        dto.setModifyTime(LocalDateTime.now());
         return tradeTypeRpc.update(dto);
     }
 

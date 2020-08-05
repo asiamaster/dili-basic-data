@@ -5,20 +5,16 @@ import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProviderUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
- * provider
+ * vue element form provider
  */
-@Controller
+@RestController
 @RequestMapping({"/convert"})
 public class ConvertController {
 
@@ -34,8 +30,7 @@ public class ConvertController {
      * @param queryMap
      * @return
      */
-    @RequestMapping({"/list.action"})
-    @ResponseBody
+    @PostMapping({"/list.action"})
     public List<ValuePair<?>> getLookupList(@RequestBody Map<String, Object> queryMap) {
         String provider = queryMap.get("provider").toString();
         var result = new ArrayList<ValuePair<?>>();

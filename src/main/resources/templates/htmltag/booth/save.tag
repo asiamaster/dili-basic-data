@@ -171,7 +171,7 @@
                 // 转换一级区域和二级区域
                 let areaArray = data.areaArray;
                 data.area = areaArray[0];
-                if(areaArray.length > 1){
+                if (areaArray.length > 1) {
                     data.secondArea = areaArray[1];
                 }
 

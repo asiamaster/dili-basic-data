@@ -53,10 +53,20 @@
                 </select>
             </div>
             <div class="form-group col">
-                <label for="parentId" class="">财务科目</label>
-                <select class="form-control" id="chargeSubject" name="chargeSubject">
-                    <option value="">暂无数据来源</option>
+                <label for="systemSubject" class="">系统科目</label>
+                <select class="form-control" id="systemSubject" name="systemSubject"></select>
+                <#bcomboProvider _id="systemSubject" _provider="systemSubjectTypeProvider" _valueField="value" _textField="text" _value="${businessChargeItem.systemSubject!}" _queryParams='{emptyText:"-- 请选择 --"}' />
+            </div>
+            <div class="form-group col">
+                <label for="chargeSubject" class="" >财务科目<i class="red">*</i></label>
+                <select class="form-control" id="chargeSubject" name="chargeSubject" required>
+                    <%
+                        if(isNotEmpty(businessChargeItem.chargeSubject)){
+                    %>
+                        <option value="${businessChargeItem.chargeSubject!}">${businessChargeItem.chargeSubjectName!}</option>
+                    <%  } %>
                 </select>
+                <#bselect2 _id="chargeSubject" _mode="remote" _value="${businessChargeItem.chargeSubject!}" _option=""  _optionVariable="chargeSubjectCompleteOption"/>
             </div>
             <div class="form-group col">
                 <label for="" class="">备注</label>
@@ -128,13 +138,20 @@
             return false;
         } else {
             bui.loading.show('努力提交中，请稍候。。。');
-            let _formData = $('#addForm').serialize();
+            // let _formData = $('#addForm').serialize();
+            let _formData = new FormData($('#addForm')[0]);
+            if ($('#chargeSubject').val()) {
+                let chargeSubjectName = $("#chargeSubject option:selected").text();
+                _formData.append("chargeSubjectName", chargeSubjectName);
+            }
             let url = "${contextPath}/businessChargeItem/save.action";
             $.ajax({
                 type: "POST",
                 url: url,
                 data: _formData,
+                processData: false,
                 async: true,
+                contentType: false,
                 success: function (ret) {
                     bui.loading.hide();
                     if (ret.success) {
@@ -155,5 +172,37 @@
             });
         }
     });
+
+
+    /**
+     * 获取财务科目信息
+     * @type {{width: string, language: string, ajax: {data: (function(*): {organizationType: (jQuery|string|undefined), keyword: *}), dataType: string, type: string, processResults: chargeSubjectCompleteOption.ajax.processResults, url: string}, maximumSelectionLength: number}}
+     */
+    var chargeSubjectCompleteOption = {
+        width: '100%',
+        language: 'zh-CN',
+        maximumSelectionLength: 10,
+        ajax: {
+            type: 'post',
+            dataType: 'json',
+            url: '${contextPath}/subject/getTree.action',
+            data: function (params) {
+                return {
+                    marketId: $('#marketId').val(),
+                    likeName: params.term,
+                }
+            },
+            processResults: function (res) {
+                if (res.success) {
+                    return {
+                        results: $.map(res.data, function (item) {
+                            item.text = item.name;
+                            return item;
+                        })
+                    };
+                }
+            }
+        }
+    }
 
 </script>

@@ -117,6 +117,8 @@ public class BusinessChargeItemController {
                     old.setNotes(chargeItem.getNotes());
                     old.setIsRequired(chargeItem.getIsRequired());
                     old.setChargeSubject(chargeItem.getChargeSubject());
+                    old.setChargeSubjectName(chargeItem.getChargeSubjectName());
+                    old.setSystemSubject(chargeItem.getSystemSubject());
                     businessChargeItemRpc.save(old);
                 }else{
                     return BaseOutput.failure("数据已不存在");

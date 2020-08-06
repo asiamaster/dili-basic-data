@@ -19,7 +19,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.TradeTypeDto;
 import com.dili.assets.sdk.dto.TradeTypeQuery;
-import com.dili.bd.rpc.TradeTypeRpc;
+import com.dili.assets.sdk.rpc.TradeTypeRpc;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.session.SessionContext;
 import lombok.RequiredArgsConstructor;

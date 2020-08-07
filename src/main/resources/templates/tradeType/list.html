@@ -84,6 +84,10 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
 			    field: 'id',
 			    title: 'ID'
 			},
+               {
+                   field: 'code',
+                   title: '编号'
+               },
             {
 			    field: 'name',
 			    title: '类型名称'
@@ -136,10 +140,10 @@ $(function(){
             return {
                 formData: {},
                 formDesc: {
-                name: {
+                keyword: {
                     type: 'input',
-                        label: '类型名称',
-                        rules: [ { required: true, message: '请输入类型名称', trigger: 'blur' }]
+                        label: '名称/编码',
+                        rules: [ { required: true, message: '请输入名称/编码', trigger: 'blur' }]
                 }
                 }
         };

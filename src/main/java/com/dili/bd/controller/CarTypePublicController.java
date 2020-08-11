@@ -108,7 +108,7 @@ public class CarTypePublicController {
     public @ResponseBody String listPage(CarTypePublicDTO carTypePublic) throws Exception {
     	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
     	carTypePublic.setMarketId(userTicket.getFirmId());
-    	PageOutput<List<Map<String, Object>>> listPage = null;
+    	PageOutput<List<Map<String, Object>>> listPage = assetsRpc.listPage(carTypePublic);
         List results = true ? ValueProviderUtils.buildDataByProvider(carTypePublic, listPage.getData()) : listPage.getData();
         return new EasyuiPageOutput(listPage.getTotal(), results).toString();
     }

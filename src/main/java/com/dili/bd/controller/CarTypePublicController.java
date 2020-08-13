@@ -76,20 +76,21 @@ public class CarTypePublicController {
     @RequestMapping("/update.html")
     public String update(Long id, Long carTypeId, String name, String number, ModelMap map) {
     	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-    	if(id != null) {
-    		CarTypePublicDTO carTypePublic = new CarTypePublicDTO();
-    		carTypePublic.setId(id);
-    		carTypePublic.setMarketId(userTicket.getFirmId());
-    		Object data = assetsRpc.getCarTypePublicById(carTypePublic).getData();
-    		map.put("obj", data);
-    	}else{
-    		map.put("obj", null);
-    	}
     	DataDictionaryValue dataDictionaryValue = DTOUtils.newInstance(DataDictionaryValue.class);
     	dataDictionaryValue.setDdCode("cartype_tag");
     	dataDictionaryValue.setFirmId(userTicket.getFirmId());
     	
     	List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionaryValue).getData();
+    	if(id != null) {
+    		CarTypePublicDTO carTypePublic = new CarTypePublicDTO();
+    		carTypePublic.setId(id);
+    		carTypePublic.setMarketId(userTicket.getFirmId());
+    		carTypePublic.setTags(list);
+    		Object data = assetsRpc.getCarTypePublicById(carTypePublic).getData();
+    		map.put("obj", data);
+    	}else{
+    		map.put("obj", null);
+    	}
     	
     	map.put("cartypeTags", list);
     	map.put("carTypeId", carTypeId);

@@ -5,8 +5,8 @@
       "chnname": "资产",
       "entities": [
         {
-          "title": "booth",
-          "chnname": "摊位 ",
+          "title": "assets",
+          "chnname": "资产",
           "fields": [
             {
               "name": "id",

@@ -75,38 +75,6 @@
         }
     });
 
-
-    $("#areaOne").change(function () {
-        var id = $(this).val();
-        if(id && id!==''){
-            $.ajax({
-                type: "POST",
-                url: "/district/search.action",
-                data: {parentId: $(this).val()},
-                success: function (data) {
-                    if (data.code == "200") {
-                        var array = $.map(data.data, function (obj) {
-                            obj.text = obj.text || obj.name;
-                            return obj;
-                        });
-                        if (array.length == 0) {
-                            $('#areaTwo').html("")
-                        } else {
-                            $('#areaTwo').html("")
-                            $("#areaTwo").select2({
-                                language:'zh-CN',
-                                data: array,
-                                width: "50%",
-                                minimumResultsForSearch: Infinity
-                            })
-                        }
-                    }
-                }
-            });
-        }else{
-            $('#areaTwo').html("")
-        }
-    });
 </script>
 
 

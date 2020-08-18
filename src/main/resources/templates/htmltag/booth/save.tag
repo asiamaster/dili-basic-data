@@ -40,9 +40,9 @@
                     areaArray: {
                         options: function (data) {
                             return new Promise((resolve, reject) => {
-                                axios.post('/district/search.action', {parentId: 0})
+                                axios.post('/district/search.action')
                                     .then((res) => {
-                                        resolve(res.data.data);
+                                        resolve(toEleTree(res.data.data, {label: "name", pid: "parentId"}));
                                         // console.log(res);
                                     })
                                     .catch(function (error) {
@@ -59,21 +59,7 @@
                                 label: 'name',
                                 separator: '-',
                                 expandTrigger: 'hover',
-                                checkStrictly: true,
-                                lazy: true,
-                                lazyLoad(node, resolve) {
-                                    if(node.value){
-                                        axios.post('/district/search.action', {parentId: node.value})
-                                            .then((res) => {
-                                                resolve(res.data.data);
-                                                // console.log(res);
-                                            })
-                                            .catch(function (error) {
-                                                reject(error);
-                                                // console.log(error);
-                                            });
-                                    }
-                                }
+                                checkStrictly: true
                             }
                         },
                         layout: 6,
@@ -84,7 +70,7 @@
                         type: "input",
                         attrs: {
                             maxlength: 20,
-                            showWordLimit: true
+                            showWordLimit: false
                         },
                         layout: 6,
                         required: true

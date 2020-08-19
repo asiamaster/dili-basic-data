@@ -17,7 +17,7 @@
         <div id="baseInfo" class="row row-cols-1 mx-auto">
 	        <div class="form-group col">
 	            <label for="number">快捷编码</label>
-	            <input type="text" class="form-control" name="code" value="${obj.code!}" id="code" maxlength="6" required/>
+	            <input type="text" class="form-control" name="code" value="${obj.code!}" id="code" maxlength="6"/>
 	        </div>
 	        <div class="form-group col">
 	            <label>标签以及自重</label>
@@ -39,7 +39,6 @@
 					    	</div>
 					<%}%>
 				</div>
-				
 	        </div>
 	        <div class="form-group col">
 	            <label for="c_autoPassCheckbox">自动放行</label>
@@ -81,6 +80,31 @@
 		if(autoSave && autoSave == 1){
 			$("#c_autoSaveCheckbox").attr("checked", "checked");
 		}
+		$("#updateForm").validate({
+            rules: {
+                code: {
+                    remote: {
+                        url: "/carTypePublic/checkRepeat.action",
+                        type: "post",
+                        async: false,
+                        cache: false,
+                        data: {
+                            code: function () {
+                                return $('#code').val();
+                            },
+                            id: function(){
+                            	return $("input[name=id]").val();
+                            }
+                        }
+                    }
+                }
+            },
+            messages: {
+                code: {
+                    remote: "该快捷编码已存在"
+                }
+            }
+        });
 	})
 	
 	function changeInput(checkbox){

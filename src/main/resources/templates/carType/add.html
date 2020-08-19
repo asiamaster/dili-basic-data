@@ -40,12 +40,39 @@
 </div>
 
 <script>
-
+	$(function(){
+		$("#saveForm").validate({
+            rules: {
+                name: {
+                	required: true,
+                    remote: {
+                        url: "/carType/checkRepeat.action",
+                        type: "post",
+                        async: false,
+                        cache: false,
+                        data: {
+                            name: function () {
+                                return $('#name').val();
+                            }
+                        }
+                    }
+                }
+            },
+            messages: {
+                name: {
+                	required: "必填",
+                    remote: "该车型名称已存在"
+                }
+            }
+        });
+	})
     // 提交保存
     $('#formSubmit').on('click', function (e) {
+    	var okButton = $("#saveBtn");
         if (!$('#saveForm').valid()) {
             return false;
         } else {
+            okButton.attr("disabled", "disabled");
             bui.loading.show('努力提交中，请稍候。。。');
             let _formData = new FormData($('#saveForm')[0]);
             $.ajax({
@@ -59,49 +86,19 @@
                     bui.loading.hide();
                     if (res.code == "200") {
                         window.location.reload();
+                        okButton.removeAttr("disabled");
                     } else {
                         bui.loading.hide();
                         bs4pop.alert(res.result, {type: 'error'});
                     }
+                    okButton.removeAttr("disabled");
                 },
                 error: function (error) {
+                	okButton.removeAttr("disabled");
                     bui.loading.hide();
                     bs4pop.alert(error.result, {type: 'error'});
                 }
             });
-        }
-    });
-
-
-    $("#areaOne").change(function () {
-        var id = $(this).val();
-        if(id && id!==''){
-            $.ajax({
-                type: "POST",
-                url: "/district/search.action",
-                data: {parentId: $(this).val()},
-                success: function (data) {
-                    if (data.code == "200") {
-                        var array = $.map(data.data, function (obj) {
-                            obj.text = obj.text || obj.name;
-                            return obj;
-                        });
-                        if (array.length == 0) {
-                            $('#areaTwo').html("")
-                        } else {
-                            $('#areaTwo').html("")
-                            $("#areaTwo").select2({
-                                language:'zh-CN',
-                                data: array,
-                                width: "50%",
-                                minimumResultsForSearch: Infinity
-                            })
-                        }
-                    }
-                }
-            });
-        }else{
-            $('#areaTwo').html("")
         }
     });
 </script>

@@ -2,8 +2,10 @@ package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.commons.glossary.EnabledStateEnum;
+import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
 import com.dili.logger.sdk.glossary.LoggerConstant;
 import com.dili.ss.domain.BaseOutput;
@@ -113,6 +115,19 @@ public class CarTypePublicController {
         List results = true ? ValueProviderUtils.buildDataByProvider(carTypePublic, listPage.getData()) : listPage.getData();
         return new EasyuiPageOutput(listPage.getTotal(), results).toString();
     }
+    
+    /**
+     * 分页查询CarType，返回easyui分页信息
+     * @param carTypePublic
+     * @return String
+     * @throws Exception
+     */
+    @RequestMapping(value="/checkRepeat.action")
+    public @ResponseBody Boolean checkRepeat(CarTypePublicDTO carTypePublic) throws Exception {
+    	carTypePublic.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+    	Boolean b = assetsRpc.checkRepeat(carTypePublic);
+    	return b;
+    }
 
     /**
      * 修改CarType/新增CarType
@@ -120,6 +135,7 @@ public class CarTypePublicController {
      * @return BaseOutput
      */
     @RequestMapping(value="/update.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @BusinessLogger(businessType = LogBizTypeConst.CAR_TYPE_PUBLIC, content = "", systemCode = "INTELLIGENT_ASSETS")
     public @ResponseBody BaseOutput update(CarTypePublicDTO carTypePublic, String opType) {
     	try {
     		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -151,6 +167,7 @@ public class CarTypePublicController {
      * @return BaseOutput
      */
     @RequestMapping(value="/updateStatus.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @BusinessLogger(businessType = LogBizTypeConst.CAR_TYPE_PUBLIC, content = "", systemCode = "INTELLIGENT_ASSETS")
     public @ResponseBody BaseOutput updateStatus(CarTypePublicDTO carTypePublic, String opType) {
     	try {
     		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -172,6 +189,7 @@ public class CarTypePublicController {
      * @return BaseOutput
      */
     @RequestMapping(value="/delete.action", method = {RequestMethod.GET, RequestMethod.POST})
+    @BusinessLogger(businessType = LogBizTypeConst.CAR_TYPE_PUBLIC, content = "", operationType = "delete", systemCode = "INTELLIGENT_ASSETS")
     public @ResponseBody BaseOutput delete(Long id) {
     	UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
     	assetsRpc.delete(id);

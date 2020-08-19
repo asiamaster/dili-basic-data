@@ -1,6 +1,7 @@
 package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CarTypeDTO;
+import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
@@ -132,5 +133,17 @@ public class CarTypeController {
 		} catch (Exception e) {
 			return BaseOutput.failure("系统异常");
 		}
+    }
+    
+    /**
+     * 分页查询CarType，返回easyui分页信息
+     * @param carTypePublic
+     * @return String
+     * @throws Exception
+     */
+    @RequestMapping(value="/checkRepeat.action")
+    public @ResponseBody Boolean checkRepeat(CarTypeDTO carType) throws Exception {
+    	Boolean b = assetsRpc.checkRepeat(carType);
+    	return b;
     }
 }

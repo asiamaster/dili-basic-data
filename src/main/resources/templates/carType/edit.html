@@ -40,7 +40,35 @@
 </div>
 
 <script>
-
+	$(function(){
+		$("#updateForm").validate({
+	        rules: {
+	            name: {
+	            	required: true,
+	                remote: {
+	                    url: "/carType/checkRepeat.action",
+	                    type: "post",
+	                    async: false,
+	                    cache: false,
+	                    data: {
+	                        name: function () {
+	                            return $('#name').val();
+	                        },
+	                        id: function () {
+	                        	return $("input[name=id]").val();
+	                        }
+	                    }
+	                }
+	            }
+	        },
+	        messages: {
+	            name: {
+	            	required: "必填",
+	                remote: "该车型名称已存在"
+	            }
+	        }
+	    });
+	})
     // 提交保存
     $('#editformSubmit').on('click', function (e) {
         if (!$('#updateForm').valid()) {

@@ -198,11 +198,11 @@
      * 查询处理
      */
     function queryDataHandler() {
-    if (!$('#queryForm').valid()) {
+    	if (!$('#queryForm').valid()) {
             return false;
         }else{
-	        _grid.bootstrapTable('refresh');
-        }
+	    	_grid.bootstrapTable('refresh');
+	    }
     }
 
     /**

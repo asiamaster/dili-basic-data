@@ -149,7 +149,11 @@
      * 查询处理
      */
     function queryDataHandler() {
-        _grid.bootstrapTable('refresh');
+    	if (!$('#queryForm').valid()) {
+            return false;
+        }else{
+		    _grid.bootstrapTable('refresh');
+        }
     }
 
     /**

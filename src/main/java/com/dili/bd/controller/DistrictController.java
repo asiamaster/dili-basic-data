@@ -182,7 +182,7 @@ public class DistrictController {
      */
     @RequestMapping("search.action")
     @ResponseBody
-    public BaseOutput<List<DistrictDTO>> search(@RequestBody DistrictDTO input) {
+    public BaseOutput<List<DistrictDTO>> search(@RequestBody(required = false) DistrictDTO input) {
         if (input == null) {
             input = new DistrictDTO();
         }

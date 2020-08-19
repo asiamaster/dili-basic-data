@@ -252,7 +252,7 @@
                     title: title,
                     content: url,
                     isIframe: true,
-                    closeBtn: false,
+                    closeBtn: true,
                     backdrop: 'static',
                     width: width + "px",
                     height: height + "px",

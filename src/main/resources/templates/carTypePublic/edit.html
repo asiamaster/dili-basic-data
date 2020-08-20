@@ -29,11 +29,10 @@
 						        	if(obj != null){
 							        	ss = obj[(tag.code + '_weight')];
 						        	}
-						        
 						        %>
 					        	<input type="checkbox" value="${tag.code!}" id="c_tagCheckbox_${tagLP.index!}" name="tag" class="custom-control-input" <% if(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code)){%>checked<%}%> onclick="changeInput(this)">
 						        <label class="custom-control-label" for="c_tagCheckbox_${tagLP.index!}" >${tag.name!}-</label>
-				        		<input type="text" class="custom-control-inline tagValue" name="tagExtWeight"  value="${ss!}" <% if(!(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code))){%> disabled  <%}%> digits="true" maxlength="20" placeholder="公斤"/>
+				        		<input type="text" class="custom-control-inline tagValue" name="tagExtWeight" id="weight_${tagLP.index}"  value="${ss!}" <% if(!(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code))){%> disabled  <%}%> number="true" minNumber min="0" max="999999999.99" placeholder="公斤"/>
 				        		<input type="hidden" value="${tag.code!}" name="tagExtCode">
 				        		<input type="hidden" value="${tag.name!}" name="tagExtName">
 					    	</div>
@@ -60,7 +59,7 @@
 	        </div>
 	        <div class="form-group col">
 	            <label for="notes">备注</label>
-	            <textarea class="form-control" id="remark" name="remark" rows="1" maxlength="100">${obj.remark!}</textarea>
+	            <textarea class="form-control" id="remark" name="remark" rows="1" maxlength="50">${obj.remark!}</textarea>
 	        </div>
 	    </div>
 
@@ -80,6 +79,33 @@
 		if(autoSave && autoSave == 1){
 			$("#c_autoSaveCheckbox").attr("checked", "checked");
 		}
+		if ($.validator){
+		    $.validator.prototype.elements = function () {
+				var validator = this, rulesCache = {};
+				return $([]).add(this.currentForm.elements).filter(":input").not(":submit, :reset, :image, [disabled]").not(this.settings.ignore).filter(function () {
+		            var elementIdentification = this.id || this.name;
+					!elementIdentification && validator.settings.debug && window.console && console.error("%o has no id nor name assigned", this);
+		            if (elementIdentification in rulesCache || !validator.objectLength($(this).rules())){
+		                return false;
+		            }
+		            rulesCache[elementIdentification] = true;
+		            return true;
+		        });
+		    };
+		}
+		//自定义validate验证输入的数字小数点位数不能大于两位
+        jQuery.validator.addMethod("minNumber",function(value, element){
+            var returnVal = true;
+            inputZ=value;
+            var ArrMen= inputZ.split(".");    //截取字符串
+            if(ArrMen.length==2){
+                if(ArrMen[1].length>2){    //判断小数点后面的字符串长度
+                    returnVal = false;
+                    return false;
+                }
+            }
+            return returnVal;
+        },"小数点后最多为两位");         //验证错误信息
 		$("#updateForm").validate({
             rules: {
                 code: {
@@ -106,7 +132,9 @@
             }
         });
 	})
-	
+	function getFormat(format){
+		return format.toFixed(2);
+	}
 	function changeInput(checkbox){
 		var input = $(checkbox).parent().find(".tagValue");
 		if(typeof($(input[0]).attr("disabled")) == "undefined"){

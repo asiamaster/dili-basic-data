@@ -86,7 +86,7 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
 			},
                {
                    field: 'code',
-                   title: '编号'
+                   title: '类型编码'
                },
             {
 			    field: 'name',
@@ -143,7 +143,10 @@ $(function(){
                 keyword: {
                     type: 'input',
                         label: '名称/编码',
-                        rules: [ { required: true, message: '请输入名称/编码', trigger: 'blur' }]
+                        attrs: {
+                            maxlength: 25,
+                            showWordLimit: true
+                        }
                 }
                 }
         };

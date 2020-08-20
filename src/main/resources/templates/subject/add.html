@@ -3,7 +3,7 @@
     <div class="form-group row">
         <label for="addForm_name" class="col-sm-2 col-form-label">科目名称</label>
         <div class="col-sm-10">
-            <input type="text" id="addForm_name" name="name" class="form-control" maxlength="20"
+            <input type="text" id="addForm_name" name="name" class="form-control" maxlength="8"
                    required/>
         </div>
     </div>
@@ -20,7 +20,7 @@
     <div class="form-group row">
         <label for="memo" class="col-sm-2 col-form-label">备注</label>
         <div class="col-sm-10">
-            <textarea required maxlength="20" name="memo"></textarea>
+            <textarea maxlength="20"  class="form-control input-sm" name="memo" ></textarea>
         </div>
     </div>
 </form>
@@ -45,13 +45,13 @@
                         loadTable();
                         addTreeNode($("#parentId").val(), data.data, true);
                         $('#addModal').modal('hide');
-                        bs4pop.alert("品类信息新增成功", {type: 'success'});
+                        bs4pop.alert("新增成功", {type: 'success'});
                         bui.loading.hide();
                         okButton.removeAttr("disabled");
                     },
                     error: function () {
                         okButton.removeAttr("disabled");
-                        bs4pop.alert("品类新增失败", {type: 'error'});
+                        bs4pop.alert("新增失败", {type: 'error'});
                     }
                 });
             }

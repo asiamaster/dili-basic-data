@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,13 @@ public class CarTypePublicController {
     		carTypePublic.setId(id);
     		carTypePublic.setMarketId(userTicket.getFirmId());
     		carTypePublic.setTags(list);
-    		Object data = assetsRpc.getCarTypePublicById(carTypePublic).getData();
+    		Map<String, Object> data = (Map<String, Object>) assetsRpc.getCarTypePublicById(carTypePublic).getData();
+    		for(Map.Entry<String, Object> entry : data.entrySet()){
+    		    String mapKey = entry.getKey();
+    		    if(mapKey.contains("_weight")) {
+    		    	data.put(mapKey, new BigDecimal(entry.getValue().toString()));
+    		    }
+    		}
     		map.put("obj", data);
     	}else{
     		map.put("obj", null);

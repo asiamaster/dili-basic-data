@@ -1,208 +1,232 @@
 <#bs4Body>
-<style>
-    /**
-    * 去掉select 的下拉选择箭头
-    */
-    .select-no-down {
-        /*Chrome和Firefox里面的边框是不一样的，所以复写了一下*/
-        /*很关键：将默认的select选择框样式清除*/
-        appearance:none;
-        -moz-appearance:none;
-        -webkit-appearance:none;
-        /*在选择框的最右侧中间显示小箭头图片*/
-        background: transparent;
-    }
-</style>
-<div class="container-fluid">
-    <form id="addForm" role="form" novalidate>
-        <input type="hidden" id="id" name="id" value="${businessChargeItem.id!}">
-        <div class="row row-cols-1">
-            <div class="form-group col">
-                <label for="" class="">归属市场<i class="red">*</i></label>
-                <select class="form-control edit" id="marketId" name="marketId" required></select>
-                <#bcomboProvider _id="marketId" _provider="marketProvider"  _valueField="value" _textField="text" _value="${businessChargeItem.marketId!}" _queryParams='{required:true}' _option='async:false'/>
-            </div>
-            <div class="form-group col">
-                <label for="" class="">所属业务<i class="red">*</i></label>
-                <select class="form-control edit" id="businessType" name="businessType" required></select>
-                <#bcomboProvider _log="所属业务" _id="businessType" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"base_business_type",required:true}'  _valueField="value" _textField="text" _value="${businessChargeItem.businessType!}" _option='async:false'/>
-            </div>
-            <div class="form-group col">
-                <label for="chargeItem" class="">费用项<i class="red">*</i></label>
-                <input class="form-control edit" id="chargeItem" name="chargeItem" required value="${businessChargeItem.chargeItem!}">
-            </div>
-            <div class="form-group col">
-                <label for="chargeType">项目类型<i class="red">*</i></label>
-                <select class="form-control edit" id="chargeType" name="chargeType" required onchange="getParentItem()">
-                    <%if (has(chargeTypeList) && isNotEmpty(chargeTypeList) && chargeTypeList.~size >0 ){
-                    for(ct in chargeTypeList){
-                    %>
-                    <option  value="${ct.code!}" data-query="${ct.query!}" <%if(ct.code==businessChargeItem.chargeType){%> selected <%}%> >${ct.value!}</option>
-                    <%}}%>
-                </select>
-            </div>
-            <div class="form-group col">
-                <label for="" class="">是否必填<i class="red">*</i></label>
-                <select class="form-control" id="isRequired" name="isRequired" required></select>
-                <#bcomboProvider _id="isRequired" _provider="yesOrNoProvider" _valueField="value" _textField="text" _value="${businessChargeItem.isRequired!}" _queryParams='{required:true}' />
-            </div>
-            <div id="parentIdDiv" style="display: none;" class="form-group col">
-                <label for="parentId" class="">关联项目</label>
-                <input type="hidden" id="oldParentId" value="${businessChargeItem.parentId!}">
-                <select class="form-control edit" id="parentId" name="parentId">
-                </select>
-            </div>
-            <div class="form-group col">
-                <label for="systemSubject" class="">系统科目</label>
-                <select class="form-control" id="systemSubject" name="systemSubject"></select>
-                <#bcomboProvider _id="systemSubject" _provider="systemSubjectTypeProvider" _valueField="value" _textField="text" _value="${businessChargeItem.systemSubject!}" _queryParams='{emptyText:"-- 请选择 --"}' />
-            </div>
-            <div class="form-group col">
-                <label for="chargeSubject" class="" >财务科目<i class="red">*</i></label>
-                <select class="form-control" id="chargeSubject" name="chargeSubject" required>
-                    <%
-                        if(isNotEmpty(businessChargeItem.chargeSubject)){
-                    %>
-                        <option value="${businessChargeItem.chargeSubject!}">${businessChargeItem.chargeSubjectName!}</option>
-                    <%  } %>
-                </select>
-                <#bselect2 _id="chargeSubject" _mode="remote" _value="${businessChargeItem.chargeSubject!}" _option=""  _optionVariable="chargeSubjectCompleteOption"/>
-            </div>
-            <div class="form-group col">
-                <label for="" class="">备注</label>
-                <textarea type="text" class="form-control" id="notes" name="notes" maxlength="255">${businessChargeItem.notes!}</textarea>
-            </div>
-        </div>
-        <div class="text-right mt-2">
-            <button type="button" class="btn btn-secondary px-5" id="formCancel" onclick="javascript:parent.dia.hide()">取消</button>
-            <button type="button" class="btn btn-primary px-5" id="formSubmit">保存</button>
-        </div>
-    </form>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<div id=app>
+    <ele-form
+            :form-attrs="{
+            size: 'medium'
+            }"
+            ref="myForm"
+            :span="18"
+            label-position="left"
+            :is-show-cancel-btn="false"
+            submit-btn-text="提交"
+            :is-show-error-notify="false"
+            form-btn-size="medium"
+            :form-btns="formBtns"
+            :is-dialog="true"
+            :form-desc="formDesc"
+            v-model="formData"
+            :request-fn="handleRequest">
+    </ele-form>
 </div>
 </#bs4Body>
-
+<script type="text/javascript">
+    window.rootPath = '${contextPath}';
+</script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_treegrid.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
 <script>
-
-    $(function () {
-        let id = $('#id').val();
-        if (id){
-            $('.edit').attr("disabled","disabled");
-            $("select:disabled").addClass("select-no-down");
-            getParentItem($("#oldParentId").val());
-        }
-    });
-
-    /**
-     * 项目类型改变时，检查是否需要加载关联项目
-     * @param _defaultValue 默认值
-     */
-    function getParentItem(_defaultValue) {
-        let query = $('#chargeType').find("option:selected").data("query");
-        let targetId = $('#parentId');
-        targetId.empty();
-        if (query && query == true) {
-            let marketId = $('#marketId').val();
-            let businessType = $('#businessType').val();
-            let datas = ["<option value=''>-- 请选择 --</option>"];
-            if (typeof (marketId) != "undefined" && typeof (businessType) != "undefined" && marketId && businessType) {
-                $.ajax({
-                    type: 'post',
-                    url: '${contextPath}/businessChargeItem/getParentItem.action',
-                    data: {marketId: marketId, businessType: businessType},
-                    async: false,
-                    success: function (ret) {
-                        if (ret.success) {
-                            $.each(ret.data, function (i, item) {
-                                if (typeof (_defaultValue) != "undefined" && null != _defaultValue && '' != _defaultValue && _defaultValue == item.id) {
-                                    datas.push('<option selected value="' + item.id + '">' + item.chargeItem + '</option>');
-                                } else {
-                                    datas.push('<option value="' + item.id + '">' + item.chargeItem + '</option>');
-                                }
-                            });
+    function init(vm){
+        vm.formData = ${businessChargeItem!};
+    }
+</script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                formBtns: [
+                    {
+                        text: '关闭',
+                        click: () => {
+                            $.modal.close();
                         }
                     }
-                });
-                targetId.html(datas.join(''));
-            }
-            $("#parentIdDiv").show();
-        } else {
-            $("#parentIdDiv").hide();
-        }
-    }
-
-    /**
-     * 保存数据
-     */
-    $('#formSubmit').on('click', function () {
-        if (!$('#addForm').valid()) {
-            return false;
-        } else {
-            bui.loading.show('努力提交中，请稍候。。。');
-            // let _formData = $('#addForm').serialize();
-            let _formData = new FormData($('#addForm')[0]);
-            if ($('#chargeSubject').val()) {
-                let chargeSubjectName = $("#chargeSubject option:selected").text();
-                _formData.append("chargeSubjectName", chargeSubjectName);
-            }
-            let url = "${contextPath}/businessChargeItem/save.action";
-            $.ajax({
-                type: "POST",
-                url: url,
-                data: _formData,
-                processData: false,
-                async: true,
-                contentType: false,
-                success: function (ret) {
-                    bui.loading.hide();
-                    if (ret.success) {
-                        bs4pop.alert('保存成功', {type: 'success',width: 400}, function () {
-                            parent.dia.hide();
-                            parent.queryDataHandler();
-                        });
-                    } else {
-                        bs4pop.alert(ret.message, {width: 400,type: 'error'});
+                ],
+                formData: {},
+                formDesc: {
+                    marketId: {
+                        options: loadProvider({
+                            provider: 'marketProvider',
+                            queryParams: {required: true}
+                        }, true, "marketId"),
+                        label: "归属市场",
+                        type: "select",
+                        disabled(data) {
+                            return data.disabled;
+                        }
+                    },
+                    businessType: {
+                        options: function (data) {
+                            return loadProvider({
+                                provider: 'dataDictionaryValueProvider',stringValue:true,
+                                queryParams: {dd_code: "base_business_type", required: true}
+                            }, true, "businessType")
+                        },
+                        label: "所属业务",
+                        type: "select",
+                        disabled(data) {
+                            return data.disabled;
+                        }
+                    },
+                    chargeItem: {
+                        label: "费用项",
+                        type: "input",
+                        required: true,
+                        disabled(data) {
+                            return data.disabled;
+                        }
+                    },
+                    chargeType: {
+                        options: loadProvider({
+                            provider: 'businessChargeTypeProvider',
+                            queryParams: {required: true}
+                        }, true, "chargeType"),
+                        label: "项目类型",
+                        type: "select",
+                        disabled(data) {
+                            return data.disabled;
+                        }
+                    },
+                    isRequired: {
+                        options: loadProvider({provider: 'yesOrNoProvider', queryParams: {required: true}}),
+                        label: "是否必填",
+                        type: "radio",
+                        required: true
+                    },
+                    parentId: {
+                        vif: function (data) {
+                            if (!data.chargeType || data.chargeType === 1) {
+                                data.parentId = null;
+                                return false;
+                            }
+                            return true;
+                        },
+                        optionsLinkageFields: ['chargeType'],
+                        options: function (data) {
+                            return new Promise((resolve, reject) => {
+                                axios.post('/businessChargeItem/getParentItem.action', {
+                                    marketId: data.marketId,
+                                    businessType: data.businessType
+                                })
+                                    .then((res) => {
+                                        resolve(res.data.data);
+                                    })
+                                    .catch(function (error) {
+                                        reject(error);
+                                    });
+                            });
+                        },
+                        prop: {text: 'chargeItem', value: 'id'},
+                        label: "关联项目",
+                        type: "select",
+                        disabled(data) {
+                            return data.disabled;
+                        }
+                    },
+                    systemSubject: {
+                        options: loadProvider({provider: 'systemSubjectTypeProvider'}),
+                        label: "系统科目",
+                        type: "select"
+                    },
+                    chargeSubjectPath: {
+                        options: function (data) {
+                            return new Promise((resolve, reject) => {
+                                axios.post('/subject/getTree.action')
+                                    .then((res) => {
+                                        resolve(toEleTree(res.data.data,{label:"name",pid:"parent"}));
+                                        // console.log(res);
+                                    })
+                                    .catch(function (error) {
+                                        reject(error);
+                                        // console.log(error);
+                                    });
+                            });
+                        },
+                        label: "财务科目",
+                        type: "cascader",
+                        attrs: {
+                            props: {
+                                value: 'id',
+                                label: 'name',
+                                separator: '-',
+                                expandTrigger: 'hover',
+                                checkStrictly: true
+                            }
+                        },
+                        required: true
+                    },
+                    notes: {
+                        label: "备注",
+                        type: "textarea",
+                        attrs: {
+                            maxlength: 100,
+                            showWordLimit: true,
+                            autosize: {
+                                minRows: 2,
+                                maxRows: 4
+                            }
+                        }
                     }
-                },
-                error: function (error) {
-                    bui.loading.hide();
-                    bs4pop.alert(error.result, {width: 400,type: 'error'},function () {
+                }
+            };
+        },
+        methods: {
+            handleRequest(data) {
+                //因为财务科目必须填写，所以可不判断是否为空
+                let chargeSubjectNode = app.$refs.myForm.$refs.chargeSubjectPath[0].$refs.cascader.getCheckedNodes(true)[0];
+                let chargeSubject = data.chargeSubjectPath;
+                data.chargeSubjectPath = chargeSubject.join();
+                data.chargeSubjectName = chargeSubjectNode.pathLabels.join();
 
+                axios.post(rootPath + "/businessChargeItem/save.action", data)
+                    .then(function (response) {
+                        if (response.data.success){
+                            $.modal.close();
+                            parent.queryDataHandler();
+                        }else{
+                            $.modal.alertError(response.data.message);
+                        }
+                    })
+                    .catch(function (error) {
+                        $.modal.alertError("系统错误");
                     });
-                }
-            });
-        }
-    });
-
-
-    /**
-     * 获取财务科目信息
-     * @type {{width: string, language: string, ajax: {data: (function(*): {organizationType: (jQuery|string|undefined), keyword: *}), dataType: string, type: string, processResults: chargeSubjectCompleteOption.ajax.processResults, url: string}, maximumSelectionLength: number}}
-     */
-    var chargeSubjectCompleteOption = {
-        width: '100%',
-        language: 'zh-CN',
-        maximumSelectionLength: 10,
-        ajax: {
-            type: 'post',
-            dataType: 'json',
-            url: '${contextPath}/subject/getTree.action',
-            data: function (params) {
-                return {
-                    marketId: $('#marketId').val(),
-                    likeName: params.term,
-                }
             },
-            processResults: function (res) {
-                if (res.success) {
-                    return {
-                        results: $.map(res.data, function (item) {
-                            item.text = item.name;
-                            return item;
-                        })
-                    };
-                }
+            handleRequestSuccess() {
+                this.$message.success('发送成功')
             }
+        },
+        created: function () {
+            // `this` 指向 vm 实例
+            init(this)
         }
-    }
+    })
 
+    function loadProvider(data, first, name) {
+        return new Promise((resolve, reject) => {
+            axios.post('/convert/list.action', data)
+                .then((res) => {
+                    if (first) {
+                        if (!app.formData[name]){
+                            app.formData[name] = res.data[0].value;
+                        }
+                    }
+                    resolve(res.data);
+                })
+                .catch(function (error) {
+                    reject(error);
+                });
+        });
+    }
 </script>

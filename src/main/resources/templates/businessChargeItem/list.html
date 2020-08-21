@@ -99,6 +99,8 @@
         </div>
     </div>
 </div>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_list.js" type="text/javascript"></script>
 </#bs4Body>
 <script>
     /*********************变量定义区 begin*************/
@@ -141,17 +143,8 @@
      * 打开新增窗口
      */
     function openInsertHandler() {
-        let url = "/businessChargeItem/preSave.html";
-        dia = bs4pop.dialog({
-            title: '新增费用项',
-            content: url,
-            isIframe: true,
-            closeBtn: true,
-            backdrop: 'static',
-            width: '30%',
-            height: '90%',
-            btns: []
-        });
+        $.modal.open("添加费用项", "/businessChargeItem/preSave.html");
+
     }
 
     /**
@@ -166,17 +159,7 @@
         }
         //table选择模式是单选时可用
         let selectedRow = rows[0];
-        let url = "/businessChargeItem/preSave.html?id=" + selectedRow.id;
-        dia = bs4pop.dialog({
-            title: '修改费用项',
-            content: url,
-            isIframe: true,
-            closeBtn: true,
-            backdrop: 'static',
-            width: '30%',
-            height: '90%',
-            btns: []
-        });
+        $.modal.open("修改费用项", "/businessChargeItem/preSave.html?id=" + selectedRow.id);
     }
 
     /**

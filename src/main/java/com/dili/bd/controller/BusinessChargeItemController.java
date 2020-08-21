@@ -1,6 +1,9 @@
 package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.BusinessChargeItemDto;
 import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.assets.sdk.rpc.BusinessChargeItemRpc;
@@ -14,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -80,9 +84,15 @@ public class BusinessChargeItemController {
         Optional<BusinessChargeItemDto> item = Optional.empty();
         if (Objects.nonNull(id)) {
             item = this.getById(id);
+            BusinessChargeItemDto businessChargeItemDto = item.orElse(new BusinessChargeItemDto());
+            JSONObject jsonObject = JSONUtil.parseObj(businessChargeItemDto);
+            List<String> split = StrUtil.split(businessChargeItemDto.getChargeSubjectPath(), ',');
+            jsonObject.put("chargeSubjectPath",JSONUtil.parseArray(split.stream().mapToLong(Long::parseLong).toArray()));
+            jsonObject.put("disabled",true);
+            modelMap.put("businessChargeItem", jsonObject);
+        } else  {
+            modelMap.put("businessChargeItem", "{}");
         }
-        modelMap.put("businessChargeItem", item.orElse(new BusinessChargeItemDto()));
-        modelMap.put("chargeTypeList", BusinessChargeItemEnum.ChargeType.values());
         return "businessChargeItem/edit";
     }
 
@@ -94,7 +104,7 @@ public class BusinessChargeItemController {
      */
     @RequestMapping(value = "/save.action", method = {RequestMethod.POST})
     @ResponseBody
-    public BaseOutput save(BusinessChargeItemDto chargeItem) {
+    public BaseOutput save(@RequestBody BusinessChargeItemDto chargeItem) {
         if (Objects.isNull(chargeItem)) {
             return BaseOutput.failure("参数丢失");
         }
@@ -116,7 +126,7 @@ public class BusinessChargeItemController {
                     BusinessChargeItemDto old = item.get();
                     old.setNotes(chargeItem.getNotes());
                     old.setIsRequired(chargeItem.getIsRequired());
-                    old.setChargeSubject(chargeItem.getChargeSubject());
+                    old.setChargeSubjectPath(chargeItem.getChargeSubjectPath());
                     old.setChargeSubjectName(chargeItem.getChargeSubjectName());
                     old.setSystemSubject(chargeItem.getSystemSubject());
                     businessChargeItemRpc.save(old);
@@ -165,7 +175,7 @@ public class BusinessChargeItemController {
      */
     @RequestMapping(value = "/getParentItem.action", method = {RequestMethod.GET, RequestMethod.POST})
     @ResponseBody
-    public BaseOutput getParentItem(BusinessChargeItemDto chargeItem) {
+    public BaseOutput getParentItem(@RequestBody BusinessChargeItemDto chargeItem) {
         if (Objects.isNull(chargeItem)){
             return BaseOutput.failure("必要参数丢失");
         }

@@ -40,7 +40,7 @@ public class DataDictionaryValueProvider extends BatchDisplayTextProviderAdaptor
         Long firmId = SessionContext.getSessionContext().getUserTicket().getFirmId();
         dataDictionary.setFirmId(firmId);
         
-        List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionary).getData();
+        List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValueWithFirm(dataDictionary).getData();
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }

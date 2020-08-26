@@ -122,7 +122,7 @@ public class TradeRoomController {
      */
     @PostMapping("/deleteAll.action")
     @ResponseBody
-    public Object deleteAll(@RequestBody Long[] ids) {
+    public Object deleteAll(Long[] ids) {
         return tradeRoomRpc.deleteAll(ids);
     }
 }

@@ -19,7 +19,7 @@
             <div class="form-group col">
                 <label for="">车型分类<i class="red">*</i></label>
                 <select class="form-control" id="classify1" name="classify"></select>
-                <#bcomboProvider _id="classify1" _provider="dataDictionaryValueProvider" _value="${obj.classify!}" _queryParams='{dd_code:"cartype_classify", required:true}'/>
+                <#bcomboProvider _id="classify1" _provider="cartypeClassifyProvider" _value="${obj.classify!}" _queryParams='{dd_code:"cartype_classify", required:true}'/>
             </div>
             <div class="form-group col">
                 <label for="">车型名称<i class="red">*</i></label>

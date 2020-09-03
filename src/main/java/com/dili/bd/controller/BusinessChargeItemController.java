@@ -75,23 +75,22 @@ public class BusinessChargeItemController {
 
     /**
      * 进入收费项预编辑页面
-     * @param id
+     * @param chargeItemDto 业务费用项对象
      * @param modelMap
      * @return
      */
     @RequestMapping(value = "/preSave.html", method = {RequestMethod.GET})
-    public String preSave(Long id, ModelMap modelMap) {
-        Optional<BusinessChargeItemDto> item = Optional.empty();
-        if (Objects.nonNull(id)) {
-            item = this.getById(id);
+    public String preSave(BusinessChargeItemDto chargeItemDto, ModelMap modelMap) {
+        if (Objects.nonNull(chargeItemDto.getId())) {
+            Optional<BusinessChargeItemDto> item = this.getById(chargeItemDto.getId());
             BusinessChargeItemDto businessChargeItemDto = item.orElse(new BusinessChargeItemDto());
             JSONObject jsonObject = JSONUtil.parseObj(businessChargeItemDto);
             List<String> split = StrUtil.split(businessChargeItemDto.getChargeSubjectPath(), ',');
-            jsonObject.put("chargeSubjectPath",JSONUtil.parseArray(split.stream().mapToLong(Long::parseLong).toArray()));
-            jsonObject.put("disabled",true);
+            jsonObject.putOpt("chargeSubjectPath",JSONUtil.parseArray(split.stream().mapToLong(Long::parseLong).toArray()));
+            jsonObject.putOpt("disabled",true);
             modelMap.put("businessChargeItem", jsonObject);
         } else  {
-            modelMap.put("businessChargeItem", "{}");
+            modelMap.put("businessChargeItem", JSONUtil.parseObj(chargeItemDto));
         }
         return "businessChargeItem/edit";
     }

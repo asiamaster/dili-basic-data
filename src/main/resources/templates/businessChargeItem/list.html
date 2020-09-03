@@ -143,7 +143,8 @@
      * 打开新增窗口
      */
     function openInsertHandler() {
-        $.modal.open("添加费用项", "/businessChargeItem/preSave.html");
+        let url = "/businessChargeItem/preSave.html?marketId=" + $("#marketId").val() + "&businessType=" + $("#businessType").val()
+        $.modal.open("添加费用项", url);
 
     }
 

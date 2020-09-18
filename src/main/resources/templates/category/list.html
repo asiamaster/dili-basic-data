@@ -3,6 +3,14 @@
       href="https://www.jq22.com/demo/bootstrap-ztree3201708300202/css/bootstrapStyle/bootstrapStyle.css"
       type="text/css">
 <script type='text/javascript' src="${contextPath}/resources/bui/js/jquery.inputmask.bundle.js"></script>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
 <div class="main-container container-fluid">
     <#bs4nav>
     <div class="row row-cols-4" id="queryForm">
@@ -220,5 +228,6 @@
 
         $('#addModal .modal-body').load("/category/addView.html?pid=" + pid);
     }
+
 </script>
 </#bs4Body>

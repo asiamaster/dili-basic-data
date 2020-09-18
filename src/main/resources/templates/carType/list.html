@@ -253,7 +253,7 @@
                 <select id="classify" name="classify" class="form-control w-200px">
                 	<option value="">--全部--</option>
                 </select>
-                <#bcomboProvider _id="classify" _provider="dataDictionaryValueProvider" _queryParams='{dd_code:"cartype_classify", required:true}'/>
+                <#bcomboProvider _id="classify" _provider="cartypeClassifyProvider" _queryParams='{dd_code:"cartype_classify", required:true}'/>
             </div>
             <div class="col align-self-center mt-3">
                 <button type="button" class="btn btn-outline-primary mr-2" onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>

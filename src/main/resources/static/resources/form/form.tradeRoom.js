@@ -53,7 +53,7 @@ var app = new Vue({
     methods: {
         handleRequest(data) {
 
-            axios.post(rootPath + "/tradeRoomController/add.action", data)
+            axios.post(this.opUrl, data)
                 .then(function (response) {
                     $.operate.saveSuccess(response.data);
                 })

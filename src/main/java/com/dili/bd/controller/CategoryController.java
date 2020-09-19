@@ -13,6 +13,7 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,6 +34,9 @@ public class CategoryController {
     @Autowired
     private AssetsRpc assetsRpc;
 
+    @Value("${dfs.url}")
+    private String dfsurl;
+
     /**
      * 跳转到品类列表页
      */
@@ -46,6 +50,7 @@ public class CategoryController {
      */
     @RequestMapping("addView.html")
     public String toAdd(Long pid, ModelMap map) {
+        map.put("url",dfsurl);
         // 品类未选择或者选择根品类时，添加页面不显示上级品类字段
         if (pid == null) {
             pid = 0L;
@@ -66,6 +71,7 @@ public class CategoryController {
     public String toEdit(Long id, ModelMap map) {
         CategoryDTO categoryDTO = assetsRpc.get(id).getData();
         map.put("obj", categoryDTO);
+        map.put("url",dfsurl);
         if (categoryDTO != null) {
             String substring = categoryDTO.getCode().substring(categoryDTO.getCode().length() - 2);
             map.put("code", substring);

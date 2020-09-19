@@ -65,7 +65,7 @@
                     :data="pram"
                     :show-file-list="false"
                     :on-success="handleAvatarSuccess"
-                    action="http://dfs.diligrp.com:9527/file/upload/">
+                    action="${url!}file/upload/">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
@@ -137,7 +137,7 @@
         created: function () {
             let icon = '${obj.icon!}';
             if (icon !== '') {
-                this.imageUrl = "http://dfs.diligrp.com:9527/file/view/" + icon;
+                this.imageUrl = "${url!}file/view/" + icon;
             }
         },
         data() {
@@ -148,7 +148,7 @@
         },
         methods: {
             handleAvatarSuccess(res, file) {
-                this.imageUrl = "http://dfs.diligrp.com:9527/file/view/" + res.data
+                this.imageUrl = "${url!}file/view/" + res.data
                 $("#addForm_img").val(res.data)
             },
             beforeAvatarUpload(file) {

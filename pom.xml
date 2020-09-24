@@ -9,7 +9,7 @@
 		<version>3.6.8-SNAPSHOT</version>
 	</parent>
 	<artifactId>dili-basic-data</artifactId>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<name>dili-basic-data</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -161,7 +161,7 @@
 		<dependency>
 			<groupId>com.dili</groupId>
 			<artifactId>assets-sdk</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
+			<version>1.3.0-SNAPSHOT</version>
 		</dependency>
 		<!--结算中心 -->
 		<dependency>

@@ -174,7 +174,20 @@
 
     $(document).on('click', '.table tr', function () {
         $(this).find('input[type="radio"]').prop('checked',true);
+        $(this).find('input[type="radio"]').trigger('change');
     });
 
-
+    $(document).on("change", '.table :radio',function() {
+        let checked = $(this).prop("checked");
+        if (!checked) {
+            return;
+        }
+        let treeObj = $.fn.zTree.getZTreeObj("treeView1");
+        if (!treeObj) {
+            return;
+        }
+        let treeNode = treeObj.getNodeByParam("id", $(this).val());
+        //treeObj.expandNode(treeNode, true, false, true);
+        treeObj.selectNode(treeNode);
+    })
 </script>

@@ -143,6 +143,7 @@ public class CusCategoryController {
     public ModelAndView list(@ModelAttribute CusCategoryQuery input) {
 
         Map<String, Object> map = new HashMap<>();
+        input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         List<CusCategoryDTO> list = assetsRpc.listCusCategory(input).getData();
         map.put("obj", list);
         return new ModelAndView("cus_category/table", map);

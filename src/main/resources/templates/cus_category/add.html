@@ -36,10 +36,6 @@
 </form>
 <script type="text/javascript">
     var app = new Vue({
-        created: function () {
-            const data = ${data!};
-            this.formData = data;
-        },
         el: '#addForm',
         data() {
             return {
@@ -231,13 +227,13 @@
                             return;
                         }
                         loadTable();
-                        updateTreeNode(response.data.data);
-                        $('#editModal').modal('hide');
-                        bs4pop.alert("品类信息修改成功!", {type: 'success'});
+                        addTreeNode($("#parentId").val(), response.data.data, true);
+                        $('#addModal').modal('hide');
+                        bs4pop.alert("品类信息新增成功", {type: 'success'});
                         bui.loading.hide();
                     })
                     .catch(function (error) {
-                        bs4pop.alert("品类修改失败", {type: 'error'});
+                        bs4pop.alert("品类新增失败", {type: 'error'});
                     });
             }
         }

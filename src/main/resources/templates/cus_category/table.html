@@ -2,15 +2,21 @@
 
     <#resource code="cc_edit">
         <button type="button" class="btn btn-primary" onclick="tableUpdateClickHandler()">
-            <i class="fa fa-pencil-square-o"></i> 设置
+            <i class="fa fa-pencil-square-o"></i> 修改
         </button>
     </#resource>
-<#resource code="cc_enableCategory">
+
+<#resource code="cc_del">
+    <button type="button" class="btn btn-primary" onclick="tableDeleteClickHandler()">
+        <i class="fa fa-trash-o"></i> 删除
+    </button>
+</#resource>
+<#resource code="cc_on">
     <button type="button" class="btn btn-primary" onclick="tableUnFreezeClickHandler()">
         <i class="fa fa-play"></i> 启用
     </button>
 </#resource>
-<#resource code="cc_disableCategory">
+<#resource code="cc_off">
     <button type="button" class="btn btn-primary" onclick="tableFreezeClickHandler()">
         <i class="fa fa-stop"></i> 禁用
     </button>
@@ -20,22 +26,18 @@
     <tr>
         <th scope="col"></th>
         <th scope="col">品类名称</th>
-        <th scope="col">品类代码</th>
+        <th scope="col">快捷编码</th>
         <th scope="col">拼音全写</th>
         <th scope="col">拼音简写</th>
-        <th scope="col">别名</th>
-        <th scope="col">快捷码</th>
         <th scope="col">状态</th>
     </tr>
     <% for(o in obj) { %>
     <tr data-name="${o.name!}">
         <td style="text-align: center"><input type="radio" value="${o.id}" name="ck"/></td>
         <td>${o.name!}</td>
-        <td>${o.code!}</td>
+        <td>${o.keycode!}</td>
         <td>${o.pingying!}</td>
         <td>${o.pyInitials!}</td>
-        <td>${o.cusName!}</td>
-        <td>${o.keycode!}</td>
         <td>
             <% if(o.state==1){ %>
             已启用
@@ -61,6 +63,44 @@
         $('#editModal .modal-body').load("/cus_category/editView.html?id=" + id);
     }
 
+    function tableDeleteClickHandler(id, name, code) {
+        let size = $("input[name='ck']:checked").length;
+        if (size === 0){
+            tips("提示", "请选择一条数据!");
+            return;
+        }
+        id = $("input[name='ck']:checked").val();
+        name = $("input[name='ck']:checked").closest('tr').attr("data-name");
+        var msg = '删除后，其下关联的子品类将一并删除！确定' + '<span class="red">删除</span>品类<span class="red">' + name + '</span>' + '？';
+
+        bs4pop.confirm(msg, {title: "确认提示"}, function (sure) {
+            if (sure) {
+                $.ajax({
+                    type: "POST",
+                    url: '/cus_category/batchUpdate.action',
+                    dataType: "json",
+                    data: {
+                        'id': id,
+                        'value': 3
+                    },
+                    success: function (data) {
+                        if (data.code != '200') {
+                            tips("提示", data.message);
+                            return;
+                        }
+                        loadTable();
+                        removeTreeNode(id);
+                        $("#parentId").val(0);
+                        tips("提示", "删除品类成功!");
+                        bui.loading.hide();
+                    },
+                    error: function () {
+                        tips("提示", "删除品类失败!");
+                    }
+                });
+            }
+        });
+    }
 
     function tableFreezeClickHandler(id, code) {
         let size = $("input[name='ck']:checked").length;
@@ -134,7 +174,20 @@
 
     $(document).on('click', '.table tr', function () {
         $(this).find('input[type="radio"]').prop('checked',true);
+        $(this).find('input[type="radio"]').trigger('change');
     });
 
-
+    $(document).on("change", '.table :radio',function() {
+        let checked = $(this).prop("checked");
+        if (!checked) {
+            return;
+        }
+        let treeObj = $.fn.zTree.getZTreeObj("treeView1");
+        if (!treeObj) {
+            return;
+        }
+        let treeNode = treeObj.getNodeByParam("id", $(this).val());
+        //treeObj.expandNode(treeNode, true, false, true);
+        treeObj.selectNode(treeNode);
+    })
 </script>

@@ -2,6 +2,7 @@ package com.dili.bd.controller;
 
 import com.dili.assets.sdk.dto.CarTypePublicDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.bd.provider.CarTypePublicAutoPassProvider.CarTypePublicEnum;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.commons.glossary.EnabledStateEnum;
@@ -54,6 +55,7 @@ public class CarTypePublicController {
     	DataDictionaryValue dataDictionaryValue = DTOUtils.newInstance(DataDictionaryValue.class);
     	dataDictionaryValue.setDdCode("cartype_tag");
     	dataDictionaryValue.setFirmId(userTicket.getFirmId());
+    	dataDictionaryValue.setState(1);
     	List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionaryValue).getData();
     	map.put("market_id", userTicket.getFirmId());
     	map.put("cartypeTags", list);
@@ -82,6 +84,7 @@ public class CarTypePublicController {
     	DataDictionaryValue dataDictionaryValue = DTOUtils.newInstance(DataDictionaryValue.class);
     	dataDictionaryValue.setDdCode("cartype_tag");
     	dataDictionaryValue.setFirmId(userTicket.getFirmId());
+    	dataDictionaryValue.setState(1);
     	
     	List<DataDictionaryValue> list = dataDictionaryRpc.listDataDictionaryValue(dataDictionaryValue).getData();
     	if(id != null) {
@@ -147,6 +150,9 @@ public class CarTypePublicController {
     	try {
     		UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
     		if(carTypePublic.getId() != null) {
+    			if(carTypePublic.getAutoPass() == null) {
+    				carTypePublic.setAutoPass(CarTypePublicEnum.NO.getCode());
+    			}
     			carTypePublic.setMarketId(userTicket.getFirmId());
     			carTypePublic.setModifyTime(new Date());
     			assetsRpc.deleteTagExt(carTypePublic);

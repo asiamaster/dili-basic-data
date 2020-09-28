@@ -148,6 +148,7 @@
 
         $('#addModal .modal-body').load("/cus_category/addView.html?pid=" + pid);
     }
+
     var treeApp = new Vue({
         el: '#treeView',
         watch: {
@@ -155,30 +156,33 @@
                 this.$refs.tree.filter(val);
             }
         },
-        created:function(){
-            $.ajax({
-                type: "GET",
-                dataType: "json",
-                url: '/cus_category/getTree.action',
-                success: function (data) {
-                    if (data.code != '200') {
-                        tips("提示", data.message);
-                        treeApp.loading = false;
-                        return;
-                    }
-                    if (data.data) {
-                        data.data.push({code: "", id: 0, name: "根目录", parent: -1, path: "0", pyInitials: ""});
-                    }
-                    treeApp.data = toEleTree(data.data, {label: "name", pid: "parent"});
-                    treeApp.loading = false;
-                },
-                error: function () {
-                    tips("提示", "加载品类树失败");
-                    treeApp.loading = false;
-                }
-            });
+        created: function () {
+            this.loadTree();
         },
         methods: {
+            loadTree() {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: '/cus_category/getTree.action',
+                    success: function (data) {
+                        if (data.code != '200') {
+                            tips("提示", data.message);
+                            treeApp.loading = false;
+                            return;
+                        }
+                        if (data.data) {
+                            data.data.push({code: "", id: 0, name: "根目录", parent: -1, path: "0", pyInitials: ""});
+                        }
+                        treeApp.data = toEleTree(data.data, {label: "name", pid: "parent"});
+                        treeApp.loading = false;
+                    },
+                    error: function () {
+                        tips("提示", "加载品类树失败");
+                        treeApp.loading = false;
+                    }
+                });
+            },
             filterNode(value, data) {
                 if (!value) return true;
                 return data.label.indexOf(value) !== -1;

@@ -146,7 +146,7 @@
                             label: "快捷编码",
                             attrs: {
                                 clearable: true,
-                                maxlength: 8,
+                                maxlength: 20,
                                 showWordLimit: true
                             },
                             required: true
@@ -260,21 +260,21 @@
                 data['categoryId'] = data.categoryArray[data.categoryArray.length - 1];
                 console.log(data);
 
-                // axios.post("/cus_category/save.action", data)
-                //     .then(function (response) {
-                //         if (response.data.code != '200') {
-                //             bs4pop.alert(response.data.message, {type: 'error'});
-                //             return;
-                //         }
-                //         loadTable();
-                //         addTreeNode($("#parentId").val(), response.data.data, true);
-                //         $('#addModal').modal('hide');
-                //         bs4pop.alert("品类信息新增成功", {type: 'success'});
-                //         bui.loading.hide();
-                //     })
-                //     .catch(function (error) {
-                //         bs4pop.alert("品类新增失败", {type: 'error'});
-                //     });
+                axios.post("/cus_category/save.action", data)
+                    .then(function (response) {
+                        if (response.data.code != '200') {
+                            bs4pop.alert(response.data.message, {type: 'error'});
+                            return;
+                        }
+                        loadTable();
+                        treeApp.loadTree();
+                        $('#addModal').modal('hide');
+                        bs4pop.alert("品类信息新增成功", {type: 'success'});
+                        bui.loading.hide();
+                    })
+                    .catch(function (error) {
+                        bs4pop.alert("品类新增失败", {type: 'error'});
+                    });
             }
         }
     });

@@ -71,16 +71,16 @@
                                                 'name': value
                                             },
                                             success: function (data) {
-                                                app.formData.pingying = data.whole;
-                                                app.formData.pyInitials = data.first;
+                                                editApp.formData.pingying = data.whole;
+                                                editApp.formData.pyInitials = data.first;
                                             },
                                             error: function () {
 
                                             }
                                         });
                                     } else {
-                                        app.formData.pingying = "";
-                                        app.formData.pyInitials = "";
+                                        editApp.formData.pingying = "";
+                                        editApp.formData.pyInitials = "";
                                     }
                                 }
                             },
@@ -150,7 +150,7 @@
                             label: "快捷编码",
                             attrs: {
                                 clearable: true,
-                                maxlength: 8,
+                                maxlength: 20,
                                 showWordLimit: true
                             },
                             required: true
@@ -214,18 +214,18 @@
                                         },
                                         success: function (data) {
                                             if (data.length > 0) {
-                                                app.formData.categoryArray = data;
+                                                editApp.formData.categoryArray = data;
                                             } else {
                                                 this.$message({
                                                     message: '抱歉,我还不能识别这个品类',
                                                     type: 'warning'
                                                 });
                                             }
-                                            app.loading = false;
+                                            editApp.loading = false;
                                         },
                                         error: function () {
                                             this.$message.error('抱歉,匹配出错');
-                                            app.loading = false;
+                                            editApp.loading = false;
                                         }
                                     });
                                 }
@@ -271,7 +271,7 @@
                             return;
                         }
                         loadTable();
-                        updateTreeNode(response.data.data);
+                        treeApp.loadTree();
                         $('#editModal').modal('hide');
                         bs4pop.alert("品类信息修改成功!", {type: 'success'});
                         bui.loading.hide();

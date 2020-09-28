@@ -68,7 +68,10 @@ public class CusCategoryController {
         parentArray.add(0L);
         CategoryDTO data = assetsRpc.get(categoryDTO.getCategoryId()).getData();
         JSONObject jsonObject = JSONUtil.parseObj(categoryDTO);
-        parentArray.addAll(StrUtil.split(categoryDTO.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
+        if (!categoryDTO.getParent().equals(0L)) {
+            CusCategoryDTO parentDTO = assetsRpc.getCusCategory(categoryDTO.getParent()).getData();
+            parentArray.addAll(StrUtil.split(parentDTO.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
+        }
         jsonObject.set("parentArray", parentArray);
         List<Long> categoryArray = new ArrayList<>(StrUtil.split(data.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
         jsonObject.set("categoryArray", categoryArray);
@@ -116,7 +119,7 @@ public class CusCategoryController {
             }
         });
         List<Long> path = new ArrayList<>();
-        if(ref.match!=null){
+        if (ref.match != null) {
             List<Long> collect = Arrays.stream(StrUtil.split(ref.match.getPath(), ",")).collect(Collectors.toList()).stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList());
             path.addAll(collect);
             return path;

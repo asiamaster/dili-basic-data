@@ -156,14 +156,6 @@
                                     axios.get('/category/getTree.action')
                                         .then((res) => {
                                             const data = res.data.data;
-                                            data.push({
-                                                code: "",
-                                                id: 0,
-                                                name: "根目录",
-                                                parent: -1,
-                                                path: "0",
-                                                pyInitials: ""
-                                            });
                                             resolve(toEleTree(data, {label: "name", pid: "parent"}));
                                             // console.log(res);
                                         })

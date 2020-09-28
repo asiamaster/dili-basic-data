@@ -10,6 +10,7 @@ import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.bd.util.PinyinUtil;
+import com.dili.bd.util.similarity.util.CosineSimilarity;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
@@ -65,13 +66,11 @@ public class CusCategoryController {
         CusCategoryDTO categoryDTO = assetsRpc.getCusCategory(id).getData();
         List<Long> parentArray = new ArrayList<>();
         parentArray.add(0L);
-        List<Long> categoryArray = new ArrayList<>();
-        categoryArray.add(0L);
         CategoryDTO data = assetsRpc.get(categoryDTO.getCategoryId()).getData();
         JSONObject jsonObject = JSONUtil.parseObj(categoryDTO);
         parentArray.addAll(StrUtil.split(categoryDTO.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
         jsonObject.set("parentArray", parentArray);
-        categoryArray.addAll(StrUtil.split(data.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
+        List<Long> categoryArray = new ArrayList<>(StrUtil.split(data.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
         jsonObject.set("categoryArray", categoryArray);
         map.put("data", jsonObject);
         map.put("url", dfsurl);
@@ -93,6 +92,36 @@ public class CusCategoryController {
         map.put("first", PinyinUtil.converterToFirstSpell(name));
         map.put("whole", PinyinUtil.converterToSpell(name));
         return map;
+    }
+
+    /**
+     * 中文转拼音
+     */
+    @RequestMapping(value = "/match.action")
+    @ResponseBody
+    public Object match(String name) {
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setState(EnabledStateEnum.ENABLED.getCode());
+        BaseOutput<List<CategoryDTO>> list = assetsRpc.list(categoryDTO);
+        var ref = new Object() {
+            Double score = 0D;
+            CategoryDTO match = null;
+        };
+
+        list.getData().forEach(it -> {
+            double temp = CosineSimilarity.getSimilarity(name, it.getName());
+            if (temp >= ref.score) {
+                ref.score = temp;
+                ref.match = it;
+            }
+        });
+        List<Long> path = new ArrayList<>();
+        if(ref.match!=null){
+            List<Long> collect = Arrays.stream(StrUtil.split(ref.match.getPath(), ",")).collect(Collectors.toList()).stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList());
+            path.addAll(collect);
+            return path;
+        }
+        return new ArrayList<>();
     }
 
     /**

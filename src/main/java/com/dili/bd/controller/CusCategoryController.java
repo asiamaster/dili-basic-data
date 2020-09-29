@@ -1,5 +1,7 @@
 package com.dili.bd.controller;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -18,6 +20,7 @@ import com.dili.logger.sdk.glossary.LoggerConstant;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
+import com.hankcs.hanlp.suggest.Suggester;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -26,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -106,25 +110,67 @@ public class CusCategoryController {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setState(EnabledStateEnum.ENABLED.getCode());
         BaseOutput<List<CategoryDTO>> list = assetsRpc.list(categoryDTO);
+
+        CategoryDTO result = intellijSearch(list.getData(), name);
+        if (result != null) {
+            return Arrays.stream(StrUtil.split(result.getPath(), ",")).collect(Collectors.toList()).stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList());
+        } else {
+            List<Integer> randomEle = CollUtil.newArrayList(1, 2);
+            Integer random = RandomUtil.randomEle(randomEle);
+            switch (random) {
+                case 1:
+                    for (char c : name.toCharArray()) {
+                        result = intellijSearch(list.getData(), String.valueOf(c));
+                        if (result != null) {
+                            return Arrays.stream(StrUtil.split(result.getPath(), ",")).collect(Collectors.toList()).stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList());
+                        }
+                    }
+                    break;
+                case 2:
+                    Suggester suggester = new Suggester();
+                    String[] titleArray = list.getData().stream().map(CategoryDTO::getName).toArray(String[]::new);
+                    for (String title : titleArray) {
+                        suggester.addSentence(title);
+                    }
+
+                    String text = suggester.suggest(name, 1).get(0);
+                    AtomicReference<CategoryDTO> finialResult = new AtomicReference<>();
+                    list.getData().stream().filter(it -> it.getName().equals(text)).findFirst().ifPresent((finialResult::set));
+                    if (finialResult.get() != null) {
+                        return Arrays.stream(StrUtil.split(finialResult.get().getPath(), ",")).collect(Collectors.toList()).stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList());
+                    }
+                    break;
+            }
+        }
+
+        return new ArrayList<>();
+    }
+
+    /**
+     * 智能匹配
+     *
+     * @param list
+     * @param text
+     * @return
+     */
+    private CategoryDTO intellijSearch(List<CategoryDTO> list, String text) {
         var ref = new Object() {
             Double score = 0D;
             CategoryDTO match = null;
         };
 
-        list.getData().forEach(it -> {
-            double temp = CosineSimilarity.getSimilarity(name, it.getName());
+        list.forEach(it -> {
+            double temp = CosineSimilarity.getSimilarity(text, it.getName());
             if (temp >= ref.score) {
                 ref.score = temp;
                 ref.match = it;
             }
         });
-        List<Long> path = new ArrayList<>();
-        if (ref.match != null) {
-            List<Long> collect = Arrays.stream(StrUtil.split(ref.match.getPath(), ",")).collect(Collectors.toList()).stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList());
-            path.addAll(collect);
-            return path;
+
+        if (ref.match != null && ref.score != 0) {
+            return ref.match;
         }
-        return new ArrayList<>();
+        return null;
     }
 
     /**

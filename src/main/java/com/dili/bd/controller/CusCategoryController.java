@@ -1,14 +1,22 @@
 package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.TimeInterval;
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.poi.excel.ExcelReader;
+import cn.hutool.poi.excel.ExcelUtil;
 import com.dili.assets.sdk.dto.CategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.assets.sdk.rpc.CategoryRpc;
+import com.dili.bd.domian.CategoryNew;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.bd.util.PinyinUtil;
@@ -21,13 +29,16 @@ import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.hankcs.hanlp.suggest.Suggester;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -37,10 +48,13 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/cus_category")
+@Slf4j
 public class CusCategoryController {
 
     @Autowired
     private AssetsRpc assetsRpc;
+    @Autowired
+    private CategoryRpc categoryRpc;
 
     @Value("${dfs.url}")
     private String dfsurl;
@@ -60,6 +74,180 @@ public class CusCategoryController {
     public String toAdd(ModelMap map) {
         map.put("url", dfsurl);
         return "cus_category/add";
+    }
+
+    /**
+     * 导入
+     *
+     * @return
+     */
+    @RequestMapping("import.action")
+    public String toImport() {
+        return "cus_category/import";
+    }
+
+    /**
+     * do import
+     *
+     * @param file
+     * @return
+     */
+    @PostMapping("doImport.action")
+    @ResponseBody
+    public Object doImport(@RequestParam("file") MultipartFile file) {
+        try {
+            TimeInterval timer = DateUtil.timer();
+            assetsRpc.delByMarket(SessionContext.getSessionContext().getUserTicket().getFirmId());
+            ExcelReader reader = ExcelUtil.getReader(file.getInputStream(), 0);
+            List<Map<String, Object>> readAll = reader.readAll();
+            Set<String> yiji = new HashSet<>();
+            readAll.forEach(it -> {
+                Object[] objects = it.keySet().toArray();
+                yiji.add(it.get(objects[0].toString()).toString());
+            });
+            List<CategoryNew> root = new ArrayList<>();
+
+            yiji.forEach(it -> {
+                CategoryNew categoryNew = new CategoryNew();
+                categoryNew.setName(it);
+                List<CategoryNew> erji = new ArrayList<>();
+                readAll.forEach(it2 -> {
+                    Object[] objects = it2.keySet().toArray();
+                    if (it2.get(objects[0].toString()).toString().equals(it)) {
+                        CategoryNew categoryNew2 = new CategoryNew();
+                        categoryNew2.setName(it2.get(objects[1].toString()).toString());
+                        if (erji.stream().anyMatch(iterji -> iterji.getName().equals(categoryNew2.getName()))) {
+                            return;
+                        }
+                        List<CategoryNew> esanji = new ArrayList<>();
+                        readAll.forEach(it3 -> {
+                            Object[] objects2 = it3.keySet().toArray();
+                            if (it3.get(objects2[1].toString()).toString().equals(categoryNew2.getName())) {
+                                CategoryNew categoryNew3 = new CategoryNew();
+                                categoryNew3.setName(it3.get(objects2[2].toString()).toString());
+                                esanji.add(categoryNew3);
+                            }
+                        });
+                        categoryNew2.setChildren(esanji);
+                        erji.add(categoryNew2);
+                    }
+                });
+                categoryNew.setChildren(erji);
+                root.add(categoryNew);
+            });
+
+            Snowflake snowflake = IdUtil.getSnowflake(1, 1);
+            for (CategoryNew categoryNew : root) {
+                CusCategoryDTO cusCategory = new CusCategoryDTO();
+                cusCategory.setName(categoryNew.getName());
+                if (StrUtil.isBlank(cusCategory.getPingying())) {
+                    cusCategory.setPingying(PinyinUtil.converterToSpell(categoryNew.getName()));
+                    cusCategory.setPyInitials(PinyinUtil.converterToFirstSpell(categoryNew.getName()));
+                } else {
+                    cusCategory.setPingying(categoryNew.getPingying());
+                    cusCategory.setPyInitials(categoryNew.getPyInitials());
+                }
+                cusCategory.setIcon(categoryNew.getIcon());
+                cusCategory.setParent(0L);
+                cusCategory.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
+                cusCategory.setCreateTime(new Date());
+                cusCategory.setModifyTime(new Date());
+                if (StrUtil.isBlank(categoryNew.getCode())) {
+                    cusCategory.setKeycode(snowflake.nextIdStr());
+                } else {
+                    cusCategory.setKeycode(categoryNew.getCode());
+                }
+                cusCategory.setCategoryId(matchCategory(cusCategory.getName()));
+                cusCategory.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+                BaseOutput<Integer> baseOutput = assetsRpc.saveCusCategory(cusCategory);
+                savechildren(baseOutput.getData().longValue(), categoryNew.getChildren(), snowflake);
+            }
+            log.info("导入完成,花费:" + timer.intervalMinute() + "分钟");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return BaseOutput.success();
+    }
+
+    /**
+     * test
+     *
+     * @param parentId
+     * @param children
+     */
+    private void savechildren(Long parentId, List<CategoryNew> children, Snowflake snowflake) {
+        if (CollUtil.isNotEmpty(children)) {
+            for (CategoryNew categoryNew : children) {
+                CusCategoryDTO cusCategory = new CusCategoryDTO();
+                cusCategory.setName(categoryNew.getName());
+                if (StrUtil.isBlank(cusCategory.getPingying())) {
+                    cusCategory.setPingying(PinyinUtil.converterToSpell(categoryNew.getName()));
+                    cusCategory.setPyInitials(PinyinUtil.converterToFirstSpell(categoryNew.getName()));
+                } else {
+                    cusCategory.setPingying(categoryNew.getPingying());
+                    cusCategory.setPyInitials(categoryNew.getPyInitials());
+                }
+                cusCategory.setIcon(categoryNew.getIcon());
+                cusCategory.setParent(parentId);
+                cusCategory.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
+                cusCategory.setCreateTime(new Date());
+                cusCategory.setModifyTime(new Date());
+                if (StrUtil.isBlank(categoryNew.getCode())) {
+                    cusCategory.setKeycode(snowflake.nextIdStr());
+                } else {
+                    cusCategory.setKeycode(categoryNew.getCode());
+                }
+                cusCategory.setCategoryId(matchCategory(cusCategory.getName()));
+                cusCategory.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+                BaseOutput<Integer> baseOutput = assetsRpc.saveCusCategory(cusCategory);
+                savechildren(baseOutput.getData().longValue(), categoryNew.getChildren(), snowflake);
+            }
+        }
+    }
+
+    /**
+     * match test
+     *
+     * @param text
+     * @return
+     */
+    private Long matchCategory(String name) {
+        CategoryDTO categoryDTO = new CategoryDTO();
+        categoryDTO.setState(EnabledStateEnum.ENABLED.getCode());
+        BaseOutput<List<CategoryDTO>> list = assetsRpc.list(categoryDTO);
+
+        CategoryDTO result = intellijSearch(list.getData(), name);
+        if (result != null) {
+            return result.getId();
+        } else {
+            List<Integer> randomEle = CollUtil.newArrayList(1, 2);
+            Integer random = RandomUtil.randomEle(randomEle);
+            switch (random) {
+                case 1:
+                    for (char c : name.toCharArray()) {
+                        result = intellijSearch(list.getData(), String.valueOf(c));
+                        if (result != null) {
+                            return result.getId();
+                        }
+                    }
+                    break;
+                case 2:
+                    Suggester suggester = new Suggester();
+                    String[] titleArray = list.getData().stream().map(CategoryDTO::getName).toArray(String[]::new);
+                    for (String title : titleArray) {
+                        suggester.addSentence(title);
+                    }
+
+                    String text = suggester.suggest(name, 1).get(0);
+                    AtomicReference<CategoryDTO> finialResult = new AtomicReference<>();
+                    list.getData().stream().filter(it -> it.getName().equals(text)).findFirst().ifPresent((finialResult::set));
+                    if (finialResult.get() != null) {
+                        return finialResult.get().getId();
+                    }
+                    break;
+            }
+        }
+        return 1L;
     }
 
     /**

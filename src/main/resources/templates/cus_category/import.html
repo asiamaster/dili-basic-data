@@ -1,0 +1,87 @@
+<#bs4Body>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<div id=app>
+    <el-upload
+            class="upload-demo"
+            ref="upload"
+            v-loading.fullscreen.lock="loading"
+            element-loading-text="导入较慢,请耐心等待,预计10-30分钟左右,请别关闭我哦"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.8)"
+            :limit="1"
+            name="file"
+            :on-exceed="exceed"
+            :multiple="false"
+            :on-success="success"
+            :on-error="error"
+            action="/cus_category/doImport.action"
+            :auto-upload="false">
+        <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+        <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button>
+    </el-upload>
+</div>
+</#bs4Body>
+<script type="text/javascript">
+    window.rootPath = '${contextPath}';
+</script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_list.js" type="text/javascript"></script>
+
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                loading: false
+            };
+        },
+        methods: {
+            submitUpload() {
+                this.$confirm('此操作将覆盖您所在市场的所有品类, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.loading = true;
+                    this.$refs.upload.submit();
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消导入'
+                    });
+                });
+
+            },
+            success() {
+                this.loading = false;
+                this.$message({
+                    message: '导入成功,请刷新页面',
+                    type: 'success'
+                });
+            },
+            exceed(){
+                this.$message({
+                    message: '别贪心哦,为了紧急上线,程序员只实现了导入一个文件哦',
+                    type: 'warning'
+                });
+            },
+            error() {
+                this.loading = false;
+                this.$message.error('错误');
+            }
+        }
+    })
+</script>
+

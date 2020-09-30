@@ -3,8 +3,6 @@ package com.dili.bd.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
-import cn.hutool.core.lang.Snowflake;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
@@ -136,7 +134,6 @@ public class CusCategoryController {
                 root.add(categoryNew);
             });
 
-            Snowflake snowflake = IdUtil.getSnowflake(1, 1);
             for (CategoryNew categoryNew : root) {
                 CusCategoryDTO cusCategory = new CusCategoryDTO();
                 cusCategory.setName(categoryNew.getName());
@@ -152,15 +149,10 @@ public class CusCategoryController {
                 cusCategory.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
                 cusCategory.setCreateTime(new Date());
                 cusCategory.setModifyTime(new Date());
-                if (StrUtil.isBlank(categoryNew.getCode())) {
-                    cusCategory.setKeycode(snowflake.nextIdStr());
-                } else {
-                    cusCategory.setKeycode(categoryNew.getCode());
-                }
                 cusCategory.setCategoryId(matchCategory(cusCategory.getName()));
                 cusCategory.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
                 BaseOutput<Integer> baseOutput = assetsRpc.saveCusCategory(cusCategory);
-                savechildren(baseOutput.getData().longValue(), categoryNew.getChildren(), snowflake);
+                savechildren(baseOutput.getData().longValue(), categoryNew.getChildren());
             }
             log.info("导入完成,花费:" + timer.intervalMinute() + "分钟");
         } catch (IOException e) {
@@ -175,7 +167,7 @@ public class CusCategoryController {
      * @param parentId
      * @param children
      */
-    private void savechildren(Long parentId, List<CategoryNew> children, Snowflake snowflake) {
+    private void savechildren(Long parentId, List<CategoryNew> children) {
         if (CollUtil.isNotEmpty(children)) {
             for (CategoryNew categoryNew : children) {
                 CusCategoryDTO cusCategory = new CusCategoryDTO();
@@ -192,15 +184,10 @@ public class CusCategoryController {
                 cusCategory.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
                 cusCategory.setCreateTime(new Date());
                 cusCategory.setModifyTime(new Date());
-                if (StrUtil.isBlank(categoryNew.getCode())) {
-                    cusCategory.setKeycode(snowflake.nextIdStr());
-                } else {
-                    cusCategory.setKeycode(categoryNew.getCode());
-                }
                 cusCategory.setCategoryId(matchCategory(cusCategory.getName()));
                 cusCategory.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
                 BaseOutput<Integer> baseOutput = assetsRpc.saveCusCategory(cusCategory);
-                savechildren(baseOutput.getData().longValue(), categoryNew.getChildren(), snowflake);
+                savechildren(baseOutput.getData().longValue(), categoryNew.getChildren());
             }
         }
     }

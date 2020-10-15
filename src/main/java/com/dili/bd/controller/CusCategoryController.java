@@ -13,7 +13,6 @@ import com.dili.assets.sdk.dto.CategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.assets.sdk.rpc.AssetsRpc;
-import com.dili.assets.sdk.rpc.CategoryRpc;
 import com.dili.bd.domian.CategoryNew;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
@@ -51,8 +50,6 @@ public class CusCategoryController {
 
     @Autowired
     private AssetsRpc assetsRpc;
-    @Autowired
-    private CategoryRpc categoryRpc;
 
     @Value("${dfs.url}")
     private String dfsurl;
@@ -254,6 +251,9 @@ public class CusCategoryController {
         jsonObject.set("parentArray", parentArray);
         List<Long> categoryArray = new ArrayList<>(StrUtil.split(data.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
         jsonObject.set("categoryArray", categoryArray);
+        if (StrUtil.isNotBlank(jsonObject.getStr("icon"))) {
+            jsonObject.set("icon", dfsurl + "file/view/" + jsonObject.getStr("icon"));
+        }
         map.put("data", jsonObject);
         map.put("url", dfsurl);
         return "cus_category/edit";
@@ -377,6 +377,9 @@ public class CusCategoryController {
             if (input.getId() != null) {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
             }
+            if (StrUtil.isNotBlank(input.getIcon())) {
+                input.setIcon(input.getIcon().replace(dfsurl + "file/view/", ""));
+            }
             BaseOutput save = assetsRpc.saveCusCategory(input);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
@@ -394,11 +397,17 @@ public class CusCategoryController {
      */
     @RequestMapping("/table.html")
     public ModelAndView list(@ModelAttribute CusCategoryQuery input) {
+        var result = new ArrayList<CusCategoryDTO>();
+        if (input.getParent() != null && input.getParent() != 0) {
+            BaseOutput<CusCategoryDTO> parent = assetsRpc.getCusCategory(input.getParent());
+            result.add(parent.getData());
 
+        }
         Map<String, Object> map = new HashMap<>();
         input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         List<CusCategoryDTO> list = assetsRpc.listCusCategory(input).getData();
-        map.put("obj", list);
+        result.addAll(list);
+        map.put("obj", result);
         return new ModelAndView("cus_category/table", map);
     }
 

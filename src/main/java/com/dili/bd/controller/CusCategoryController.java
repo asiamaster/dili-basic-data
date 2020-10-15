@@ -373,6 +373,7 @@ public class CusCategoryController {
             input.setCreateTime(new Date());
             input.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
             input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+            input.setKeycode(StrUtil.trim(input.getKeycode()));
             input.setModifyTime(new Date());
             if (input.getId() != null) {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");

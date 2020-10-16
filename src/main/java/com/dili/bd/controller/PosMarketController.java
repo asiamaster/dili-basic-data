@@ -120,6 +120,7 @@ public class PosMarketController {
     @PostMapping("/edit.action")
     @ResponseBody
     public Object edit(@RequestBody PosMarketDto dto) {
+        dto.setModifyTime(LocalDateTime.now());
         return posMarketRpc.update(dto);
     }
 

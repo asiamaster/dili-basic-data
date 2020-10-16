@@ -1490,6 +1490,12 @@
               "chnname": "所属区域"
             },
             {
+              "name": "area_name",
+              "type": "Name",
+              "remark": "",
+              "chnname": "所属区域"
+            },
+            {
               "name": "notes",
               "type": "DefaultString",
               "remark": "",

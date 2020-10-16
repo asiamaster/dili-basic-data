@@ -14,9 +14,11 @@
             }"
             :is-show-cancel-btn="false"
             submit-btn-text="提交"
+            :is-show-error-notify="false"
             form-btn-size="medium"
             :form-btns="formBtns"
             :is-dialog="true"
+            ref="myForm"
             :form-desc="formDesc"
             v-model="formData"
             :request-fn="handleRequest">
@@ -46,7 +48,7 @@
                         }
                     }
                 ],
-                formData: {},
+                formData: {areaName: ""},
                 formDesc: {
                     name: {
                         type: 'input',
@@ -99,7 +101,7 @@
         },
         methods: {
             handleRequest(data) {
-
+                data.areaName = app.$refs.myForm.$refs.area[0].$refs.cascader.getCheckedNodes()[0].pathLabels;
                 axios.post(rootPath + "/posMarketController/add.action", data)
                     .then(function (response) {
                         $.operate.saveSuccess(response.data);

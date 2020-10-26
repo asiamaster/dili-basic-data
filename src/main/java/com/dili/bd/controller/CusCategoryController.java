@@ -254,6 +254,11 @@ public class CusCategoryController {
         if (StrUtil.isNotBlank(jsonObject.getStr("icon"))) {
             jsonObject.set("icon", dfsurl + "file/view/" + jsonObject.getStr("icon"));
         }
+        CusCategoryQuery queryPath = new CusCategoryQuery();
+        queryPath.setQueryPath(categoryDTO.getPath());
+        queryPath.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        List<CusCategoryDTO> paths = assetsRpc.listCusCategory(queryPath).getData();
+        map.put("paths",JSONUtil.toJsonStr(paths));
         map.put("data", jsonObject);
         map.put("url", dfsurl);
         return "cus_category/edit";

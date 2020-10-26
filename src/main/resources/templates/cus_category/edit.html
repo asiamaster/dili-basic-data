@@ -101,7 +101,16 @@
                                                 path: "0",
                                                 pyInitials: ""
                                             });
-                                            resolve(toEleTree(data, {label: "name", pid: "parent"}));
+                                            const paths = ${paths};
+                                            data.forEach(function (item) {
+                                                paths.forEach(function (it) {
+                                                    if (it.id === item.id) {
+                                                        item.disabled = true;
+                                                    }
+                                                });
+                                            });
+                                            const tree = toEleTree(data, {label: "name", pid: "parent"});
+                                            resolve(tree);
                                             // console.log(res);
                                         })
                                         .catch(function (error) {

@@ -115,7 +115,7 @@ public class CategoryController {
      */
     @RequestMapping(value = "/save.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "add", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput save(CategoryDTO input) {
         try {
             input.setCreateTime(new Date());
@@ -164,7 +164,7 @@ public class CategoryController {
      */
     @RequestMapping(value = "/batchUpdate.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "edit", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput batchUpdate(Long id, Integer value) {
         try {
             BaseOutput baseOutput = assetsRpc.batchUpdate(id, value);

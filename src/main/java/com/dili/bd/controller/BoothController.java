@@ -173,7 +173,7 @@ public class BoothController {
      */
     @RequestMapping("/save.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "add", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput save(@RequestBody AssetsDTO input) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
@@ -199,7 +199,7 @@ public class BoothController {
      */
     @RequestMapping("/update.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput update(@RequestBody AssetsDTO input) {
         try {
             input.setModifyTime(new Date());
@@ -220,7 +220,7 @@ public class BoothController {
      */
     @PostMapping("/changeStatus.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, content = "${name!}", operationType = "edit", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput changeStatus(AssetsDTO input, String opType) {
         try {
             input.setModifyTime(new Date());
@@ -239,7 +239,7 @@ public class BoothController {
      */
     @RequestMapping("/split.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, operationType = "split", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, operationType = "split", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput split(@RequestBody JSONObject json) {
         try {
             Long parentId = json.getLong("id");
@@ -271,7 +271,7 @@ public class BoothController {
      */
     @RequestMapping("/delete.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, operationType = "del", systemCode = "INTELLIGENT_ASSETS")
+    @BusinessLogger(businessType = LogBizTypeConst.BOOTH, operationType = "del", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput delete(Long id) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();

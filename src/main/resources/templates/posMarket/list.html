@@ -7,9 +7,9 @@
 <!-- 引入element -->
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
-<div class="container-fluid">
-    <#bs4nav>
+
     <div id=app>
+        <div class="container-fluid">
         <ele-form
                 :form-attrs="{
             size: 'medium'
@@ -30,8 +30,7 @@
                 </button>
             </template>
         </ele-form>
-    </div>
-    </#bs4nav>
+
 <hr>
     <div class="row">
         <div class="col-12">
@@ -40,7 +39,7 @@
                     <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
                 </button>
                 <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
-                    <i class="fa fa-plus"></i>&nbsp;&nbsp;修改
+                    <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
                 </button>
                 <button onclick="$.operate.batRemove()" type="button" class="btn btn-primary">
                     <i class="fa fa-remove"></i>&nbsp;&nbsp;删除
@@ -54,6 +53,7 @@
         </div>
     </div>
 </div>
+    </div>
 
 </#bs4Body>
 <script type="text/javascript">
@@ -82,12 +82,15 @@ var exportUrl=window.rootPath+"/posMarketController/export";
         createUrl: createUrl,
         updateUrl: updateUrl,
         viewUrl: viewUrl,
+        dialogWidth: 500,
+        dialogHeight: 600,
         enableUrl: enableUrl,
         disableUrl: disableUrl,
         removeUrl:removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",
         modalName: "销地市场",
+
         search: false,
         id:"id",
 	   dataColumns: [

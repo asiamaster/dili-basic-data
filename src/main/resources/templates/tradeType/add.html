@@ -1,4 +1,5 @@
 <#bs4Body>
+
 <!-- Automatically provides/replaces `Promise` if missing or broken. -->
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
@@ -8,19 +9,21 @@
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
 <div id=app>
-    <ele-form
-            :form-attrs="{
+    <div class="container-fluid pb-5">
+        <ele-form
+                :form-attrs="{
             size: 'medium'
             }"
-            :is-show-cancel-btn="false"
-            submit-btn-text="提交"
-            form-btn-size="medium"
-            :form-btns="formBtns"
-            :is-dialog="true"
-            :form-desc="formDesc"
-            v-model="formData"
-            :request-fn="handleRequest">
-    </ele-form>
+                :is-show-cancel-btn="false"
+                submit-btn-text="提交"
+                form-btn-size="medium"
+                :form-btns="formBtns"
+                :is-dialog="true"
+                :form-desc="formDesc"
+                v-model="formData"
+                :request-fn="handleRequest">
+        </ele-form>
+    </div>
 </div>
 </#bs4Body>
 <script type="text/javascript">

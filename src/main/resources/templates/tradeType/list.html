@@ -1,4 +1,5 @@
 <#bs4Body>
+
 <!-- Automatically provides/replaces `Promise` if missing or broken. -->
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
@@ -7,9 +8,16 @@
 <!-- 引入element -->
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
-<div class="container-fluid">
-    <#bs4nav>
+<style>
+    .el-button--primary {
+        color: #007bff;
+        border-color: #007bff;
+        background: transparent;
+    }
+</style>
+
     <div id=app>
+        <div class="container-fluid">
         <ele-form
                 :form-attrs="{
             size: 'medium'
@@ -20,9 +28,9 @@
                 :form-desc="formDesc"
                 v-model="formData"
                 :request-fn="handleRequest">
+
         </ele-form>
-    </div>
-    </#bs4nav>
+
 <hr>
     <div class="row">
         <div class="col-12">
@@ -31,7 +39,7 @@
                     <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
                </button>
                <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
-                    <i class="fa fa-plus"></i>&nbsp;&nbsp;修改
+                    <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
                </button>
                <button onclick="$.operate.batRemove()" type="button" class="btn btn-primary">
                     <i class="fa fa-remove"></i>&nbsp;&nbsp;删除
@@ -44,6 +52,7 @@
             </table>
         </div>
     </div>
+</div>
 </div>
 
 </#bs4Body>
@@ -71,6 +80,8 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
         createUrl: createUrl,
         updateUrl: updateUrl,
         viewUrl: viewUrl,
+        dialogWidth: 500,
+        dialogHeight: 500,
         removeUrl:removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",

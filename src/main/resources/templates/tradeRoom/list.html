@@ -8,7 +8,6 @@
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
 <div class="container-fluid">
-    <#bs4nav>
     <div id=app>
         <ele-form
                 :form-attrs="{
@@ -22,7 +21,6 @@
                 :request-fn="handleRequest">
         </ele-form>
     </div>
-    </#bs4nav>
 <hr>
     <div class="row">
         <div class="col-12">
@@ -31,7 +29,7 @@
                     <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
                </button>
                <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
-                    <i class="fa fa-plus"></i>&nbsp;&nbsp;修改
+                    <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
                </button>
                <button onclick="$.operate.batRemove()" type="button" class="btn btn-primary">
                     <i class="fa fa-remove"></i>&nbsp;&nbsp;删除
@@ -71,6 +69,8 @@ var exportUrl=window.rootPath+"/tradeRoomController/export";
         createUrl: createUrl,
         updateUrl: updateUrl,
         viewUrl: viewUrl,
+        dialogWidth: 500,
+        dialogHeight: 600,
         removeUrl:removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",

@@ -9,20 +9,6 @@
 <script src="${contextPath}/resources/design/index.js"></script>
 <div class="container-fluid">
 
-    <div id=app>
-        <ele-form
-                :form-attrs="{
-            size: 'medium'
-            }"
-                :inline="true"
-                :is-show-reset-btn="true"
-                form-btn-size="medium"
-                :form-desc="formDesc"
-                v-model="formData"
-                :request-fn="handleRequest">
-        </ele-form>
-    </div>
-
 <hr>
 <div class="row">
     <div class="col-12">
@@ -153,35 +139,4 @@
         var oTab = $.table.oTableInit(options);
         oTab.Init();
     })
-</script>
-
-<script>
-    var app = new Vue({
-        el: '#app',
-        data() {
-            return {
-                formData: {},
-                formDesc: {}
-            };
-        },
-        methods: {
-            handleRequest(data) {
-                $.table.search(data);
-            }
-        }
-    })
-
-    function loadProvider(data) {
-        return new Promise((resolve, reject) => {
-            axios.post('/convert/list.action', data)
-                .then((res) => {
-                    resolve(res.data);
-                    // console.log(res);
-                })
-                .catch(function (error) {
-                    reject(error);
-                    // console.log(error);
-                });
-        });
-    }
 </script>

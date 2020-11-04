@@ -14,11 +14,20 @@
             size: 'medium'
             }"
                 :inline="true"
+                ref="form"
                 :is-show-reset-btn="true"
                 form-btn-size="medium"
                 :form-desc="formDesc"
                 v-model="formData"
                 :request-fn="handleRequest">
+            <template v-slot:form-btn="{ btns }">
+                <button id="clear" type="button" class="btn btn-outline-primary mr-2" @click="reset">
+                    <i class="fa fa-refresh"></i> 清空
+                </button>
+                <button id="query" type="button" class="btn btn-outline-primary" @click="submit">
+                    <i class="fa fa-search"></i> 查询
+                </button>
+            </template>
         </ele-form>
     </div>
 <hr>
@@ -154,6 +163,15 @@ $(function(){
         methods: {
             handleRequest(data) {
                 $.table.search(data);
+            },
+            reset() {
+                this.$refs.form.resetForm()
+            },
+            submit() {
+                // 提交表单（内部已校检）
+                this.$refs.form.handleSubmitForm()
+                // 校检数据（如果单独为了校检，可以使用下面方法）
+                // this.$refs.validate()
             }
         }
     })

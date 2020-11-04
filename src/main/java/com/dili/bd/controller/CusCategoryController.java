@@ -27,6 +27,9 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.hankcs.hanlp.suggest.Suggester;
 import lombok.extern.slf4j.Slf4j;
+import org.javers.core.Javers;
+import org.javers.core.JaversBuilder;
+import org.javers.core.diff.Diff;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -258,7 +261,7 @@ public class CusCategoryController {
         queryPath.setQueryPath(categoryDTO.getPath());
         queryPath.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         List<CusCategoryDTO> paths = assetsRpc.listCusCategory(queryPath).getData();
-        map.put("paths",JSONUtil.toJsonStr(paths));
+        map.put("paths", JSONUtil.toJsonStr(paths));
         map.put("data", jsonObject);
         map.put("url", dfsurl);
         return "cus_category/edit";
@@ -372,7 +375,7 @@ public class CusCategoryController {
      */
     @RequestMapping(value = "/save.action")
     @ResponseBody
-    @BusinessLogger(businessType = LogBizTypeConst.CUS_CATEGORY, content = "", operationType = "add", systemCode = LogBizTypeConst.SYSTEM_CODE)
+    @BusinessLogger(businessType = LogBizTypeConst.CUS_CATEGORY, content = "${content}", operationType = "add", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput save(@RequestBody CusCategoryDTO input) {
         try {
             input.setCreateTime(new Date());
@@ -381,7 +384,17 @@ public class CusCategoryController {
             input.setKeycode(StrUtil.trim(input.getKeycode()));
             input.setModifyTime(new Date());
             if (input.getId() != null) {
+                Javers javers = JaversBuilder.javers().build();
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
+                CusCategoryDTO old = assetsRpc.getCusCategory(input.getId()).getData();
+                Diff diff = javers.compare(old, input);
+                AtomicReference<String> content = new AtomicReference<>("");
+                diff.getChanges().forEach(change -> content.updateAndGet(v -> v + change + ","));
+                String text = content.get();
+                LoggerContext.put("content", text.replaceAll("ValueChange", "").replaceAll("value changed from", "从").replaceAll(" to ", " 改为 ").replaceAll("'", ""));
+            } else {
+                String content = "新增品类,名称:" + input.getName() + ",编码:" + input.getKeycode();
+                LoggerContext.put("content", content);
             }
             if (StrUtil.isNotBlank(input.getIcon())) {
                 input.setIcon(input.getIcon().replace(dfsurl + "file/view/", ""));

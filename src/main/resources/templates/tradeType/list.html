@@ -111,18 +111,24 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
 			    field: 'name',
 			    title: '类型名称'
 			},
+           {
+               field: 'push',
+               title: '是否推送',
+               provider: 'yesOrNoProvider'
+           },
             {
 			    field: 'creatorUser',
 			    title: '创建人',
-                provider: ''
 			},
             {
 			    field: 'createdTime',
-			    title: '创建时间'
+			    title: '创建时间',
+                provider: 'datetimeProvider'
 			},
             {
 			    field: 'modifyTime',
-			    title: '更新时间'
+			    title: '更新时间',
+                provider: 'datetimeProvider'
 			},
 /*
 参照修改注释

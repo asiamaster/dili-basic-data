@@ -20,7 +20,9 @@ import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.TradeTypeDto;
 import com.dili.assets.sdk.dto.TradeTypeQuery;
 import com.dili.assets.sdk.rpc.TradeTypeRpc;
+import com.dili.commons.bstable.TableResult;
 import com.dili.ss.domain.BaseOutput;
+import com.dili.ss.metadata.ValueProviderUtils;
 import com.dili.uap.sdk.session.SessionContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,6 +30,8 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @website http://shaofan.org
@@ -81,7 +85,14 @@ public class TradeTypeController {
     @PostMapping("/query.action")
     @ResponseBody
     public Object query(@RequestBody TradeTypeQuery query) {
-        return tradeTypeRpc.query(query);
+        TableResult<TradeTypeDto> result = tradeTypeRpc.query(query);
+        try {
+            List<Map> dataByProvider = ValueProviderUtils.buildDataByProvider(query.getMetadata(), result.getRows());
+            return new TableResult<>(result.getPage(), result.getTotal(), dataByProvider);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return new TableResult<>();
     }
 
     /**

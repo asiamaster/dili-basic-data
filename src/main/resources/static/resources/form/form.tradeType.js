@@ -42,6 +42,21 @@ var app = new Vue({
                     },
                     rules: [{required: true, message: '请输入类型名称', trigger: 'blur'}]
                 },
+                push: {
+                    type: 'select',
+                    label: '是否推送',
+                    options: [
+                        {
+                            text: "是",
+                            value: 1
+                        },
+                        {
+                            text: "否",
+                            value: 0
+                        }
+                    ],
+                    default: 1
+                }
             }
         };
     },

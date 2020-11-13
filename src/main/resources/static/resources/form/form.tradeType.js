@@ -1,6 +1,13 @@
 var app = new Vue({
     el: '#app',
     data() {
+        var validatePass = (rule, value, callback) => {
+            if (value.trim() === '') {
+                callback(new Error('请输入类型名称'));
+            } else {
+                callback();
+            }
+        };
         return {
             formBtns: [
                 {
@@ -40,7 +47,12 @@ var app = new Vue({
                         maxlength: 20,
                         showWordLimit: true
                     },
-                    rules: [{required: true, message: '请输入类型名称', trigger: 'blur'}]
+                    rules: [{required: true, message: '请输入类型名称', trigger: 'blur'},
+                        {validator: validatePass, trigger: 'blur'}],
+                    displayFormatter(labels) {
+                        // 判断 如果是string类型，则调用split(',')方法分割为数组，否则直接返回
+                        return typeof labels === 'string' ? labels.trim() : labels
+                    }
                 },
                 push: {
                     type: 'select',
@@ -62,7 +74,6 @@ var app = new Vue({
     },
     methods: {
         handleRequest(data) {
-
             axios.post(this.opUrl, data)
                 .then(function (response) {
                     $.operate.saveSuccess(response.data);

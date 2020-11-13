@@ -24,7 +24,6 @@ import com.dili.commons.bstable.TableResult;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
-import com.dili.uap.sdk.session.SessionContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -102,7 +101,6 @@ public class ConfigController {
     @PostMapping("/add.action")
     @ResponseBody
     public Object add(@RequestBody ConfigDto dto) {
-        dto.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         dto.setState(EnabledStateEnum.DISABLED.getCode());
         return configRpc.add(dto);
     }

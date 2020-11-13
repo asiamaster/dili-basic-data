@@ -10,20 +10,20 @@
 
 <div id=app>
     <div class="container-fluid pb-5">
-    <ele-form
-            :form-attrs="{
+        <ele-form
+                :form-attrs="{
             size: 'medium'
             }"
-            :is-show-cancel-btn="false"
-            submit-btn-text="提交"
-            form-btn-size="medium"
-            :form-btns="formBtns"
-            :is-dialog="true"
-            :form-desc="formDesc"
-            v-model="formData"
-            :request-fn="handleRequest">
-    </ele-form>
-</div>
+                :is-show-cancel-btn="false"
+                submit-btn-text="提交"
+                form-btn-size="medium"
+                :form-btns="formBtns"
+                :is-dialog="true"
+                :form-desc="formDesc"
+                v-model="formData"
+                :request-fn="handleRequest">
+        </ele-form>
+    </div>
 </div>
 </#bs4Body>
 <script type="text/javascript">
@@ -51,26 +51,32 @@
                 ],
                 formData: {},
                 formDesc: {
-                name: {
-                type: 'input',
-                label: '配置项',
-                rules: []
-                },
-                value: {
-                type: 'input',
-                label: '值',
-                rules: []
-                },
-                notes: {
-                type: 'input',
-                label: '备注',
-                rules: []
-                },
-                type: {
-                type: 'input',
-                label: '分组',
-                rules: []
-                },
+                    name: {
+                        type: 'input',
+                        label: '配置项',
+                        rules: []
+                    },
+                    value: {
+                        type: 'input',
+                        label: '值',
+                        rules: []
+                    },
+                    notes: {
+                        type: 'input',
+                        label: '备注',
+                        rules: []
+                    },
+                    type: {
+                        type: 'input',
+                        label: '分组',
+                        rules: []
+                    },
+                    marketId: {
+                        type: 'select',
+                        label: '市场',
+                        required: true,
+                        options: loadProvider({provider: 'marketProvider'})
+                    },
                 }
             };
         },
@@ -87,6 +93,7 @@
             }
         }
     })
+
     function loadProvider(data) {
         return new Promise((resolve, reject) => {
             axios.post('/convert/list.action', data)

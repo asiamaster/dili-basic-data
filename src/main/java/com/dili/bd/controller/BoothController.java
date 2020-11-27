@@ -1,6 +1,5 @@
 package com.dili.bd.controller;
 
-import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -24,7 +23,10 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -281,37 +283,5 @@ public class BoothController {
         } catch (Exception e) {
             return BaseOutput.failure("系统异常");
         }
-    }
-
-    /**
-     * 新增BoothOrderR
-     */
-    @RequestMapping(value = "/search.action", method = {RequestMethod.GET, RequestMethod.POST})
-    public @ResponseBody
-    BaseOutput<List<AssetsDTO>> search(String keyword) {
-        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-        JSONObject json = new JSONObject();
-        json.put("keyword", keyword);
-        json.put("marketId", userTicket.getFirmId());
-        try {
-            List<AssetsDTO> data = assetsRpc.searchBooth(json).getData();
-            List<AssetsDTO> result = new ArrayList<>();
-            if (CollUtil.isNotEmpty(data)) {
-                for (AssetsDTO dto : data) {
-                    if (dto.getParentId() != 0 && dto.getState().equals(EnabledStateEnum.ENABLED.getCode())) {
-                        result.add(dto);
-                    } else {
-                        boolean anyMatch = data.stream().anyMatch(obj -> obj.getParentId().equals(dto.getId()));
-                        if (!anyMatch && dto.getParentId() == 0 && dto.getState().equals(EnabledStateEnum.ENABLED.getCode())) {
-                            result.add(dto);
-                        }
-                    }
-                }
-            }
-            return BaseOutput.success().setData(result);
-        } catch (Exception e) {
-            return BaseOutput.success().setData(new ArrayList<>());
-        }
-
     }
 }

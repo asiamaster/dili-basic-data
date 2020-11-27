@@ -69,7 +69,7 @@ public class BusinessChargeItemController {
             return new EasyuiPageOutput(listPage.getTotal(), results).toString();
         } catch (Exception e) {
             log.error(String.format("根据[%s]查询业务费用项列表异常,[%s]", businessChargeItemDto, e.getMessage()), e);
-            return new EasyuiPageOutput(0L, Collections.emptyList()).toString();
+            return new EasyuiPageOutput(0, Collections.emptyList()).toString();
         }
     }
 

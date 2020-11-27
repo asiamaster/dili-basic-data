@@ -95,7 +95,8 @@
                         <th data-options="field:'number',sortable:true,resizable:false,fixed:'false'" width="10%">编号</th>
                         <th data-options="field:'departmentId',_provider:'departmentProvider',resizable:false,fixed:'false'" width="20%">部门</th>
                         <th data-options="field:'notes',resizable:false,fixed:'false'" width="20%">备注</th>
-                        <th data-options="field:'bb',resizable:false,fixed:'false',_provider:'disProvider'" width="30%">路径</th>
+                        <th data-options="field:'kind',resizable:false,fixed:'false',formatter:formatter" width="10%">性质</th>
+                        <th data-options="field:'bb',resizable:false,fixed:'false',_provider:'disProvider'" width="20%">路径</th>
                     </tr>
                     </thead>
                 </table>
@@ -152,11 +153,11 @@
 
     function emptyFormatter(){return ''}
 
-    function oneFormatter(value, row) {
-        if(row.parentId == 0){
-            return "一级区域";
+    function formatter(value, row) {
+        if(value == 1){
+            return "临时";
         }
-        return '二级区域';
+        return '固定';
     }
 
     function operateFormatter(value, row, index) {

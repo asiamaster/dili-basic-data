@@ -127,6 +127,7 @@ public class DistrictController {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setModifyTime(new Date());
+            input.setMarketId(userTicket.getFirmId());
             BaseOutput baseOutput = assetsRpc.editDistrict(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getNumber(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;

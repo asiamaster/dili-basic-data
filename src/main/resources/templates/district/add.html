@@ -11,6 +11,13 @@
                    required/>
         </div>
         <div class="form-group col">
+            <label for="addKind">性质</label>
+            <select id="addKind" name="kind" class="form-control">
+                <option value="1">临时</option>
+                <option value="2">固定</option>
+            </select>
+        </div>
+        <div class="form-group col">
             <label for="addDepartmentId">部门</label>
             <select id="addDepartmentId" name="departmentId" class="form-control"></select>
             <#bcomboProvider _id="addDepartmentId" _provider="authDepartmentProvider"/>

@@ -12,6 +12,13 @@
                        required/>
         </div>
         <div class="form-group col">
+            <label for="editKind">性质</label>
+            <select id="editKind" name="kind" class="form-control">
+                <option value="1">临时</option>
+                <option value="2">固定</option>
+            </select>
+        </div>
+        <div class="form-group col">
             <label for="editDepartmentId">部门</label>
                 <select id="editDepartmentId"  name="departmentId" class="form-control"></select>
                 <#bcomboProvider _id="editDepartmentId" _value="${obj.departmentId}" _provider="authDepartmentProvider"/>
@@ -31,6 +38,8 @@
 <script type="text/javascript">
     $(function () {
         $("#editForm").validate();
+        var kind = "${obj.kind!}";
+        $("#editKind").val(kind);
     });
 
     var okButton = $("#form-submit");

@@ -15,27 +15,16 @@
                     businessType:1
                 },
                 formDesc: {
-                    type: {
-                        options: function (data) {
-                            return loadProvider({
-                                provider: 'dataDictionaryValueProvider',
-                                queryParams: {dd_code: "${_type}", required: true}
-                            })
-                        },
-                        label: "类型",
+                    businessType: {
+                        options: [
+                            {text: '摊位', value: 1, attrs: {size: 'medium'}},
+                            {text: '冷库', value: 2, attrs: {size: 'medium'}},
+                            {text: '公寓', value: 3, attrs: {size: 'medium'}}
+                        ],
+                        label: "资产类型",
                         type: "select",
                         layout: 6,
                         required: true
-                    },
-                    departmentId: {
-                        options: function (data) {
-                            return loadProvider({
-                                provider: 'authDepartmentProvider'})
-                        },
-                        label: "所属部门",
-                        type: "select",
-                        layout: 6,
-                        required: false
                     },
                     areaArray: {
                         options: function (data) {
@@ -65,6 +54,43 @@
                         layout: 6,
                         required: true
                     },
+                    floor: {
+                        label: "楼层",
+                        type: "select",
+                        layout: 6,
+                        optionsLinkageFields: ['areaArray'],
+                        prop: { text: 'name', value: 'name' },
+                        options: data => {
+                            if (data.areaArray!==undefined && data.areaArray.length > 0) {
+                                let areaArray = data.areaArray;
+                                let area = areaArray[0];
+                                if (areaArray.length > 1) {
+                                    area = areaArray[1];
+                                }
+                                return new Promise((resolve, reject) => {
+                                    axios.post('/floorController/queryAll.action', {area: area})
+                                        .then((res) => {
+                                            resolve(res.data);
+                                            // console.log(res);
+                                        })
+                                        .catch(function (error) {
+                                            reject(error);
+                                            // console.log(error);
+                                        });
+                                });
+                            }
+                        }
+                    },
+                    departmentId: {
+                        options: function (data) {
+                            return loadProvider({
+                                provider: 'authDepartmentProvider'})
+                        },
+                        label: "所属部门",
+                        type: "select",
+                        layout: 6,
+                        required: false
+                    },
                     name: {
                         label: "编号",
                         type: "input",
@@ -85,10 +111,17 @@
                         label: "是否转角",
                         type: "select",
                         layout: 6,
-                        required: true,
-                        vif (data) {
-                            return data.businessType === 1
-                        }
+                        required: true
+                    },
+                    type: {
+                        options: [
+                            {text: '固定', value: 0, attrs: {size: 'medium'}},
+                            {text: '临时', value: 1, attrs: {size: 'medium'}}
+                        ],
+                        label: "性质",
+                        type: "select",
+                        layout: 6,
+                        required: true
                     },
                     unit: {
                         options: function (data) {

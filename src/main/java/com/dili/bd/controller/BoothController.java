@@ -6,9 +6,9 @@ import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.bd.provider.RentEnum;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
-import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.logger.sdk.base.LoggerContext;
@@ -23,10 +23,7 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -57,6 +54,14 @@ public class BoothController {
     @RequestMapping("/list")
     public String test() {
         return "booth/list";
+    }
+
+    /**
+     * 卡片模式列表
+     */
+    @GetMapping("/card.action")
+    public String list() {
+        return "booth/card";
     }
 
     /**
@@ -181,9 +186,7 @@ public class BoothController {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setCreatorId(userTicket.getId());
             input.setMarketId(userTicket.getFirmId());
-            input.setState(EnabledStateEnum.DISABLED.getCode());
-            input.setParentId(0L);
-            input.setBusinessType(1);
+            input.setState(RentEnum.FREE.getCode());
             LoggerUtil.buildLoggerContext(null, input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
             BaseOutput save = assetsRpc.save(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
@@ -249,11 +252,11 @@ public class BoothController {
             var names = new ArrayList<String>();
             var numbers = new ArrayList<String>();
             com.alibaba.fastjson.JSONArray splitList = json.getJSONArray("splitList");
-            splitList.forEach(split ->{
-               if(split instanceof JSONObject){
-                   names.add(((JSONObject) split).getString("names"));
-                   numbers.add(((JSONObject) split).getString("numbers"));
-               }
+            splitList.forEach(split -> {
+                if (split instanceof JSONObject) {
+                    names.add(((JSONObject) split).getString("names"));
+                    numbers.add(((JSONObject) split).getString("numbers"));
+                }
             });
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             BaseOutput baseOutput = assetsRpc.boothSplit(parentId, names.toArray(new String[names.size()]), notes, numbers.toArray(new String[numbers.size()]));

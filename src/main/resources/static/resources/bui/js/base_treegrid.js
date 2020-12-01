@@ -26,9 +26,8 @@
             },
             refresh: function () {
                 var opts = $('#grid').treegrid("options");
-                opts.url = $.bs_treegrid._option.dataUrl + "?parentId=0&businessType=" + $.bs_treegrid._option.businessType;
-                $('#grid').treegrid("load", bindTreegridMeta2Form("grid", "queryForm"));
-                opts.url = $.bs_treegrid._option.dataUrl + "?businessType=" + $.bs_treegrid._option.businessType;
+                opts.url = $.bs_treegrid._option.dataUrl;
+                $('#grid').treegrid("load", $.extend({area:app.formData.area},bindTreegridMeta2Form("grid", "queryForm")));
             }
         },
         operate: {
@@ -82,10 +81,6 @@
                 var row = $.bs_treegrid.selectFirstColumns();
                 if (null == row) {
                     $.modal.alertWarning('请选中一条数据');
-                    return;
-                }
-                if (row.parentId != 0) {
-                    $.modal.alertWarning('不能拆分');
                     return;
                 }
                 var url = $.bs_treegrid._option.splitUrl.replace("{id}", row.id);

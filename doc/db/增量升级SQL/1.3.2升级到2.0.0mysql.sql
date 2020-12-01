@@ -20,3 +20,7 @@ CREATE TABLE query(
 ) COMMENT = '查询条件';
 
 ALTER TABLE district ADD COLUMN kind tinyint COMMENT '性质' AFTER parent_id;
+
+ALTER TABLE assets ADD COLUMN user VARCHAR(32) COMMENT '使用方' AFTER rent_state;
+ALTER TABLE assets ADD COLUMN floor VARCHAR(32) COMMENT '楼层' AFTER user;
+ALTER TABLE assets ADD COLUMN kind tinyint COMMENT '性质' AFTER floor;

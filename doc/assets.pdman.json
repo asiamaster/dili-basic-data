@@ -127,6 +127,24 @@
               "chnname": "租赁状态"
             },
             {
+              "name": "user",
+              "type": "DefaultString",
+              "remark": "",
+              "chnname": "使用方"
+            },
+            {
+              "name": "floor",
+              "type": "DefaultString",
+              "remark": "",
+              "chnname": "楼层"
+            },
+            {
+              "name": "kind",
+              "type": "tinyint",
+              "remark": "",
+              "chnname": "性质"
+            },
+            {
               "name": "corner",
               "type": "tinyint",
               "remark": "",
@@ -771,6 +789,18 @@
               "type": "DateTime",
               "remark": "",
               "chnname": "结束时间"
+            },
+            {
+              "name": "type",
+              "type": "tinyint",
+              "remark": "",
+              "chnname": "类型"
+            },
+            {
+              "name": "number",
+              "type": "Money",
+              "remark": "",
+              "chnname": "数量"
             }
           ],
           "indexs": [],

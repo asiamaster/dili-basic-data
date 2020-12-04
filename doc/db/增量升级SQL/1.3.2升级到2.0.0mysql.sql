@@ -24,3 +24,7 @@ ALTER TABLE district ADD COLUMN kind tinyint COMMENT '性质' AFTER parent_id;
 ALTER TABLE assets ADD COLUMN user VARCHAR(32) COMMENT '使用方' AFTER rent_state;
 ALTER TABLE assets ADD COLUMN floor VARCHAR(32) COMMENT '楼层' AFTER user;
 ALTER TABLE assets ADD COLUMN kind tinyint COMMENT '性质' AFTER floor;
+
+ALTER TABLE booth_rent ADD COLUMN type tinyint COMMENT '类型' AFTER end;
+ALTER TABLE booth_rent ADD COLUMN number DECIMAL(32,8) COMMENT '数量' AFTER type;
+ALTER TABLE booth_rent ADD COLUMN user VARCHAR(128) COMMENT '使用方' AFTER number;

@@ -116,6 +116,15 @@
                         </div>
                     </div>
                     <div class="form-group col">
+                        <label for="state">状态</label>
+                        <select id="state" class="form-control input-sm" name="state">
+                            <option value="">-- 全部 --</option>
+                            <option value="1">空闲</option>
+                            <option value="2">使用中</option>
+                            <option value="3">维修中</option>
+                        </select>
+                    </div>
+                    <div class="form-group col">
                         <label for="type">性质</label>
                         <select id="type" class="form-control input-sm" name="type">
                             <option value="">-- 全部 --</option>
@@ -159,7 +168,7 @@
         </button>
     </#resource>
     <button type="button" class="btn btn-primary" onclick="window.location.href='/booth/card.action'">
-        <i class="fa fa-trash-o"></i> 卡片模式
+        <i class="fa fa-vcard-o"></i> 卡片模式
     </button>
 </div>
 
@@ -191,7 +200,7 @@
         <th data-options="field:'user',_provider:'dataDictionaryValueProvider'" width="10%">使用方</th>
         <th data-options="field:'departmentId',_provider:'departmentProvider'" width="10%">部门</th>
         <th data-options="field:'createTime',_provider:'datetimeProvider'" width="10%">创建时间</th>
-        <th data-options="field:'status',formatter:stateFormatter" width="5%">状态</th>
+        <th data-options="field:'state',_provider:'boothStateProvider',formatter:stateFormatter" width="5%">状态</th>
     </tr>
     </thead>
 </table>
@@ -350,6 +359,10 @@
             }
         }
     })
-    app.loadTree();
+
+    $(function () {
+        app.loadTree();
+    })
+
 
 </script>

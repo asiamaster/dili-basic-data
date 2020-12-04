@@ -1,0 +1,95 @@
+<#bs4Body>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<div id=app>
+    <ele-form
+            :form-attrs="{
+            size: 'medium'
+            }"
+            :is-show-cancel-btn="false"
+            submit-btn-text="提交"
+            form-btn-size="medium"
+            :form-btns="formBtns"
+            :is-dialog="true"
+            :form-desc="formDesc"
+            v-model="formData"
+            :request-fn="handleRequest">
+    </ele-form>
+</div>
+</#bs4Body>
+<script type="text/javascript">
+    window.rootPath = '${contextPath}';
+</script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_list.js" type="text/javascript"></script>
+
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                formBtns: [
+                    {
+                        text: '关闭',
+                        click: () => {
+                            $.modal.close();
+                        }
+                    }
+                ],
+                formData: {},
+                formDesc: {
+                id: {
+                type: 'input',
+                label: '主键',
+                rules: []
+                },
+                market: {
+                type: 'input',
+                label: '所属市场',
+                rules: []
+                },
+                area: {
+                type: 'input',
+                label: '所属区域',
+                rules: []
+                },
+                }
+            };
+        },
+        methods: {
+            handleRequest(data) {
+
+                axios.post(rootPath + "/areaMarketController/add.action", data)
+                    .then(function (response) {
+                        $.operate.saveSuccess(response.data);
+                    })
+                    .catch(function (error) {
+                        $.modal.alertError("系统错误");
+                    });
+            }
+        }
+    })
+    function loadProvider(data) {
+        return new Promise((resolve, reject) => {
+            axios.post('/convert/list.action', data)
+                .then((res) => {
+                    resolve(res.data);
+                    // console.log(res);
+                })
+                .catch(function (error) {
+                    reject(error);
+                    // console.log(error);
+                });
+        });
+    }
+</script>

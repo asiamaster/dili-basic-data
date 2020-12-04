@@ -1,170 +1,318 @@
 <#bs4Body>
-<link href="https://cdn.bootcss.com/select2/4.0.12/css/select2.css" rel="stylesheet">
-<script src="https://cdn.bootcss.com/select2/4.0.12/js/select2.min.js"></script>
-<script src="https://cdn.bootcss.com/select2/4.0.12/js/i18n/zh-CN.js"></script>
-<style>
-    #viewForm .select2-container--default .select2-selection--single {
-        border: 1px solid #DBDDE1;
-        height: 33.5px;
-    }
-    #viewForm .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 33.5px;
-    }
-    #viewForm .select2-container--default.select2-container--disabled .select2-selection--single {
-        background-color: #F6F7F9;
-    }
-    #viewForm .select2-container--default .select2-selection--single {
-         background-color: #F6F7F9;
-    }
-</style>
-<div class="container-fluid">
-    <form class="form"  id="viewForm">
-        <div class="breadcrumb">
-            基本信息
-            <a href="javascript:;" class="ml-auto" data-toggle="collapse" data-target="#baseInfo" aria-expanded="true" aria-controls="baseInfo">收起 <i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
-        </div>
-        <div id="baseInfo" class="row row-cols-4 collapse show">
-            <div class="form-group col">
-                <label for="">摊位类型<i class="red">*</i></label>
-                <select class="form-control" id="typeView" name="type" disabled>
-                </select>
-                <#bcomboProvider _id="typeView" _provider="dataDictionaryValueProvider" _value="${obj.type!}" _queryParams='{dd_code:"booth_type", required:true}'/>
-                <div class="valid-feedback">error tips</div>
-            </div>
-            <div class="form-group col">
-                <label for="editDepartmentId">所属部门</label>
-                <select id="editDepartmentId" name="departmentId" class="form-control" disabled></select>
-                <#bcomboProvider _id="editDepartmentId" _provider="authDepartmentProvider" _value="${obj.departmentId!}"/>
-            </div>
-            <div class="form-group col-6">
-                <label for="">区域<i class="red">*</i></label>
-                <div class="input-group">
-                    <select class="form-control" id="areaOne" name="area" disabled>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<div id=app>
+    <ele-form-section
+            v-model="formData"
+            :sections="sections"
+            :form-attrs="{
+            size: 'mini'
+            }"
+            :is-show-cancel-btn="false"
+            :disabled="true"
+            :is-show-submit-btn="false"
+            submit-btn-text="提交"
+            form-btn-size="mini"
+            :is-dialog="true"
+            label-position="top"
+    />
 
-                    </select>
-                    <select class="form-control" id="areaTwo" name="secondArea" disabled>
-
-                    </select>
-                </div>
-            </div>
-            <div class="form-group col">
-                <label for="">摊位编号<i class="red">*</i></label>
-                <input type="text" id="name" name="name" class="form-control" maxlength="20" value="${obj.name!}"
-                       disabled/>
-            </div>
-            <div class="form-group col">
-                <label for="">数量<i class="red">*</i></label>
-                <input type="text" id="number" name="number" class="form-control" maxlength="20" value="${obj.number!}"
-                       disabled/>
-            </div>
-            <div class="form-group col">
-                <label for="">单位<i class="red">*</i></label>
-                <select class="form-control" id="editUnit" name="unit" disabled></select>
-                <#bcomboProvider _id="editUnit" _value="${obj.unit!}" _provider="dataDictionaryValueProvider" _queryParams='{dd_code:"unit", required:true}'/>
-
-            </div>
-
-            <div class="form-group col">
-                <label for="">是否转角</label>
-                <select class="form-control" id="viewCorner" name="unit" disabled></select>
-                <#bcomboProvider _id="viewCorner" _provider="cornerProvider" _value="${obj.corner!}" />
-            </div>
-            <div class="form-group col-8">
-                <label for="">备注</label>
-                <textarea class="form-control" id="notes" name="notes" rows="1" disabled>${obj.notes!}</textarea>
-            </div>
-        </div>
-
-        <div class="breadcrumb">
-            创建信息
-            <a href="javascript:;" class="ml-auto" data-toggle="collapse" data-target="#createInfo" aria-expanded="true" aria-controls="createInfo">收起 <i class="fa fa-angle-double-up" aria-hidden="true"></i></a>
-        </div>
-        <div class="row row-cols-4 collapse show" id="createInfo">
-            <div class="form-group col">
-                <label for="">创建人<i class="red">*</i></label>
-                <input type="text" class="form-control" value="${obj.creatorUser!}" disabled/>
-            </div>
-            <div class="form-group col">
-                <label for="">创建时间<i class="red">*</i></label>
-                <input type="text" class="form-control" value="${obj.createTime!,'yyyy-MM-dd HH:mm:ss'}" disabled/>
-            </div>
-        </div>
-
-        <div class="text-right">
-            <button type="button" class="btn btn-secondary px-5" onclick="$.modal.close()" >取消</button>
-        </div>
-    </form>
 </div>
 </#bs4Body>
-<script type="text/javascript" src="${contextPath}/resources/bui/js/base_treegrid.js"></script>
+<script type="text/javascript">
+    window.rootPath = '${contextPath}';
+</script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_treegrid.js" type="text/javascript"></script>
+
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
+<script src="${contextPath}/resources/design/extends/vue-ele-form-table-editor/dist/vue-ele-form-table-editor.umd.min.js"></script>
+
 <script>
-    var area = "${obj.area!}";
-    var se_area = "${obj.secondArea!}";
-    var isInit = false;
-
-    $(function () {
-        loadArea();
-    });
-
-    function loadArea() {
-        $.ajax({
-            type: "POST",
-            url: "/district/search.action",
-            data: {parentId: 0},
-            success: function (data) {
-                if (data.code == "200") {
-                    var array = $.map(data.data, function (obj) {
-                        obj.text = obj.text || obj.name;
-                        return obj;
-                    });
-                    if (array.length == 0) {
-                        $('#areaOne').html("")
-                    } else {
-                        $("#areaOne").select2({
-                            data: array,
-                            width: "50%",
-                            minimumResultsForSearch: Infinity
-                        });
-                        $('#areaOne').val(area);
-                        $('#areaOne').trigger('change');
+    var app = new Vue({
+        el: '#app',
+        data () {
+            return {
+                // 同 vue-ele-form
+                formData: {},
+                sections: [
+                    {
+                        // 分区标题
+                        title: '基本信息',
+                        // 分区icon (可选)
+                        icon: 'el-icon-user',
+                        // 分区表单项
+                        // 和group不同，仅将vue-ele-form的formDesc放入section中
+                        formDesc: {
+                            businessType: {
+                                options: [
+                                    {text: '摊位', value: 1, attrs: {size: 'medium'}},
+                                    {text: '冷库', value: 2, attrs: {size: 'medium'}},
+                                    {text: '公寓', value: 3, attrs: {size: 'medium'}}
+                                ],
+                                label: "资产类型",
+                                type: "select",
+                                layout: 6,
+                                required: true
+                            },
+                            areaArray: {
+                                options: function (data) {
+                                    return new Promise((resolve, reject) => {
+                                        axios.post('/district/search.action')
+                                            .then((res) => {
+                                                resolve(toEleTree(res.data.data, {label: "name", pid: "parentId"}));
+                                                // console.log(res);
+                                            })
+                                            .catch(function (error) {
+                                                reject(error);
+                                                // console.log(error);
+                                            });
+                                    });
+                                },
+                                label: "区域",
+                                type: "cascader",
+                                attrs: {
+                                    props: {
+                                        value: 'id',
+                                        label: 'name',
+                                        separator: '-',
+                                        expandTrigger: 'hover',
+                                        checkStrictly: true
+                                    }
+                                },
+                                layout: 6,
+                                required: true
+                            },
+                            floor: {
+                                label: "楼层",
+                                type: "select",
+                                layout: 6,
+                                optionsLinkageFields: ['areaArray'],
+                                prop: { text: 'name', value: 'name' },
+                                options: data => {
+                                    if (data.areaArray!==undefined && data.areaArray.length > 0) {
+                                        let areaArray = data.areaArray;
+                                        let area = areaArray[0];
+                                        if (areaArray.length > 1) {
+                                            area = areaArray[1];
+                                        }
+                                        return new Promise((resolve, reject) => {
+                                            axios.post('/floorController/queryAll.action', {area: area})
+                                                .then((res) => {
+                                                    resolve(res.data);
+                                                    // console.log(res);
+                                                })
+                                                .catch(function (error) {
+                                                    reject(error);
+                                                    // console.log(error);
+                                                });
+                                        });
+                                    }
+                                }
+                            },
+                            departmentId: {
+                                options: function (data) {
+                                    return loadProvider({
+                                        provider: 'authDepartmentProvider'})
+                                },
+                                label: "所属部门",
+                                type: "select",
+                                layout: 6,
+                                required: false
+                            },
+                            name: {
+                                label: "编号",
+                                type: "input",
+                                attrs: {
+                                    maxlength: 20,
+                                    showWordLimit: false
+                                },
+                                layout: 6,
+                                required: true
+                            },
+                            corner: {
+                                options: function (data) {
+                                    return loadProvider({
+                                        provider: 'cornerProvider',
+                                        queryParams: {required: true}
+                                    })
+                                },
+                                label: "是否转角",
+                                type: "select",
+                                layout: 6,
+                                required: true
+                            },
+                            type: {
+                                options: [
+                                    {text: '固定', value: 0, attrs: {size: 'medium'}},
+                                    {text: '临时', value: 1, attrs: {size: 'medium'}}
+                                ],
+                                label: "性质",
+                                type: "select",
+                                layout: 6,
+                                required: true
+                            },
+                            unit: {
+                                options: function (data) {
+                                    return loadProvider({
+                                        provider: 'dataDictionaryValueProvider',
+                                        queryParams: {dd_code: "unit", required: true}
+                                    })
+                                },
+                                label: "单位",
+                                type: "select",
+                                layout: 6,
+                                required: true
+                            },
+                            number: {
+                                label: "数量",
+                                type: "number",
+                                attrs: {
+                                    min: 1,
+                                    max: 999999,
+                                    precision: 2
+                                },
+                                default: 0,
+                                layout: 6,
+                                required: true
+                            },
+                            notes: {
+                                label: "备注",
+                                type: "textarea",
+                                attrs: {
+                                    maxlength: 100,
+                                    showWordLimit: true,
+                                    autosize: {
+                                        minRows: 2,
+                                        maxRows: 4
+                                    }
+                                },
+                                layout: 24
+                            },
+                            creatorUser: {
+                                label: "创建人",
+                                type: "input",
+                                attrs: {
+                                    disabled: true
+                                },
+                                vif (data) {
+                                    return data.creatorUser
+                                },
+                                layout: 6
+                            },
+                            createTime: {
+                                label: "创建时间",
+                                type: "input",
+                                attrs: {
+                                    disabled: true
+                                },
+                                vif (data) {
+                                    return data.createTime
+                                },
+                                layout: 18
+                            }
+                        }
+                    },
+                    {
+                        title: '资产历史使用情况',
+                        icon: 'el-icon-user',
+                        formDesc: {
+                            use: {
+                                type: 'table-editor',
+                                attrs: {
+                                    isShowDelete: false,
+                                    isShowAdd: false,
+                                    columns: [
+                                        {
+                                            // el-table-column 的属性
+                                            prop: "grade",
+                                            label: "使用方"
+                                        },
+                                        {
+                                            prop: "name",
+                                            label: "开始时间"
+                                        },
+                                        {
+                                            prop: "sex",
+                                            label: "结束时间"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    {
+                        title: '资产快照',
+                        icon: 'el-icon-user',
+                        formDesc: {
+                            snapshot: {
+                                type: 'table-editor',
+                                attrs: {
+                                    isShowDelete: false,
+                                    isShowAdd: false,
+                                    extraBtns: [
+                                        {
+                                            text: "查看",
+                                            attrs: {
+                                                type: "text"
+                                            },
+                                            // click事件
+                                            click(scope) {
+                                                /* eslint-disable */
+                                                console.log(scope);
+                                            }
+                                        }
+                                    ],
+                                    columns: [
+                                        {
+                                            // el-table-column 的属性
+                                            prop: "grade",
+                                            label: "时间"
+                                        },
+                                        {
+                                            prop: "name",
+                                            label: "快照版本"
+                                        },
+                                        {
+                                            prop: "sex",
+                                            label: "备注"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     }
-                }
+                ]
             }
-        });
-    }
+        },
+        methods: {
 
-    $("#areaOne").change(function () {
-        $.ajax({
-            type: "POST",
-            url: "/district/search.action",
-            data: {parentId: $(this).val()},
-            success: function (data) {
-                if (data.code == "200") {
-                    var array = $.map(data.data, function (obj) {
-                        obj.text = obj.text || obj.name;
-                        return obj;
-                    });
-                    if (array.length == 0) {
-                        $('#areaTwo').html("")
-                    } else {
-                        $("#areaTwo").select2({
-                            data: array,
-                            width: "50%",
-                            minimumResultsForSearch: Infinity
-                        })
-                    }
-                    initArea();
-                }
-            }
-        });
-    });
-
-
-
-    function initArea() {
-        if (!isInit) {
-            $("#areaTwo").val(se_area).trigger("change");
-            isInit = true;
         }
+    })
+    function loadProvider(data) {
+        return new Promise((resolve, reject) => {
+            axios.post('/convert/list.action', data)
+                .then((res) => {
+                    resolve(res.data);
+                    // console.log(res);
+                })
+                .catch(function (error) {
+                    reject(error);
+                    // console.log(error);
+                });
+        });
     }
+</script>
+
+<script>
+    app.formData = ${data!};
 </script>

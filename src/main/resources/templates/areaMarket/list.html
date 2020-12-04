@@ -1,0 +1,135 @@
+<#bs4Body>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<style>
+    .custom-tree-node {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 14px;
+        padding-right: 8px;
+    }
+</style>
+<div class="container-fluid">
+    <div id=app>
+        <el-tabs type="border-card">
+            <el-tab-pane label="区域关联">
+                <el-table
+                        :data="marketData"
+                        style="width:50%;margin-bottom: 20px;"
+                        row-key="id"
+                        border
+                        default-expand-all
+                        :tree-props="{children: 'children', hasChildren: 'hasChildren'}">
+                    <el-table-column
+                            prop="name"
+                            label="区域名称">
+                    </el-table-column>
+                    <el-table-column
+                            prop="marketId"
+                            label="所属组织">
+                        <template slot-scope="scope">
+                            <el-select v-model="scope.row.marketId" placeholder="请选择">
+
+                            </el-select>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <div style="margin-top: 20px">
+                    <el-button type="primary">设置</el-button>
+                </div>
+            </el-tab-pane>
+            <el-tab-pane label="黄楼关联">
+                <el-table
+                        :data="huanglouData"
+                        :show-header="false"
+                        style="width:50%;margin-bottom: 20px;"
+                        row-key="id"
+                        border>
+                    <el-table-column
+                            prop="name">
+                    </el-table-column>
+                    <el-table-column
+                            prop="marketId">
+                        <template slot-scope="scope">
+                            <el-select v-model="scope.row.marketId" placeholder="请选择">
+
+                            </el-select>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-button type="primary">设置</el-button>
+            </el-tab-pane>
+            <el-tab-pane label="劳务关联">
+                <el-table
+                        :data="laowuData"
+                        :show-header="false"
+                        style="width:50%;margin-bottom: 20px;"
+                        row-key="id"
+                        border>
+                    <el-table-column
+                            prop="name">
+                    </el-table-column>
+                    <el-table-column
+                            prop="marketId">
+                        <template slot-scope="scope">
+                            <el-select v-model="scope.row.marketId" placeholder="请选择">
+
+                            </el-select>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <el-button type="primary">设置</el-button>
+            </el-tab-pane>
+        </el-tabs>
+    </div>
+</div>
+</#bs4Body>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        created() {
+            axios.get("/district/listAreaMarket.action")
+                .then(function (response) {
+                    app.marketData = toEleTree(response.data.data, {label: "name", pid: "parentId"});
+                })
+                .catch(function (error) {
+
+                });
+            axios.get("/typeMarketController/query.action")
+                .then(function (response) {
+                    response.data.forEach(it => {
+                        if (it.type === "boutique") {
+                            app.huanglouData.push({name: '黄楼业务', type: it.type, marketId: it.marketId});
+                        }
+                        if (it.type === "passport") {
+                            app.laowuData.push({name: '通行证', type: it.type, marketId: it.marketId});
+                        }
+                        if (it.type === "laborVest") {
+                            app.laowuData.push({name: '劳务马甲', type: it.type, marketId: it.marketId});
+                        }
+                    });
+                })
+                .catch(function (error) {
+
+                });
+        },
+        data() {
+            return {
+                marketData: [],
+                huanglouData: [],
+                laowuData: [],
+            }
+        },
+        methods: {}
+    })
+</script>

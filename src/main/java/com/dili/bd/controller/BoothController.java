@@ -168,7 +168,15 @@ public class BoothController {
                 data.setCreatorUser(userBaseOutput.getData().getRealName());
             }
         }
-        map.put("obj", data);
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        JSONArray array = new JSONArray();
+        array.put(data.getArea());
+        if (data.getSecondArea() != null) {
+            array.put(data.getSecondArea());
+        }
+        jsonObject.put("areaArray", array);
+        map.put("data", jsonObject);
         return "booth/view";
     }
 

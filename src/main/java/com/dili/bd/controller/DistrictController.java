@@ -15,6 +15,7 @@ import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -153,7 +154,7 @@ public class DistrictController {
         if (input.getDepartmentId() == null) {
             List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
             long[] ids = departments.stream().mapToLong(Department::getId).toArray();
-            if(ids.length > 0){
+            if (ids.length > 0) {
                 input.setDeps(ArrayUtil.join(ids, ","));
             }
         }
@@ -189,6 +190,15 @@ public class DistrictController {
         }
         input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         return assetsRpc.searchDistrict(input);
+    }
+
+    /**
+     * 区域商户
+     */
+    @GetMapping("listAreaMarket.action")
+    @ResponseBody
+    public BaseOutput<List<DistrictDTO>> listAreaMarket() {
+        return assetsRpc.listAreaMarket(SessionContext.getSessionContext().getUserTicket().getFirmId());
     }
 
 }

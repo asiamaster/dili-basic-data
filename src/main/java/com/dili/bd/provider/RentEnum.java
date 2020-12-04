@@ -5,7 +5,7 @@ public enum RentEnum {
 
     FREE(1, "空闲"),
     RENT(2, "使用中"),
-    FIX(2, "维修中"),
+    FIX(3, "维修中"),
     ;
 
     private String name;

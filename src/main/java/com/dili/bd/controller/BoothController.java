@@ -107,7 +107,7 @@ public class BoothController {
      */
     @RequestMapping("/split.html")
     public String split(Long id, ModelMap map) {
-        AssetsDTO data = assetsRpc.getBoothById(id).getData();
+        AssetsDTO data = assetsRpc.getAssetsById(id).getData();
         if (data != null && data.getCreatorId() != null) {
             BaseOutput<User> userBaseOutput = userRpc.get(data.getCreatorId());
             if (userBaseOutput.isSuccess()) {
@@ -123,7 +123,7 @@ public class BoothController {
         }
         jsonObject.put("areaArray", array);
         map.put("data", jsonObject);
-        BaseOutput<Double> boothBalance = assetsRpc.getBoothBalance(id);
+        BaseOutput<Double> boothBalance = assetsRpc.getAssetsBalance(id);
         map.put("number", boothBalance.getData());
         return "booth/split";
     }
@@ -135,7 +135,7 @@ public class BoothController {
      */
     @RequestMapping("/update.html")
     public String update(Long id, ModelMap map) {
-        AssetsDTO data = assetsRpc.getBoothById(id).getData();
+        AssetsDTO data = assetsRpc.getAssetsById(id).getData();
         if (data != null && data.getCreatorId() != null) {
             BaseOutput<User> userBaseOutput = userRpc.get(data.getCreatorId());
             if (userBaseOutput.isSuccess()) {
@@ -161,7 +161,7 @@ public class BoothController {
      */
     @RequestMapping("/view.html")
     public String view(Long id, ModelMap map) {
-        AssetsDTO data = assetsRpc.getBoothById(id).getData();
+        AssetsDTO data = assetsRpc.getAssetsById(id).getData();
         if (data != null && data.getCreatorId() != null) {
             BaseOutput<User> userBaseOutput = userRpc.get(data.getCreatorId());
             if (userBaseOutput.isSuccess()) {
@@ -216,7 +216,7 @@ public class BoothController {
     public BaseOutput update(@RequestBody AssetsDTO input) {
         try {
             input.setModifyTime(new Date());
-            BaseOutput baseOutput = assetsRpc.updateBooth(input);
+            BaseOutput baseOutput = assetsRpc.updateAssets(input);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
             return baseOutput;
@@ -237,7 +237,7 @@ public class BoothController {
     public BaseOutput changeStatus(AssetsDTO input, String opType) {
         try {
             input.setModifyTime(new Date());
-            BaseOutput baseOutput = assetsRpc.updateBooth(input);
+            BaseOutput baseOutput = assetsRpc.updateAssets(input);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, opType);
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
@@ -267,7 +267,7 @@ public class BoothController {
                 }
             });
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            BaseOutput baseOutput = assetsRpc.boothSplit(parentId, names.toArray(new String[names.size()]), notes, numbers.toArray(new String[numbers.size()]));
+            BaseOutput baseOutput = assetsRpc.assetsSplit(parentId, names.toArray(new String[names.size()]), notes, numbers.toArray(new String[numbers.size()]));
             LoggerUtil.buildLoggerContext(parentId, null, userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;
         } catch (Exception e) {
@@ -288,7 +288,7 @@ public class BoothController {
     public BaseOutput delete(Long id) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
-            BaseOutput baseOutput = assetsRpc.delBoothById(id);
+            BaseOutput baseOutput = assetsRpc.delAssetsById(id);
             LoggerUtil.buildLoggerContext(id, null, userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;
         } catch (Exception e) {

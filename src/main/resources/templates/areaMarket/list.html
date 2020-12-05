@@ -36,14 +36,19 @@
                             prop="marketId"
                             label="所属组织">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.marketId" placeholder="请选择">
-
+                            <el-select v-model="scope.row.marketId" placeholder="请选择" size="small">
+                                <el-option
+                                        v-for="item in options"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
                             </el-select>
                         </template>
                     </el-table-column>
                 </el-table>
                 <div style="margin-top: 20px">
-                    <el-button type="primary">设置</el-button>
+                    <el-button type="primary" @click="saveMarket" size="small">设置</el-button>
                 </div>
             </el-tab-pane>
             <el-tab-pane label="黄楼关联">
@@ -59,13 +64,18 @@
                     <el-table-column
                             prop="marketId">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.marketId" placeholder="请选择">
-
+                            <el-select v-model="scope.row.marketId" placeholder="请选择" size="small">
+                                <el-option
+                                        v-for="item in options"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
                             </el-select>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-button type="primary">设置</el-button>
+                <el-button type="primary" size="small">设置</el-button>
             </el-tab-pane>
             <el-tab-pane label="劳务关联">
                 <el-table
@@ -80,13 +90,18 @@
                     <el-table-column
                             prop="marketId">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.marketId" placeholder="请选择">
-
+                            <el-select v-model="scope.row.marketId" placeholder="请选择" size="small">
+                                <el-option
+                                        v-for="item in options"
+                                        :key="item.id"
+                                        :label="item.name"
+                                        :value="item.id">
+                                </el-option>
                             </el-select>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-button type="primary">设置</el-button>
+                <el-button type="primary" size="small">设置</el-button>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -128,8 +143,32 @@
                 marketData: [],
                 huanglouData: [],
                 laowuData: [],
+                options: [{
+                    name: '选项1',
+                    id: 1
+                }, {
+                    name: '选项2',
+                    id: 2
+                }]
             }
         },
-        methods: {}
+        methods: {
+            saveMarket() {
+                let other = [];
+                app.marketData.forEach(function (it) {
+                    if (it.children && it.children.length > 0) {
+                        other = other.concat(it.children);
+                    }
+                });
+                let data = app.marketData.concat(other);
+                axios.post("/areaMarketController/add.action", data)
+                    .then(function (response) {
+
+                    })
+                    .catch(function (error) {
+
+                    });
+            }
+        }
     })
 </script>

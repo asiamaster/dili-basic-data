@@ -19,6 +19,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.AreaMarketDto;
 import com.dili.assets.sdk.dto.AreaMarketQuery;
+import com.dili.assets.sdk.dto.DistrictDTO;
 import com.dili.assets.sdk.rpc.AreaMarketRpc;
 import com.dili.commons.bstable.TableResult;
 import com.dili.ss.domain.BaseOutput;
@@ -97,7 +98,7 @@ public class AreaMarketController {
     */
     @PostMapping("/add.action")
     @ResponseBody
-    public Object add(@RequestBody AreaMarketDto dto) {
+    public Object add(@RequestBody List<DistrictDTO> dto) {
         return areaMarketRpc.add(dto);
     }
 

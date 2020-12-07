@@ -75,7 +75,7 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-button type="primary" size="small">设置</el-button>
+                <el-button type="primary" size="small" @click="saveType">设置</el-button>
             </el-tab-pane>
             <el-tab-pane label="劳务关联">
                 <el-table
@@ -101,7 +101,7 @@
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-button type="primary" size="small">设置</el-button>
+                <el-button type="primary" size="small" @click="saveType">设置</el-button>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -113,26 +113,11 @@
     var app = new Vue({
         el: '#app',
         created() {
-            axios.get("/district/listAreaMarket.action")
+            this.loadAreaMarket();
+            this.loadTypeMarket();
+            axios.get("/areaMarketController/getAllChildrenByParentId.action")
                 .then(function (response) {
-                    app.marketData = toEleTree(response.data.data, {label: "name", pid: "parentId"});
-                })
-                .catch(function (error) {
-
-                });
-            axios.get("/typeMarketController/query.action")
-                .then(function (response) {
-                    response.data.forEach(it => {
-                        if (it.type === "boutique") {
-                            app.huanglouData.push({name: '黄楼业务', type: it.type, marketId: it.marketId});
-                        }
-                        if (it.type === "passport") {
-                            app.laowuData.push({name: '通行证', type: it.type, marketId: it.marketId});
-                        }
-                        if (it.type === "laborVest") {
-                            app.laowuData.push({name: '劳务马甲', type: it.type, marketId: it.marketId});
-                        }
-                    });
+                    app.options = response.data;
                 })
                 .catch(function (error) {
 
@@ -143,13 +128,7 @@
                 marketData: [],
                 huanglouData: [],
                 laowuData: [],
-                options: [{
-                    name: '选项1',
-                    id: 1
-                }, {
-                    name: '选项2',
-                    id: 2
-                }]
+                options: []
             }
         },
         methods: {
@@ -163,7 +142,64 @@
                 let data = app.marketData.concat(other);
                 axios.post("/areaMarketController/add.action", data)
                     .then(function (response) {
+                        if(response.data.code != "200"){
+                            this.$message.error('设置失败，请稍后再试');
+                        } else{
+                            app.$message({
+                                message: '设置成功',
+                                type: 'success'
+                            });
+                            app.loadAreaMarket();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        this.$message.error('设置失败，请稍后再试');
+                    });
+            },
+            loadAreaMarket() {
+                axios.get("/district/listAreaMarket.action")
+                    .then(function (response) {
+                        app.marketData = toEleTree(response.data.data, {label: "name", pid: "parentId"});
+                    })
+                    .catch(function (error) {
 
+                    });
+            },
+            saveType() {
+                let data = app.huanglouData.concat(app.laowuData);
+                axios.post("/typeMarketController/add.action", data)
+                    .then(function (response) {
+                        if(response.data.code != "200"){
+                            this.$message.error('设置失败，请稍后再试');
+                        } else{
+                            app.$message({
+                                message: '设置成功',
+                                type: 'success'
+                            });
+                            app.loadTypeMarket();
+                        }
+                    })
+                    .catch(function (error) {
+                        console.error(error);
+                        this.$message.error('设置失败，请稍后再试');
+                    });
+            },
+            loadTypeMarket() {
+                axios.get("/typeMarketController/query.action")
+                    .then(function (response) {
+                        app.laowuData = [];
+                        response.data.forEach(it => {
+                            if (it.type === "boutique") {
+                                app.huanglouData = [{name: '黄楼业务', type: it.type, marketId: it.marketId, id: it.id}];
+                            }
+                            if (it.type === "passport") {
+                                app.laowuData.push({name: '通行证', type: it.type, marketId: it.marketId, id: it.id});
+                            }
+                            if (it.type === "laborVest") {
+                                app.laowuData.push({name: '劳务马甲', type: it.type, marketId: it.marketId, id: it.id});
+                            }
+                        });
                     })
                     .catch(function (error) {
 

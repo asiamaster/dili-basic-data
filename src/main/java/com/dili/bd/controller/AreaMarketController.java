@@ -24,6 +24,8 @@ import com.dili.assets.sdk.rpc.AreaMarketRpc;
 import com.dili.commons.bstable.TableResult;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;
+import com.dili.uap.sdk.rpc.FirmRpc;
+import com.dili.uap.sdk.session.SessionContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -45,6 +47,8 @@ public class AreaMarketController {
     private String prefix = "areaMarket";
 
     private final AreaMarketRpc areaMarketRpc;
+
+    private final FirmRpc firmRpc;
 
     /**
     * 分页跳转
@@ -136,5 +140,14 @@ public class AreaMarketController {
     @ResponseBody
     public Object disableAll(Long[] ids) {
         return areaMarketRpc.disableAll(ids);
+    }
+
+    /**
+     * 商户查询
+     */
+    @GetMapping("/getAllChildrenByParentId.action")
+    @ResponseBody
+    public Object getAllChildrenByParentId() {
+        return firmRpc.getAllChildrenByParentId(SessionContext.getSessionContext().getUserTicket().getFirmId()).getData();
     }
 }

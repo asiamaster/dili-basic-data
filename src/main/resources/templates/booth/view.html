@@ -15,7 +15,6 @@
             size: 'mini'
             }"
             :is-show-cancel-btn="false"
-            :disabled="true"
             :is-show-submit-btn="false"
             submit-btn-text="提交"
             form-btn-size="mini"
@@ -40,7 +39,7 @@
 <script>
     var app = new Vue({
         el: '#app',
-        data () {
+        data() {
             return {
                 // 同 vue-ele-form
                 formData: {},
@@ -97,9 +96,9 @@
                                 type: "select",
                                 layout: 6,
                                 optionsLinkageFields: ['areaArray'],
-                                prop: { text: 'name', value: 'name' },
+                                prop: {text: 'name', value: 'name'},
                                 options: data => {
-                                    if (data.areaArray!==undefined && data.areaArray.length > 0) {
+                                    if (data.areaArray !== undefined && data.areaArray.length > 0) {
                                         let areaArray = data.areaArray;
                                         let area = areaArray[0];
                                         if (areaArray.length > 1) {
@@ -122,7 +121,8 @@
                             departmentId: {
                                 options: function (data) {
                                     return loadProvider({
-                                        provider: 'authDepartmentProvider'})
+                                        provider: 'authDepartmentProvider'
+                                    })
                                 },
                                 label: "所属部门",
                                 type: "select",
@@ -204,7 +204,7 @@
                                 attrs: {
                                     disabled: true
                                 },
-                                vif (data) {
+                                vif(data) {
                                     return data.creatorUser
                                 },
                                 layout: 6
@@ -215,7 +215,7 @@
                                 attrs: {
                                     disabled: true
                                 },
-                                vif (data) {
+                                vif(data) {
                                     return data.createTime
                                 },
                                 layout: 18
@@ -254,7 +254,7 @@
                         title: '资产快照',
                         icon: 'el-icon-user',
                         formDesc: {
-                            snapshot: {
+                            snapshots: {
                                 type: 'table-editor',
                                 attrs: {
                                     isShowDelete: false,
@@ -263,7 +263,8 @@
                                         {
                                             text: "查看",
                                             attrs: {
-                                                type: "text"
+                                                type: "text",
+                                                disabled: false,
                                             },
                                             // click事件
                                             click(scope) {
@@ -275,15 +276,18 @@
                                     columns: [
                                         {
                                             // el-table-column 的属性
-                                            prop: "grade",
+                                            prop: "commitDate",
+                                            align: "center",
                                             label: "时间"
                                         },
                                         {
-                                            prop: "name",
+                                            prop: "version",
+                                            align: "center",
                                             label: "快照版本"
                                         },
                                         {
-                                            prop: "sex",
+                                            prop: "notes",
+                                            align: "center",
                                             label: "备注"
                                         }
                                     ]
@@ -294,10 +298,9 @@
                 ]
             }
         },
-        methods: {
-
-        }
+        methods: {}
     })
+
     function loadProvider(data) {
         return new Promise((resolve, reject) => {
             axios.post('/convert/list.action', data)

@@ -181,6 +181,7 @@ public class BoothController {
         assetsRentDTO.setBoothId(id);
         List<AssetsRentDTO> rentDTOS = assetsRpc.rentList(assetsRentDTO).getData();
         jsonObject.set("rent", rentDTOS);
+        jsonObject.set("snapshots", assetsRpc.getAssetsSnapshots(id).getData());
         map.put("data", jsonObject);
         return "booth/view";
     }

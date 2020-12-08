@@ -5,6 +5,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
+import com.dili.assets.sdk.dto.AssetsRentDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.provider.RentEnum;
 import com.dili.bd.util.LogBizTypeConst;
@@ -175,7 +176,11 @@ public class BoothController {
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
         }
-        jsonObject.put("areaArray", array);
+        jsonObject.set("areaArray", array);
+        AssetsRentDTO assetsRentDTO = new AssetsRentDTO();
+        assetsRentDTO.setBoothId(id);
+        List<AssetsRentDTO> rentDTOS = assetsRpc.rentList(assetsRentDTO).getData();
+        jsonObject.set("rent", rentDTOS);
         map.put("data", jsonObject);
         return "booth/view";
     }

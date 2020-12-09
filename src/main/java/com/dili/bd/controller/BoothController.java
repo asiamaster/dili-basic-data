@@ -181,7 +181,24 @@ public class BoothController {
         assetsRentDTO.setBoothId(id);
         List<AssetsRentDTO> rentDTOS = assetsRpc.rentList(assetsRentDTO).getData();
         jsonObject.set("rent", rentDTOS);
-        jsonObject.set("snapshots", assetsRpc.getAssetsSnapshots(id).getData());
+        JSONArray objects = JSONUtil.parseArray(assetsRpc.getAssetsSnapshots(id).getData());
+        JSONArray snapshots = new JSONArray();
+        for (int i = 0; i < objects.size(); i++) {
+            cn.hutool.json.JSONObject object = objects.getJSONObject(i);
+            Long creatorId = object.getJSONObject("state").getLong("creatorId");
+            BaseOutput<User> userBaseOutput = userRpc.get(creatorId);
+            if (userBaseOutput.isSuccess()) {
+                object.getJSONObject("state").set("creatorUser", userBaseOutput.getData().getRealName());
+            }
+            JSONArray areaArray = new JSONArray();
+            areaArray.put(object.getJSONObject("state").get("area"));
+            if (object.getJSONObject("state").get("secondArea") != null) {
+                areaArray.put(object.getJSONObject("state").get("secondArea"));
+            }
+            object.getJSONObject("state").set("areaArray", array);
+            snapshots.add(object);
+        }
+        jsonObject.set("snapshots", snapshots);
         map.put("data", jsonObject);
         return "booth/view";
     }

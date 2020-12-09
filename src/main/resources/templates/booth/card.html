@@ -154,6 +154,8 @@
 
             </form>
             <hr>
+            <button type="button" class="btn btn-primary" @click="add"><i class="fa fa-plus"></i> 新增
+            </button>
             <button type="button" class="btn btn-primary" onclick="window.location.href='/booth/list'">
                 <i class="fa fa-th"></i> 列表模式
             </button>
@@ -269,6 +271,10 @@
             }
         },
         methods: {
+            add() {
+                var url = "/booth/add.html";
+                $.modal.open("新增", url);
+            },
             view(id) {
                 var url = "/booth/view.html?id={id}".replace("{id}", id);
                 dia = bs4pop.dialog({

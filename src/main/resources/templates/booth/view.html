@@ -21,7 +21,26 @@
             :is-dialog="true"
             label-position="top"
     />
-
+    <el-dialog title="快照详情" :visible.sync="dialogFormVisible">
+        <ele-form
+                :form-attrs="{
+            size: 'small'
+            }"
+                :is-show-cancel-btn="false"
+                :disabled="true"
+                :is-show-submit-btn="false"
+                submit-btn-text="提交"
+                form-btn-size="small"
+                :inline="true"
+                :is-dialog="true"
+                label-position="top"
+                :form-desc="sections[0].formDesc"
+                v-model="snapshotsData">
+        </ele-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        </div>
+    </el-dialog>
 </div>
 </#bs4Body>
 <script type="text/javascript">
@@ -41,8 +60,10 @@
         el: '#app',
         data() {
             return {
+                dialogFormVisible: false,
                 // 同 vue-ele-form
                 formData: {},
+                snapshotsData: {},
                 sections: [
                     {
                         // 分区标题
@@ -61,6 +82,7 @@
                                 label: "资产类型",
                                 type: "select",
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             areaArray: {
@@ -89,12 +111,14 @@
                                     }
                                 },
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             floor: {
                                 label: "楼层",
                                 type: "select",
                                 layout: 6,
+                                disabled: true,
                                 optionsLinkageFields: ['areaArray'],
                                 prop: {text: 'name', value: 'name'},
                                 options: data => {
@@ -127,6 +151,7 @@
                                 label: "所属部门",
                                 type: "select",
                                 layout: 6,
+                                disabled: true,
                                 required: false
                             },
                             name: {
@@ -137,6 +162,7 @@
                                     showWordLimit: false
                                 },
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             corner: {
@@ -149,6 +175,7 @@
                                 label: "是否转角",
                                 type: "select",
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             type: {
@@ -159,6 +186,7 @@
                                 label: "性质",
                                 type: "select",
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             unit: {
@@ -171,6 +199,7 @@
                                 label: "单位",
                                 type: "select",
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             number: {
@@ -183,6 +212,7 @@
                                 },
                                 default: 0,
                                 layout: 6,
+                                disabled: true,
                                 required: true
                             },
                             notes: {
@@ -196,6 +226,7 @@
                                         maxRows: 4
                                     }
                                 },
+                                disabled: true,
                                 layout: 24
                             },
                             creatorUser: {
@@ -207,6 +238,7 @@
                                 vif(data) {
                                     return data.creatorUser
                                 },
+                                disabled: true,
                                 layout: 6
                             },
                             createTime: {
@@ -218,6 +250,7 @@
                                 vif(data) {
                                     return data.createTime
                                 },
+                                disabled: true,
                                 layout: 18
                             }
                         }
@@ -226,7 +259,7 @@
                         title: '资产历史使用情况',
                         icon: 'el-icon-user',
                         formDesc: {
-                            use: {
+                            rent: {
                                 type: 'table-editor',
                                 attrs: {
                                     isShowDelete: false,
@@ -234,15 +267,15 @@
                                     columns: [
                                         {
                                             // el-table-column 的属性
-                                            prop: "grade",
+                                            prop: "user",
                                             label: "使用方"
                                         },
                                         {
-                                            prop: "name",
+                                            prop: "start",
                                             label: "开始时间"
                                         },
                                         {
-                                            prop: "sex",
+                                            prop: "end",
                                             label: "结束时间"
                                         }
                                     ]
@@ -268,6 +301,8 @@
                                             },
                                             // click事件
                                             click(scope) {
+                                                app.snapshotsData = scope.row.state;
+                                                app.dialogFormVisible = true;
                                                 /* eslint-disable */
                                                 console.log(scope);
                                             }

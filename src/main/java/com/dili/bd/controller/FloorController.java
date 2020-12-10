@@ -16,8 +16,6 @@
 package com.dili.bd.controller;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.FloorDto;
 import com.dili.assets.sdk.dto.FloorQuery;
 import com.dili.bd.rpc.FloorRpc;
@@ -56,26 +54,6 @@ public class FloorController {
         return prefix + "/list";
     }
 
-    /**
-     * 分页跳转
-     */
-    @GetMapping("/edit.action")
-    public String edit(Long id, ModelMap map) {
-        BaseOutput baseOutput = floorRpc.get(id);
-        if (baseOutput.getCode() != null) {
-            JSONObject jsonObject = JSONUtil.parseObj(baseOutput.getData());
-            map.put("data", jsonObject);
-        }
-        return prefix + "/edit";
-    }
-
-    /**
-     * 分页跳转
-     */
-    @GetMapping("/add.action")
-    public String add(ModelMap model) {
-        return prefix + "/add";
-    }
 
     /**
      * 查询数据分页
@@ -125,41 +103,5 @@ public class FloorController {
             }
         }
         return BaseOutput.success();
-    }
-
-    /**
-     * 修改
-     */
-    @PostMapping("/edit.action")
-    @ResponseBody
-    public Object edit(@RequestBody FloorDto dto) {
-        return floorRpc.update(dto);
-    }
-
-    /**
-     * 多选删除
-     */
-    @PostMapping("/deleteAll.action")
-    @ResponseBody
-    public Object deleteAll(Long[] ids) {
-        return floorRpc.deleteAll(ids);
-    }
-
-    /**
-     * 多选启用
-     */
-    @PostMapping("/enableAll.action")
-    @ResponseBody
-    public Object enableAll(Long[] ids) {
-        return floorRpc.enableAll(ids);
-    }
-
-    /**
-     * 多选禁用
-     */
-    @PostMapping("/disableAll.action")
-    @ResponseBody
-    public Object disableAll(Long[] ids) {
-        return floorRpc.disableAll(ids);
     }
 }

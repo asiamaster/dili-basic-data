@@ -29,6 +29,9 @@
     .box-card {
         width: 100%;
     }
+    .assets-used {
+        background-color: #ff6f6f;
+    }
 </style>
 <style>
     .el-dropdown {
@@ -163,9 +166,9 @@
                 <div class="col-12">
                     <el-row :gutter="12" class="infinite-list"  style="overflow:auto">
                         <el-col :span="8" v-for="item in card" :key="item.id" style="padding-bottom: 10px">
-                            <el-card class="box-card">
+                            <el-card class="box-card" v-bind:class="{ 'assets-used': item.$_state==2}">
                                 <div slot="header" class="clearfix">
-                                    <span>{{item.name}}</span>
+                                    <span>{{item.state}}</span>
                                     <span style="float: right; padding: 3px 0">状态:{{item.status}}</span>
                                 </div>
                                 <div class="text item">

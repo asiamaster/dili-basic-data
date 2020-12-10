@@ -7,7 +7,7 @@
 <!-- 引入element -->
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
-<div class="main-container container-fluid" id=app>
+<div class="main-container container-fluid" id=app v-loading.fullscreen.lock="fullscreenLoading">
 
     <el-dialog title="设置楼层" :visible.sync="visible">
         <el-breadcrumb separator=">">
@@ -237,6 +237,7 @@
         },
         data() {
             return {
+                fullscreenLoading: true,
                 path: [],
                 options:[],
                 splitTemp: {
@@ -303,6 +304,7 @@
                         app.loading = false;
                         var oTab=$.table.oTableInit(options);
                         oTab.Init();
+                        app.fullscreenLoading = false;
                     },
                     error: function () {
                         app.loading = false;

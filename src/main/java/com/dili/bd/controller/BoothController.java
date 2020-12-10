@@ -122,7 +122,7 @@ public class BoothController {
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
         }
-        jsonObject.put("areaArray", array);
+        jsonObject.set("areaArray", array);
         map.put("data", jsonObject);
         BaseOutput<Double> boothBalance = assetsRpc.getAssetsBalance(id);
         map.put("number", boothBalance.getData());

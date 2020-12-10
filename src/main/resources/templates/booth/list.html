@@ -26,7 +26,7 @@
         max-width: fit-content;
     }
 </style>
-<div class="main-container container-fluid" id=app>
+<div class="main-container container-fluid" id=app v-loading.fullscreen.lock="fullscreenLoading">
 
     <div class="row">
         <div class="col-2">
@@ -295,6 +295,7 @@
         },
         data() {
             return {
+                fullscreenLoading: true,
                 path: [],
                 filterText: '',
                 loading: true,
@@ -331,7 +332,7 @@
 
                         var oGrid = $.bs_treegrid.oGridInit(options);
                         oGrid.Init();
-
+                        app.fullscreenLoading = false;
                         app.loading = false;
                     },
                     error: function () {

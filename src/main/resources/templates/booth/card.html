@@ -168,7 +168,7 @@
                         <el-col :span="8" v-for="item in card" :key="item.id" style="padding-bottom: 10px">
                             <el-card class="box-card" v-bind:class="{ 'assets-used': item.$_state==2}">
                                 <div slot="header" class="clearfix">
-                                    <span>{{item.state}}</span>
+                                    <span>{{item.name}}</span>
                                     <span style="float: right; padding: 3px 0">状态:{{item.status}}</span>
                                 </div>
                                 <div class="text item">
@@ -281,7 +281,7 @@
             view(id) {
                 var url = "/booth/view.html?id={id}".replace("{id}", id);
                 dia = bs4pop.dialog({
-                    title: "资产管理",
+                    title: "查看资产",
                     content: url,
                     isIframe: true,
                     closeBtn: true,

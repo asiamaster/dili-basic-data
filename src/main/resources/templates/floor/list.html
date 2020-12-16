@@ -28,7 +28,7 @@
                                 :prop="'splitList.' + scope.$index + '.name'"
                                 :rules="rules.name"
                         >
-                            <el-input v-model="scope.row.name" placeholder="请填写楼层名称" maxlength="100" show-word-limit/>
+                            <el-input v-model="scope.row.name" placeholder="请填写楼层名称" maxlength="32" show-word-limit/>
                         </el-form-item>
                     </template>
                 </el-table-column>
@@ -258,7 +258,8 @@
                     label: 'label'
                 },
                 formData: {
-                    area: 0
+                    area: 0,
+                    name: ''
                 },
                 formDesc: {
                     name: {

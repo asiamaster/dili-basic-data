@@ -75,7 +75,16 @@
                     url = $.bs_treegrid._option.viewUrl.replace("{id}", id);
                 }
 
-                $.modal.open("查看" + $.bs_treegrid._option.modalName, url);
+                dia = bs4pop.dialog({
+                    title: "查看资产",
+                    content: url,
+                    isIframe: true,
+                    closeBtn: true,
+                    backdrop: 'static',
+                    width: "90%",
+                    height: "100%",
+                    btns: []
+                });
             },
             split: function () {
                 var row = $.bs_treegrid.selectFirstColumns();

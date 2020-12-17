@@ -51,3 +51,5 @@ CREATE TABLE type_market
     market_id BIGINT COMMENT '所属商户',
     PRIMARY KEY (id)
 ) COMMENT = '业务商户';
+
+INSERT INTO area_market(market,area) SELECT market_id as market,id as area FROM district  WHERE market_id !=9;

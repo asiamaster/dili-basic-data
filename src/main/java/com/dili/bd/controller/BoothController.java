@@ -178,7 +178,7 @@ public class BoothController {
         }
         jsonObject.set("areaArray", array);
         AssetsRentDTO assetsRentDTO = new AssetsRentDTO();
-        assetsRentDTO.setBoothId(id);
+        assetsRentDTO.setAssetsId(id);
         List<AssetsRentDTO> rentDTOS = assetsRpc.rentList(assetsRentDTO).getData();
         jsonObject.set("rent", rentDTOS);
         JSONArray objects = JSONUtil.parseArray(assetsRpc.getAssetsSnapshots(id).getData());

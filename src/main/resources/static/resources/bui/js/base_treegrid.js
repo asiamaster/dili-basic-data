@@ -294,7 +294,8 @@
                 }, 50)
             },
             reload: function () {
-                parent.location.reload()
+                parent.$.bs_treegrid.refresh();
+                parent.dia.hide();
             }
         },
         // 通用方法封装处理

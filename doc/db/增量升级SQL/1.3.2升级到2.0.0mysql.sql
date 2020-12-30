@@ -53,3 +53,7 @@ CREATE TABLE type_market
 ) COMMENT = '业务商户';
 
 INSERT INTO area_market(market,area) SELECT market_id as market,id as area FROM district  WHERE market_id !=9;
+
+INSERT INTO `type_market` VALUES (1, 'boutique', null);
+INSERT INTO `type_market` VALUES (2, 'passport', null);
+INSERT INTO `type_market` VALUES (3, 'laborVest', null);

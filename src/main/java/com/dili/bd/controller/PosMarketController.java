@@ -17,7 +17,7 @@ package com.dili.bd.controller;
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.dili.assets.sdk.dto.CityDto;
+import com.dili.assets.sdk.dto.CityQueryDto;
 import com.dili.assets.sdk.dto.PosMarketDto;
 import com.dili.assets.sdk.dto.PosMarketQuery;
 import com.dili.assets.sdk.rpc.CityRpc;
@@ -158,7 +158,7 @@ public class PosMarketController {
     @PostMapping("/listCity.action")
     @ResponseBody
     public Object listCity() {
-        CityDto query = new CityDto();
+        CityQueryDto query = new CityQueryDto();
         query.setLevelTypeList(Arrays.asList(1, 2));
         return cityRpc.listByExample(query).getData();
     }

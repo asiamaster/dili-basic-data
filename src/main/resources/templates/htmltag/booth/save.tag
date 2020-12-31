@@ -111,7 +111,6 @@
                         label: "是否转角",
                         type: "select",
                         layout: 6,
-                        required: true
                     },
                     type: {
                         options: [
@@ -140,7 +139,7 @@
                         type: "number",
                         attrs: {
                             min: 1,
-                            max: 999999,
+                            max: 999999999,
                             precision: 2
                         },
                         default: 0,
@@ -151,7 +150,7 @@
                         label: "备注",
                         type: "textarea",
                         attrs: {
-                            maxlength: 100,
+                            maxlength: 50,
                             showWordLimit: true,
                             autosize: {
                                 minRows: 2,

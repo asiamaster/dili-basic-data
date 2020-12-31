@@ -28,7 +28,7 @@
                                 :prop="'splitList.' + scope.$index + '.name'"
                                 :rules="rules.name"
                         >
-                            <el-input v-model="scope.row.name" placeholder="请填写楼层名称" maxlength="32" show-word-limit/>
+                            <el-input v-model="scope.row.name" placeholder="请填写楼层名称" maxlength="10" show-word-limit/>
                         </el-form-item>
                     </template>
                 </el-table-column>
@@ -40,7 +40,7 @@
                                 :prop="'splitList.' + scope.$index + '.notes'"
                                 :rules="rules.notes"
                         >
-                            <el-input v-model="scope.row.notes" placeholder="请填写备注" maxlength="100" show-word-limit/>
+                            <el-input v-model="scope.row.notes" placeholder="请填写备注" maxlength="50" show-word-limit/>
                         </el-form-item>
                     </template>
                 </el-table-column>
@@ -75,7 +75,7 @@
     </el-dialog>
 
     <div class="row">
-        <div class="col-2">
+        <div class="col-3">
             <!-- treeView1 start -->
             <div id="treeView" class="pull-left ztree">
                 <el-input
@@ -98,7 +98,7 @@
             </div>
             <!-- treeView1 end -->
         </div>
-        <div class="col-10">
+        <div class="col-9">
             <div>
                 <ele-form
                         :form-attrs="{
@@ -246,8 +246,7 @@
                     ]
                 },
                 rules: {
-                    name: [{ required: true, message: '请输入编号', trigger: ['blur', 'change'] }],
-                    notes: [{ required: true, message: '请输入备注', trigger: ['blur', 'change'] }]
+                    name: [{ required: true, message: '请输入编号', trigger: ['blur', 'change'] }]
                 },
                 visible: false,
                 filterText: '',

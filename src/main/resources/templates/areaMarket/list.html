@@ -36,7 +36,7 @@
                             prop="marketId"
                             label="所属组织">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.marketId" placeholder="请选择" size="small">
+                            <el-select style="width:100%" v-model="scope.row.marketId" placeholder="请选择" size="small">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.id"
@@ -64,7 +64,7 @@
                     <el-table-column
                             prop="marketId">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.marketId" placeholder="请选择" size="small">
+                            <el-select style="width:100%" v-model="scope.row.marketId" placeholder="请选择" size="small">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.id"
@@ -90,7 +90,7 @@
                     <el-table-column
                             prop="marketId">
                         <template slot-scope="scope">
-                            <el-select v-model="scope.row.marketId" placeholder="请选择" size="small">
+                            <el-select style="width:100%" v-model="scope.row.marketId" placeholder="请选择" size="small">
                                 <el-option
                                         v-for="item in options"
                                         :key="item.id"

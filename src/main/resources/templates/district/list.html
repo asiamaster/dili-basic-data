@@ -156,8 +156,10 @@
     function formatter(value, row) {
         if(value == 1){
             return "临时";
+        }else if(value == 2){
+            return '固定';
         }
-        return '固定';
+        return '';
     }
 
     function operateFormatter(value, row, index) {

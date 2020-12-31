@@ -104,4 +104,13 @@ public class FloorController {
         }
         return BaseOutput.success();
     }
+
+    /**
+     * 多选删除
+     */
+    @PostMapping("/deleteAll.action")
+    @ResponseBody
+    public Object deleteAll(Long[] ids) {
+        return floorRpc.deleteAll(ids);
+    }
 }

@@ -51,35 +51,9 @@
                     <el-button type="primary" @click="saveMarket" size="small">设置</el-button>
                 </div>
             </el-tab-pane>
-            <el-tab-pane label="黄楼关联">
+            <el-tab-pane label="业务关联">
                 <el-table
-                        :data="huanglouData"
-                        :show-header="false"
-                        style="width:50%;margin-bottom: 20px;"
-                        row-key="id"
-                        border>
-                    <el-table-column
-                            prop="name">
-                    </el-table-column>
-                    <el-table-column
-                            prop="marketId">
-                        <template slot-scope="scope">
-                            <el-select style="width:100%" v-model="scope.row.marketId" placeholder="请选择" size="small">
-                                <el-option
-                                        v-for="item in options"
-                                        :key="item.id"
-                                        :label="item.name"
-                                        :value="item.id">
-                                </el-option>
-                            </el-select>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <el-button type="primary" size="small" @click="saveType">设置</el-button>
-            </el-tab-pane>
-            <el-tab-pane label="劳务关联">
-                <el-table
-                        :data="laowuData"
+                        :data="typeData"
                         :show-header="false"
                         style="width:50%;margin-bottom: 20px;"
                         row-key="id"
@@ -126,8 +100,7 @@
         data() {
             return {
                 marketData: [],
-                huanglouData: [],
-                laowuData: [],
+                typeData: [],
                 options: []
             }
         },
@@ -167,7 +140,7 @@
                     });
             },
             saveType() {
-                let data = app.huanglouData.concat(app.laowuData);
+                let data = app.typeData;
                 axios.post("/typeMarketController/add.action", data)
                     .then(function (response) {
                         if(response.data.code != "200"){
@@ -188,16 +161,16 @@
             loadTypeMarket() {
                 axios.get("/typeMarketController/query.action")
                     .then(function (response) {
-                        app.laowuData = [];
+                        app.typeData = [];
                         response.data.forEach(it => {
                             if (it.type === "boutique") {
-                                app.huanglouData = [{name: '黄楼业务', type: it.type, marketId: it.marketId, id: it.id}];
+                                app.typeData.push({name: '黄楼业务', type: it.type, marketId: it.marketId, id: it.id});
                             }
                             if (it.type === "passport") {
-                                app.laowuData.push({name: '通行证', type: it.type, marketId: it.marketId, id: it.id});
+                                app.typeData.push({name: '通行证', type: it.type, marketId: it.marketId, id: it.id});
                             }
                             if (it.type === "laborVest") {
-                                app.laowuData.push({name: '劳务马甲', type: it.type, marketId: it.marketId, id: it.id});
+                                app.typeData.push({name: '劳务马甲', type: it.type, marketId: it.marketId, id: it.id});
                             }
                         });
                     })

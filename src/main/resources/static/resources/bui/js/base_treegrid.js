@@ -293,8 +293,18 @@
                     $.unblockUI()
                 }, 50)
             },
-            reload: function () {
-                parent.$.bs_treegrid.refresh();
+            reload: function (){
+                try {
+                    parent.$.bs_treegrid.refresh();
+                }catch (e){
+
+                }
+
+                try {
+                    parent.app.search();
+                }catch (e){
+
+                }
                 parent.dia.hide();
             }
         },

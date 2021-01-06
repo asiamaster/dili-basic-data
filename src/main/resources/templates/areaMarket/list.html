@@ -161,18 +161,7 @@
             loadTypeMarket() {
                 axios.get("/typeMarketController/query.action")
                     .then(function (response) {
-                        app.typeData = [];
-                        response.data.forEach(it => {
-                            if (it.type === "boutique") {
-                                app.typeData.push({name: '黄楼业务', type: it.type, marketId: it.marketId, id: it.id});
-                            }
-                            if (it.type === "passport") {
-                                app.typeData.push({name: '通行证', type: it.type, marketId: it.marketId, id: it.id});
-                            }
-                            if (it.type === "laborVest") {
-                                app.typeData.push({name: '劳务马甲', type: it.type, marketId: it.marketId, id: it.id});
-                            }
-                        });
+                        app.typeData = response.data;
                     })
                     .catch(function (error) {
 

@@ -1928,6 +1928,12 @@
               "chnname": "业务类型"
             },
             {
+              "name": "name",
+              "type": "DefaultString",
+              "remark": "",
+              "chnname": "业务名称"
+            },
+            {
               "name": "market_id",
               "type": "BigInt",
               "remark": "",

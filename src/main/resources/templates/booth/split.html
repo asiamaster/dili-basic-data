@@ -7,6 +7,9 @@
 <!-- 引入element -->
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
+<style>
+    [v-cloak]{ display: none; }
+</style>
 <div id=app>
     <ele-form
             :form-attrs="{
@@ -25,7 +28,7 @@
             :request-fn="handleRequest">
     </ele-form>
 </div>
-<div id="split">
+<div id="split" v-cloak>
     <el-divider content-position="left">拆分(可用:{{ number }})</el-divider>
     <el-form
             ref="dataFormLXR"

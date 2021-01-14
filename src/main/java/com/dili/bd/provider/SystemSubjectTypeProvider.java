@@ -2,14 +2,17 @@ package com.dili.bd.provider;
 
 
 import cn.hutool.core.util.StrUtil;
-import com.dili.bd.domian.enums.SystemSubjectType;
+import com.dili.assets.sdk.enums.BusinessChargeItemEnum;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.ValueProvider;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +26,7 @@ public class SystemSubjectTypeProvider implements ValueProvider {
 
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
-        return Stream.of(SystemSubjectType.values())
+        return Stream.of(BusinessChargeItemEnum.SystemSubjectType.values())
                 .map(e -> new ValuePairImpl<>(e.getName(), String.valueOf(e.getCode())))
                 .collect(Collectors.toList());
     }
@@ -33,9 +36,9 @@ public class SystemSubjectTypeProvider implements ValueProvider {
         if (Objects.isNull(val) || StrUtil.isBlank(val.toString())) {
             return null;
         }
-        Optional<SystemSubjectType> systemSubjectType = Arrays.stream(SystemSubjectType.values()).filter(t -> t.getCode() == Integer.valueOf(val.toString())).findFirst();
-        if (systemSubjectType.isPresent()) {
-            return systemSubjectType.get().getName();
+        Optional<BusinessChargeItemEnum.SystemSubjectType> instance = BusinessChargeItemEnum.SystemSubjectType.getInstance(Integer.valueOf(val.toString()));
+        if (instance.isPresent()) {
+            return instance.get().getName();
         }
         return null;
     }

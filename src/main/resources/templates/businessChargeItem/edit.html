@@ -112,6 +112,18 @@
                         type: "radio",
                         required: true
                     },
+                    fundItem: {
+                        options: loadProvider({provider: 'fundItemProvider', queryParams: {required: true}}),
+                        type: "select",
+                        label: "资金项目",
+                        required: true,
+                        attrs: {
+                            filterable: true
+                        },
+                        disabled(data) {
+                            return data.disabled;
+                        }
+                    },
                     parentId: {
                         vif: function (data) {
                             if (!data.chargeType || data.chargeType === 1) {
@@ -196,7 +208,13 @@
                 let chargeSubject = data.chargeSubjectPath;
                 data.chargeSubjectPath = chargeSubject.join();
                 data.chargeSubjectName = chargeSubjectNode.pathLabels.join();
-
+                app.$refs.myForm.$refs.fundItem[0].options.some(function (fundItem) {
+                    if (fundItem.value === data.fundItem){
+                        data.fundItemValue = fundItem.text;
+                        return true;
+                    }
+                });
+                debugger;
                 axios.post(rootPath + "/businessChargeItem/save.action", data)
                     .then(function (response) {
                         if (response.data.success){

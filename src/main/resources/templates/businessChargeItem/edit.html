@@ -154,6 +154,24 @@
                             return data.disabled;
                         }
                     },
+                    code: {
+                        vif: function (data) {
+                            if (data.fixed && data.fixed === 1) {
+                                data.code = null;
+                                return true;
+                            }
+                            return false;
+                        },
+                        label: "费用项编码",
+                        type: "input",
+                        disabled(data) {
+                            return data.disabled;
+                        },
+                        attrs: {
+                            maxlength: 20,
+                            showWordLimit: true
+                        }
+                    },
                     systemSubject: {
                         options: loadProvider({provider: 'systemSubjectTypeProvider'}),
                         label: "系统科目",
@@ -214,7 +232,6 @@
                         return true;
                     }
                 });
-                debugger;
                 axios.post(rootPath + "/businessChargeItem/save.action", data)
                     .then(function (response) {
                         if (response.data.success){

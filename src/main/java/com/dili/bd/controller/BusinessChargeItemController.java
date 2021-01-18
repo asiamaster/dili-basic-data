@@ -90,8 +90,22 @@ public class BusinessChargeItemController {
             jsonObject.putOpt("disabled",true);
             modelMap.put("businessChargeItem", jsonObject);
         } else  {
+            chargeItemDto.setFixed(YesOrNoEnum.NO.getCode());
             modelMap.put("businessChargeItem", JSONUtil.parseObj(chargeItemDto));
         }
+        return "businessChargeItem/edit";
+    }
+
+    /**
+     * 添加固定费用项
+     * @param modelMap
+     * @return
+     */
+    @RequestMapping(value = "/addFixed.action", method = {RequestMethod.GET})
+    public String addFixed(ModelMap modelMap) {
+        BusinessChargeItemDto chargeItemDto = new BusinessChargeItemDto();
+        chargeItemDto.setFixed(YesOrNoEnum.YES.getCode());
+        modelMap.put("businessChargeItem", JSONUtil.parseObj(chargeItemDto));
         return "businessChargeItem/edit";
     }
 
@@ -118,7 +132,6 @@ public class BusinessChargeItemController {
                 chargeItem.setCreateTime(chargeItem.getModifyTime());
                 chargeItem.setIsDelete(YesOrNoEnum.NO.getCode());
                 chargeItem.setIsEnable(YesOrNoEnum.YES.getCode());
-                chargeItem.setFixed(YesOrNoEnum.NO.getCode());
                 businessChargeItemRpc.save(chargeItem);
             }else{
                 Optional<BusinessChargeItemDto> item = this.getById(chargeItem.getId());

@@ -23,6 +23,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+
 /**
  * @author shaofan
  * @website http://shaofan.org
@@ -72,5 +74,11 @@ public interface ConfigRpc {
      */
     @RequestMapping(value = "/api/config/get", method = RequestMethod.POST)
     BaseOutput<ConfigDto> get(Long id);
+
+    /**
+     * 查询分组
+     */
+    @RequestMapping(value = "/api/config/searchGroup", method = RequestMethod.POST)
+    BaseOutput<List<ConfigDto>> searchGroup(String keyword);
 
 }

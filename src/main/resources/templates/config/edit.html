@@ -66,9 +66,22 @@
                         rules: []
                     },
                     type: {
-                        type: 'input',
+                        type: 'autocomplete',
                         label: '分组',
-                        rules: []
+                        rules: [],
+                        attrs: {
+                            valueKey: "type",
+                            triggerOnFocus: false,
+                            fetchSuggestions: function (queryString, cb) {
+                                axios.get(rootPath + "/configController/searchGroup.action?keyword=" + queryString)
+                                    .then(function (response) {
+                                        cb(response.data);
+                                        console.log(response)
+                                    })
+                                    .catch(function (error) {
+                                    });
+                            }
+                        }
                     },
                     marketId: {
                         type: 'select',

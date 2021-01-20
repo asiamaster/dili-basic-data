@@ -166,7 +166,25 @@
                         type: 'select',
                         label: '市场',
                         options: loadProvider({provider: 'marketProvider'})
-                    }
+                    },
+                    type: {
+                        type: 'autocomplete',
+                        label: '分组',
+                        rules: [],
+                        attrs: {
+                            valueKey: "type",
+                            triggerOnFocus: false,
+                            fetchSuggestions: function (queryString, cb) {
+                                axios.get(rootPath + "/configController/searchGroup.action?keyword=" + queryString)
+                                    .then(function (response) {
+                                        cb(response.data);
+                                        console.log(response)
+                                    })
+                                    .catch(function (error) {
+                                    });
+                            }
+                        }
+                    },
                 }
             };
         },

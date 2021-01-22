@@ -19,7 +19,7 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.ConfigDto;
 import com.dili.assets.sdk.dto.ConfigQuery;
-import com.dili.bd.rpc.ConfigRpc;
+import com.dili.assets.sdk.rpc.ConfigRpc;
 import com.dili.commons.bstable.TableResult;
 import com.dili.commons.glossary.EnabledStateEnum;
 import com.dili.ss.domain.BaseOutput;

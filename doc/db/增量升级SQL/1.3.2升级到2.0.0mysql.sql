@@ -55,9 +55,11 @@ CREATE TABLE type_market
 
 INSERT INTO area_market(market,area) SELECT market_id as market,id as area FROM district  WHERE market_id !=9;
 
-INSERT INTO `type_market` VALUES (1, 'boutique', null);
-INSERT INTO `type_market` VALUES (2, 'passport', null);
-INSERT INTO `type_market` VALUES (3, 'laborVest', null);
+INSERT INTO `type_market` VALUES (1, 'boutique', NULL, '黄楼业务');
+INSERT INTO `type_market` VALUES (2, 'passport', NULL, '通行证');
+INSERT INTO `type_market` VALUES (3, 'laborVest', NULL, '劳务马甲');
+INSERT INTO `type_market` VALUES (4, 'jmsf_clbk', NULL, '车辆办卡');
+INSERT INTO `type_market` VALUES (5, 'card_income_account', NULL, '卡务收益(工本费、手续费)');
 
 
 ALTER TABLE business_charge_item ADD COLUMN `fund_item` bigint DEFAULT NULL COMMENT '关联的资金项目代码' AFTER charge_type;

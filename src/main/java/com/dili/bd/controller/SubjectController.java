@@ -74,6 +74,7 @@ public class SubjectController {
     @ResponseBody
     public BaseOutput<List<SubjectDTO>> getTree(SubjectQuery input) {
         try {
+            input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
             return assetsRpc.listSubject(input);
         } catch (Exception e) {
             return BaseOutput.failure(e.getMessage());
@@ -91,6 +92,7 @@ public class SubjectController {
             input.setCreateTime(new Date());
             input.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
             input.setModifyTime(new Date());
+            input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
             if (input.getId() != null) {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
             }

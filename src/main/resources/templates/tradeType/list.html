@@ -90,7 +90,7 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
         updateUrl: updateUrl,
         viewUrl: viewUrl,
         dialogWidth: 500,
-        dialogHeight: 500,
+        dialogHeight: 600,
         removeUrl:removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",
@@ -116,6 +116,11 @@ var exportUrl=window.rootPath+"/tradeTypeController/export";
                field: 'push',
                title: '是否推送',
                provider: 'yesOrNoProvider'
+           },
+           {
+               field: 'scene',
+               title: '过磅场景',
+               provider: 'sceneProvider'
            },
             {
 			    field: 'creatorUser',

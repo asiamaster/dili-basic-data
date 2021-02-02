@@ -68,6 +68,26 @@ var app = new Vue({
                         }
                     ],
                     default: 1
+                },
+                scene: {
+                    isOptions: true,
+                    options: [
+                        {
+                            text: "常规交易",
+                            value: 1
+                        },
+                        {
+                            text: "老农交易",
+                            value: 2
+                        },
+                        {
+                            text: "自营交易",
+                            value: 3
+                        }
+                    ],
+                    type: "checkbox",
+                    label: "过磅场景",
+                    attrs: {}
                 }
             }
         };

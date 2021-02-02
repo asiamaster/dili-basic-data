@@ -1,10 +1,12 @@
 UPDATE `dili-basic-data`.booth_rent br SET type = 1,`user` = (SELECT customer_name FROM dili_ia.assets_lease_order o WHERE o.ID = br.order_id);
 
-UPDATE `dili-basic-data`.assets a SET a.`user` = (SELECT b.`user` from `dili-basic-data`.booth_rent b WHERE a.id = b.booth_id);
+UPDATE `dili-basic-data`.assets a SET a.`user` = (SELECT b.`user` from `dili-basic-data`.booth_rent b WHERE a.id = b.booth_id and now() >= b.start and now() <= b.end);
 
 ALTER TABLE `dili-basic-data`.`config` AUTO_INCREMENT = 200;
 
 UPDATE `dili-basic-data`.config SET id = id + 100;
+
+UPDATE `dili-basic-data`.`subject` SET market_id = 8;
 
 INSERT INTO `dili-basic-data`.`config`(id, name, value, notes, state, market_id, type)
 VALUES (1, '现金存款', NULL, NULL, 1, 9, 'fundItem');
@@ -78,6 +80,8 @@ INSERT INTO `dili-basic-data`.`config`(id, name, value, notes, state, market_id,
 VALUES (35, '返点', NULL, NULL, 1, 9, 'fundItem');
 INSERT INTO `dili-basic-data`.`config`(id, name, value, notes, state, market_id, type)
 VALUES (36, '占地费', NULL, NULL, 1, 9, 'fundItem');
+INSERT INTO `dili-basic-data`.`config`(id, name, value, notes, state, market_id, type)
+VALUES (37, '账户转账', NULL, NULL, 1, 9, 'fundItem');
 
 INSERT INTO `dili-basic-data`.`config`(name, value, notes, state, market_id, type)
 VALUES ('租金', NULL, NULL, 1, 11, 'fundItem');

@@ -72,6 +72,15 @@ ALTER TABLE business_charge_item ADD COLUMN `code` VARCHAR(20) DEFAULT NULL COMM
 ALTER TABLE business_charge_item ADD COLUMN `fixed` TINYINT DEFAULT NULL COMMENT '是否固定项1-是;0-否' AFTER code;
 update business_charge_item set fixed = 0;
 
+CREATE TABLE funditem
+(
+    id        BIGINT NOT NULL AUTO_INCREMENT COMMENT 'id',
+    name      VARCHAR(128) COMMENT '资金项名称',
+    state     INT COMMENT '状态',
+    market_id json COMMENT '市场',
+    PRIMARY KEY (id)
+) COMMENT = '资金项目 ';
+
 -- ----------------------------
 -- Table structure for jv_commit
 -- ----------------------------

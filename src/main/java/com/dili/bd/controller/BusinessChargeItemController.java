@@ -86,10 +86,13 @@ public class BusinessChargeItemController {
             BusinessChargeItemDto businessChargeItemDto = item.orElse(new BusinessChargeItemDto());
             JSONObject jsonObject = JSONUtil.parseObj(businessChargeItemDto);
             List<String> split = StrUtil.split(businessChargeItemDto.getChargeSubjectPath(), ',');
-            jsonObject.putOpt("chargeSubjectPath",JSONUtil.parseArray(split.stream().mapToLong(Long::parseLong).toArray()));
-            jsonObject.putOpt("disabled",true);
+            jsonObject.putOpt("chargeSubjectPath", JSONUtil.parseArray(split.stream().mapToLong(Long::parseLong).toArray()));
+            jsonObject.putOpt("disabled", true);
+            if (Objects.nonNull(businessChargeItemDto.getFundItem())) {
+                jsonObject.putOpt("fundItemDisabled", true);
+            }
             modelMap.put("businessChargeItem", jsonObject);
-        } else  {
+        } else {
             chargeItemDto.setFixed(YesOrNoEnum.NO.getCode());
             modelMap.put("businessChargeItem", JSONUtil.parseObj(chargeItemDto));
         }
@@ -126,24 +129,28 @@ public class BusinessChargeItemController {
             chargeItem.setOperatorId(SessionContext.getSessionContext().getUserTicket().getId());
             if (Objects.isNull(chargeItem.getId())) {
                 Boolean notExist = this.checkNotExist(chargeItem);
-                if (!notExist){
+                if (!notExist) {
                     return BaseOutput.failure("已存在相同名称的收费项");
                 }
                 chargeItem.setCreateTime(chargeItem.getModifyTime());
                 chargeItem.setIsDelete(YesOrNoEnum.NO.getCode());
                 chargeItem.setIsEnable(YesOrNoEnum.YES.getCode());
                 businessChargeItemRpc.save(chargeItem);
-            }else{
+            } else {
                 Optional<BusinessChargeItemDto> item = this.getById(chargeItem.getId());
                 if (item.isPresent()) {
                     BusinessChargeItemDto old = item.get();
+                    if (Objects.isNull(old.getFundItem())) {
+                        old.setFundItem(chargeItem.getFundItem());
+                        old.setFundItemValue(chargeItem.getFundItemValue());
+                    }
                     old.setNotes(chargeItem.getNotes());
                     old.setIsRequired(chargeItem.getIsRequired());
                     old.setChargeSubjectPath(chargeItem.getChargeSubjectPath());
                     old.setChargeSubjectName(chargeItem.getChargeSubjectName());
                     old.setSystemSubject(chargeItem.getSystemSubject());
                     businessChargeItemRpc.save(old);
-                }else{
+                } else {
                     return BaseOutput.failure("数据已不存在");
                 }
             }

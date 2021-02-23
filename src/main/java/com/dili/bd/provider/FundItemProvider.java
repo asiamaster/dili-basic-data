@@ -3,15 +3,20 @@ package com.dili.bd.provider;
 import cn.hutool.core.collection.CollectionUtil;
 import com.dili.assets.sdk.dto.ConfigDto;
 import com.dili.assets.sdk.dto.ConfigQuery;
+import com.dili.assets.sdk.dto.FunditemDto;
+import com.dili.assets.sdk.dto.FunditemQuery;
 import com.dili.assets.sdk.rpc.ConfigRpc;
+import com.dili.assets.sdk.rpc.FunditemRpc;
 import com.dili.commons.bstable.TableResult;
 import com.dili.commons.glossary.EnabledStateEnum;
+import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.dto.DTOUtils;
 import com.dili.ss.metadata.BatchProviderMeta;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValuePairImpl;
 import com.dili.ss.metadata.provider.BatchDisplayTextProviderSupport;
+import com.dili.uap.sdk.session.SessionContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Scope;
@@ -20,6 +25,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -33,19 +39,16 @@ import java.util.stream.Collectors;
 @Component
 public class FundItemProvider extends BatchDisplayTextProviderSupport {
 
-    private static final String FUND_ITEM_GROUP = "fundItem";
-
-    private final ConfigRpc configRpc;
+    private final FunditemRpc funditemRpc;
 
     @Override
     public List<ValuePair<?>> getLookupList(Object val, Map metaMap, FieldMeta fieldMeta) {
-        ConfigQuery query = new ConfigQuery();
-        query.setType(FUND_ITEM_GROUP);
-        query.setState(EnabledStateEnum.ENABLED.getCode());
+        FunditemQuery query = new FunditemQuery();
+        query.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         try {
-            TableResult<ConfigDto> tableResult = configRpc.query(query);
-            if (CollectionUtil.isNotEmpty(tableResult.getRows())) {
-                return tableResult.getRows().stream()
+            BaseOutput<List<FunditemDto>> listBaseOutput = funditemRpc.queryAll(query);
+            if (Objects.nonNull(listBaseOutput) && CollectionUtil.isNotEmpty(listBaseOutput.getData())) {
+                return listBaseOutput.getData().stream()
                         .map(e -> new ValuePairImpl<>(e.getName(), String.valueOf(e.getId())))
                         .collect(Collectors.toList());
             }

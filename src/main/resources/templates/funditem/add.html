@@ -55,13 +55,33 @@
                         rules: []
                     },
                     marketId: {
-                        type: 'select',
-                        label: '市场',
-                        required: true,
-                        options: loadProvider({provider: 'marketAllProvider', queryParams: {required: true}}),
+                        options: function (data) {
+                            return new Promise((resolve, reject) => {
+                                axios.post('/funditemController/allMarket.action')
+                                    .then((res) => {
+                                        console.log(toEleTree(res.data, {label: "name", pid: "parentId"}))
+                                        resolve(toEleTree(res.data, {label: "name", pid: "parentId"}));
+                                        // console.log(res);
+                                    })
+                                    .catch(function (error) {
+                                        reject(error);
+                                        // console.log(error);
+                                    });
+                            });
+                        },
+                        label: "市场",
+                        type: "cascader",
                         attrs: {
-                            multiple: true
-                        }
+                            props: {
+                                value: 'id',
+                                label: 'name',
+                                separator: '-',
+                                expandTrigger: 'hover',
+                                checkStrictly: true,
+                                multiple: true
+                            }
+                        },
+                        required: true
                     },
                 }
             };

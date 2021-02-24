@@ -40,12 +40,6 @@
                 <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
                     <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
                 </button>
-                <button type="button" class="btn btn-primary" onclick="$.operate.enable()">
-                    <i class="fa fa-play"></i> 启用
-                </button>
-                <button type="button" class="btn btn-primary" onclick="$.operate.disable()">
-                    <i class="fa fa-stop"></i> 禁用
-                </button>
             </div>
 
             <table id="dataTable" class="table" data-page-size="6" data-icons="bui.variable.icons">
@@ -152,18 +146,13 @@
         el: '#app',
         data() {
             return {
-                formData: {name:"",marketId:""},
+                formData: {name: "", marketId: ""},
                 formDesc: {
                     name: {
                         type: 'input',
                         label: '资金项名称',
                         rules: []
-                    },
-                    marketId: {
-                        type: 'select',
-                        label: '市场',
-                        options: loadProvider({provider: 'marketAllProvider'})
-                    },
+                    }
                 }
             };
         },

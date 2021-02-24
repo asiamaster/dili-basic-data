@@ -54,6 +54,7 @@ CREATE TABLE type_market
 ) COMMENT = '业务商户 ';
 
 ALTER TABLE trade_type ADD COLUMN scene json COMMENT '过磅场景' AFTER push;
+UPDATE trade_type SET scene = JSON_ARRAY(1);
 
 INSERT INTO area_market(market,area) SELECT market_id as market,id as area FROM district  WHERE market_id !=9;
 

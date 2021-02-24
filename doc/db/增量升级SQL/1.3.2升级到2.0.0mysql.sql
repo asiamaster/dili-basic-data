@@ -82,6 +82,56 @@ CREATE TABLE funditem
     PRIMARY KEY (id)
 ) COMMENT = '资金项目 ';
 
+INSERT INTO `funditem` VALUES (1, '现金存款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (2, 'POS存款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (3, '网银存款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (4, '现金取款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (5, '网银取款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (6, 'IC卡工本费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (7, '网银手续费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (8, 'POS手续费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (9, '交易冻结', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (10, '交易解冻', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (11, '退卡零钱', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (12, '手动冻结资金', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (13, '手动解冻资金', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (14, '手动冻结账户', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (15, '手动解冻账户', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (16, '本地配送费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (17, '车辆进场费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (18, '车辆出场费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (19, '称重服务费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (20, '车辆转场费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (21, '车辆离场费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (22, '货款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (23, '交易手续费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (24, '通行证管理费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (25, '检测费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (26, '查询费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (29, '圈提取款', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (30, '圈提手续费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (31, '进门冻结', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (32, '进门解冻', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (33, '装卸费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (34, '办卡费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (35, '返点', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (36, '占地费', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (37, '账户转账', 1, '[8, 9]');
+INSERT INTO `funditem` VALUES (38, '租金', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (39, '物业管理费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (40, '卫生费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (41, '入库费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (42, '管理费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (43, '信息费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (44, '保证金', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (45, '定金', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (46, '水费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (47, '电费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (48, '劳务通行证管理费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (49, '精品停车费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (50, '更名费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+INSERT INTO `funditem` VALUES (51, '更型费', 1, '[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]');
+
 -- ----------------------------
 -- Table structure for jv_commit
 -- ----------------------------

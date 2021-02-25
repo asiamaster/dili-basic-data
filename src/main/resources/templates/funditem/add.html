@@ -54,7 +54,7 @@
                         required: true,
                         rules: []
                     },
-                    marketId: {
+                    marketIdArray: {
                         options: function (data) {
                             return new Promise((resolve, reject) => {
                                 axios.post('/funditemController/allMarket.action')
@@ -70,7 +70,7 @@
                             });
                         },
                         label: "市场",
-                        type: "cascader",
+                        type: "cascader-panel",
                         attrs: {
                             props: {
                                 value: 'id',
@@ -88,7 +88,11 @@
         },
         methods: {
             handleRequest(data) {
-
+                const marketIdArray = [];
+                data.marketIdArray.forEach(function (item){
+                  marketIdArray.push(item[0]);
+                });
+                data.marketId = marketIdArray;
                 axios.post(rootPath + "/funditemController/add.action", data)
                     .then(function (response) {
                         $.operate.saveSuccess(response.data);

@@ -70,8 +70,13 @@ public class FunditemController {
         BaseOutput baseOutput = funditemRpc.get(id);
         if (baseOutput.getCode() != null) {
             JSONObject jsonObject = JSONUtil.parseObj(baseOutput.getData());
-            JSONArray scene = jsonObject.getJSONArray("marketId");
-            jsonObject.set("marketId", scene);
+            JSONArray jsonArray = jsonObject.getJSONArray("marketId");
+            JSONArray marketIdArray = new JSONArray();
+            for (int i = 0; i < jsonArray.size(); i++) {
+                Long marketId = jsonArray.getLong(i);
+                marketIdArray.put(new JSONArray().put(marketId));
+            }
+            jsonObject.set("marketIdArray", marketIdArray);
             map.put("data", jsonObject);
         }
         return prefix + "/edit";
@@ -88,7 +93,7 @@ public class FunditemController {
     /**
      * 查询数据分页
      *
-     * @param query    条件
+     * @param query 条件
      * @return PageInfo<FunditemDto>
      */
     @PostMapping("/query.action")
@@ -158,8 +163,8 @@ public class FunditemController {
     public Object allMarket() {
         List<Firm> firmList = firmRpc.getAllChildrenByParentId(null).getData();
         JSONArray array = new JSONArray();
-        for (int i = 0; i < firmList.size(); i++) {
-            Firm firm = firmList.get(i);
+
+        for (Firm firm : firmList) {
             JSONObject jsonObject = JSONUtil.parseObj(firm.toString());
             if (!jsonObject.getLong("id").equals(SessionContext.getSessionContext().getUserTicket().getFirmId())) {
                 jsonObject.set("disabled", true);

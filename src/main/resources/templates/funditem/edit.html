@@ -53,7 +53,14 @@
                         label: '资金项名称',
                         required: true,
                         disabled: true,
-                        rules: []
+                        rules: [],
+                        attrs: {
+                            maxlength: 20,
+                            showWordLimit: true
+                        },
+                        valueFormatter (value) {
+                            return value.trim();
+                        }
                     },
                     marketIdArray: {
                         options: function (data) {

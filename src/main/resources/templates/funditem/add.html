@@ -52,7 +52,14 @@
                         type: 'input',
                         label: '资金项名称',
                         required: true,
-                        rules: []
+                        rules: [],
+                        attrs: {
+                            maxlength: 20,
+                            showWordLimit: true
+                        },
+                        valueFormatter (value) {
+                            return value.trim();
+                        }
                     },
                     marketIdArray: {
                         options: function (data) {

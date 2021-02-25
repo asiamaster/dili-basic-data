@@ -52,7 +52,11 @@
                         type: 'input',
                         label: '资金项名称',
                         required: true,
-                        rules: [],
+                        rules: [{
+                            pattern: new RegExp("^[\u4e00-\u9fa5_a-zA-Z0-9]+$", ""),
+                            type: "string",
+                            message: "资金项名称只能是中文、英文字母和数字"
+                        }],
                         attrs: {
                             maxlength: 20,
                             showWordLimit: true

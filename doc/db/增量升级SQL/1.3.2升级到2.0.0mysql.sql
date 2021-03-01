@@ -82,6 +82,8 @@ CREATE TABLE funditem
     PRIMARY KEY (id)
 ) COMMENT = '资金项目 ';
 
+ALTER TABLE `funditem` AUTO_INCREMENT = 200;
+
 INSERT INTO `funditem` VALUES (1, '现金存款', 1, '[8, 9]');
 INSERT INTO `funditem` VALUES (2, 'POS存款', 1, '[8, 9]');
 INSERT INTO `funditem` VALUES (3, '网银存款', 1, '[8, 9]');

@@ -15,6 +15,7 @@
  */
 package com.dili.bd.controller;
 
+import cn.hutool.db.Session;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -66,7 +67,8 @@ public class FunditemController {
      * 分页跳转
      */
     @GetMapping("/edit.action")
-    public String edit(Long id, ModelMap map) {
+    @ResponseBody
+    public String edit(Long id) {
         BaseOutput baseOutput = funditemRpc.get(id);
         if (baseOutput.getCode() != null) {
             JSONObject jsonObject = JSONUtil.parseObj(baseOutput.getData());
@@ -77,7 +79,6 @@ public class FunditemController {
                 marketIdArray.put(new JSONArray().put(marketId));
             }
             jsonObject.set("marketIdArray", marketIdArray);
-            map.put("data", jsonObject);
         }
         return prefix + "/edit";
     }
@@ -116,6 +117,7 @@ public class FunditemController {
     @ResponseBody
     public Object add(@RequestBody FunditemDto dto) {
         dto.setState(EnabledStateEnum.ENABLED.getCode());
+        dto.setMarketId(new JSONArray().put(SessionContext.getSessionContext().getUserTicket().getFirmId()).toString());
         return funditemRpc.add(dto);
     }
 
@@ -125,6 +127,7 @@ public class FunditemController {
     @PostMapping("/edit.action")
     @ResponseBody
     public Object edit(@RequestBody FunditemDto dto) {
+        dto.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId().toString());
         return funditemRpc.update(dto);
     }
 

@@ -1,14 +1,34 @@
 <#bs4Body>
 <!-- Automatically provides/replaces `Promise` if missing or broken. -->
-<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.js"></script>
+<script src="${contextPath}/resources/design/es6-promise.js"></script>
+<script src="${contextPath}/resources/design/es6-promise.auto.js"></script>
 <!-- 引入Vue -->
 <script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
 <!-- 引入element -->
 <link rel="stylesheet" href="${contextPath}/resources/design/index.css">
 <script src="${contextPath}/resources/design/index.js"></script>
-<div class="container-fluid">
-    <div id=app>
+
+<link href="${contextPath}/resources/bui/bootstrap-switch-master/dist/css/bootstrap4/bootstrap-switch.css" rel="stylesheet">
+<script src="${contextPath}/resources/bui/bootstrap-switch-master/dist/js/bootstrap-switch.js"></script>
+<div id="dialogApp">
+    <el-dialog title="收货地址" width="60%" :visible.sync="dialogFormVisible" :close-on-click-modal="false"
+               :destroy-on-close="true" :before-close="handleClose">
+        <ele-form
+                :form-attrs="{
+            size: 'medium'
+            }"
+                :is-show-cancel-btn="false"
+                submit-btn-text="提交"
+                form-btn-size="medium"
+                :is-dialog="true"
+                :form-desc="formDesc"
+                v-model="formData"
+                :request-fn="handleRequest">
+        </ele-form>
+    </el-dialog>
+</div>
+<div id=app class="container-fluid">
+    <div>
         <ele-form
                 :form-attrs="{
             size: 'medium'
@@ -34,14 +54,20 @@
     <div class="row">
         <div class="col-12">
             <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-                <button onclick="$.operate.add()" type="button" class="btn btn-primary">
+                <button onclick="openDialog()" type="button" class="btn btn-primary">
                     <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
                 </button>
-                <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
-                    <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
-                </button>
+                <#resource code="funditem_add">
+                    <button onclick="$.operate.add()" type="button" class="btn btn-primary">
+                        <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
+                    </button>
+                </#resource>
+                <#resource code="funditem_edit">
+                    <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
+                        <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
+                    </button>
+                </#resource>
             </div>
-
             <table id="dataTable" class="table" data-page-size="6" data-icons="bui.variable.icons">
 
             </table>
@@ -85,10 +111,31 @@
         sortName: "roleSort",
         modalName: "资金项",
         search: false,
+        onLoadSuccess:function (){
+            $("[class='my-switch']").click(function (){
+                let checked = this.checked;
+                let id = $(this).data(`id`);
+                axios.post(rootPath + "/funditemController/edit.action", {id: id})
+                    .then(function (response) {
+                        let result = response.data;
+                        if (result.code == web_status.SUCCESS) {
+                            diaApp.$message({
+                                message: '操作成功',
+                                type: 'success'
+                            });
+                        } else {
+                            diaApp.$message({
+                                message: result.message,
+                                type: 'error'
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        $.modal.alertError("系统错误");
+                    });
+            });
+        },
         dataColumns: [
-            {
-                checkbox: true
-            },
             {
                 field: 'id',
                 title: 'id'
@@ -98,20 +145,18 @@
                 title: '资金项名称'
             },
             {
-                field: 'state',
-                title: '状态',
-                formatter: function (value, row, index) {
-                    if (value == 1) {
-                        return '启用';
-                    } else {
-                        return '禁用';
-                    }
-                }
-            },
-            {
                 field: 'marketId',
-                title: '市场',
-                provider: 'marketListProvider'
+                title: '开关',
+                provider: 'marketListProvider',
+                formatter: function (value, row) {
+                    const actions = [];
+                    if (value === "1") {
+                        actions.push('<input type="checkbox" data-id="' + row.id + '" checked class="my-switch">');
+                    } else if (value === "0") {
+                        actions.push('<input type="checkbox" data-id="' + row.id + '" class="my-switch">');
+                    }
+                    return actions.join('');
+                }
             },
             /*
             参照修改注释
@@ -172,6 +217,64 @@
         }
     })
 
+
+    var diaApp = new Vue({
+        el: '#dialogApp',
+        data() {
+            return {
+                dialogFormVisible: false,
+                formData: {name:"",enabled:""},
+                formDesc: {
+                    name: {
+                        type: 'input',
+                        label: '资金项名称',
+                        required: true,
+                        rules: [{
+                            pattern: new RegExp("^[\u4e00-\u9fa5_a-zA-Z0-9]+$", ""),
+                            type: "string",
+                            message: "资金项名称只能是中文、英文字母和数字"
+                        }],
+                        attrs: {
+                            maxlength: 20,
+                            showWordLimit: true
+                        },
+                        valueFormatter (value) {
+                            return value.trim();
+                        }
+                    }
+                }
+            };
+        },
+        methods: {
+            handleClose(done) {
+                diaApp.formData.name = "";
+                done();
+            },
+            handleRequest(data) {
+                axios.post(rootPath + "/funditemController/add.action", data)
+                    .then(function (response) {
+                        let result = response.data;
+                        if (result.code == web_status.SUCCESS) {
+                            diaApp.$message({
+                                message: '保存成功',
+                                type: 'success'
+                            });
+                            app.submit();
+                            diaApp.dialogFormVisible = false;
+                        } else {
+                            diaApp.$message({
+                                message: result.message,
+                                type: 'error'
+                            });
+                        }
+                    })
+                    .catch(function (error) {
+                        $.modal.alertError("系统错误");
+                    });
+            }
+        }
+    });
+
     function loadProvider(data) {
         return new Promise((resolve, reject) => {
             axios.post('/convert/list.action', data)
@@ -185,4 +288,9 @@
                 });
         });
     }
+
+    function openDialog(){
+        diaApp.dialogFormVisible = true;
+    }
+
 </script>

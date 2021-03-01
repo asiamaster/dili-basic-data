@@ -5,6 +5,7 @@ import com.dili.bd.service.MarketRpcService;
 import com.dili.ss.metadata.FieldMeta;
 import com.dili.ss.metadata.ValuePair;
 import com.dili.ss.metadata.ValueProvider;
+import com.dili.uap.sdk.session.SessionContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -31,11 +32,12 @@ public class MarketListProvider implements ValueProvider {
             return null;
         }
         JSONArray array = JSONArray.parseArray(obj.toString());
-        List<String> list = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
             Long id = array.getLong(i);
-            marketRpcService.getFirmById(id).ifPresent(it -> list.add(it.getName()));
+            if(SessionContext.getSessionContext().getUserTicket().getFirmId().equals(id)){
+                return "1";
+            }
         }
-        return String.join(",", list);
+        return "0";
     }
 }

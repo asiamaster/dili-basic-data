@@ -1,50 +1,72 @@
+
 <form id="editForm">
-    <input type="hidden" id="updateForm_id" name="id" value="${obj.id!}"/>
-    <div class="form-group row">
-        <label for="editForm_name" class="col-sm-2 col-form-label">科目名称</label>
-        <div class="col-sm-10">
-            <input type="text" id="editForm_name" name="name" class="form-control" maxlength="8" value="${obj.name!}"
-                   required/>
-        </div>
-    </div>
-    <div class="form-group row">
-        <label for="edit-code" class="col-sm-2 col-form-label">备注</label>
-        <div class="col-sm-10">
-            <textarea maxlength="20"  class="form-control input-sm" name="memo" >${obj.memo!}</textarea>
-        </div>
-    </div>
+    <ele-form
+            v-bind="formConfig"
+            v-model="formData"
+            :request-fn="handleRequest"
+    />
 </form>
 <script type="text/javascript">
-    $(function () {
-        $("#editForm").validate();
-        var okButton = $("#editBtn");
-        okButton.unbind("click").click(function () {
-            if ($("#editForm").valid()) {
-                okButton.attr("disabled", "disabled");
-                $.ajax({
-                    type: "POST",
-                    dataType: "json",
-                    url: '/subject/save.action',
-                    data: $("#editForm").serialize(),
-                    success: function (data) {
-                        if (data.code != '200') {
-                            tips("提示", data.message);
-                            okButton.removeAttr("disabled");
+    var editApp = new Vue({
+        el: '#editForm',
+        created: function () {
+            const data = ${data!};
+            this.formData = data;
+        },
+        data() {
+            return {
+                formData: {},
+                formConfig: {
+                    isDialog: true,
+                    isShowCancelBtn: false,
+                    isShowErrorNotify: false,
+                    formBtnSize: 'small',
+                    formAttrs:{size:'small'},
+                    formDesc: {
+                        name: {
+                            type: "input",
+                            label: "名称",
+                            attrs: {
+                                clearable: true,
+                                maxlength: 20,
+                                showWordLimit: true
+                            },
+                            required: true
+                        },
+                        memo: {
+                            label: "备注",
+                            type: "textarea",
+                            attrs: {
+                                maxlength: 50,
+                                showWordLimit: true,
+                                autosize: {
+                                    minRows: 2,
+                                    maxRows: 4
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        methods: {
+            handleRequest(data) {
+                axios.post("/subject/save.action", data)
+                    .then(function (response) {
+                        if (response.data.code != '200') {
+                            bs4pop.alert(response.data.message, {type: 'error'});
                             return;
                         }
                         loadTable();
-                        updateTreeNode(data.data);
+                        treeApp.loadTree();
                         $('#editModal').modal('hide');
-                        tips("提示", "修改成功!");
+                        bs4pop.alert("修改成功", {type: 'success'});
                         bui.loading.hide();
-                        okButton.removeAttr("disabled");
-                    },
-                    error: function () {
-                        okButton.removeAttr("disabled");
-                        tips("提示", "修改失败!");
-                    }
-                });
+                    })
+                    .catch(function (error) {
+                        bs4pop.alert("修改失败", {type: 'error'});
+                    });
             }
-        });
+        }
     });
 </script>

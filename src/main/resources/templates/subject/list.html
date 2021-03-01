@@ -1,57 +1,81 @@
 <#bs4Body>
-<link rel="stylesheet"
-      href="https://www.jq22.com/demo/bootstrap-ztree3201708300202/css/bootstrapStyle/bootstrapStyle.css"
-      type="text/css">
-<script type='text/javascript' src="${contextPath}/resources/bui/js/jquery.inputmask.bundle.js"></script>
+<!-- Automatically provides/replaces `Promise` if missing or broken. -->
+<script src="${contextPath}/resources/design/es6-promise.js"></script>
+<script src="${contextPath}/resources/design/es6-promise.auto.js"></script>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
+<script src="${contextPath}/resources/design/extends/vue-ele-form-image-uploader/dist/vue-ele-form-image-uploader.umd.min.js"></script>
+
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_list.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
 <div class="main-container container-fluid">
 
-    <div class="row row-cols-4" id="queryForm">
-        <div class="form-group col">
-            <label for="category_status">状态</label>
-            <select id="category_status" class="form-control input-sm">
-                <option value="">-- 全部 --</option>
-                <option value="1">已启用</option>
-                <option value="2">已禁用</option>
-            </select>
-        </div>
-        <div class="form-group col">
-            <label for="category_text">名称</label>
-            <input id="category_text" type="text" class="form-control input-sm input-control len224"
-                   placeholder="名称">
-        </div>
-        <div class="col align-self-center mt-3">
-            <button type="button" onclick="queryClickHandler();return false;" class="btn btn-outline-primary mr-2"><i class="fa fa-search"></i> 查询</button>
-            <button type="button" class="btn btn-outline-primary mr-2"onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空</button>
-            <#resource code="sub_add">
-            <button class="btn btn-outline-primary" id="addButton" onclick="addClickHandler();return false;"><i class="fa fa-plus"></i> 新增</button>
-        </#resource>
-        </div>
-    </div>
-
-
     <div class="row">
-        <div class="col-2">
+        <div class="col-3">
             <!-- treeView1 start -->
-            <div id="treeView1" class="pull-left ztree"></div>
+            <div id="treeView" class="pull-left ztree">
+                <el-input
+                        placeholder="输入关键字进行过滤"
+                        v-model="filterText">
+                </el-input>
+
+                <el-tree
+                        class="filter-tree"
+                        v-loading="loading"
+                        :data="data"
+                        :highlight-current="true"
+                        :props="defaultProps"
+                        @node-click="nodeClick"
+                        :filter-node-method="filterNode"
+                        ref="tree">
+                </el-tree>
+            </div>
             <!-- treeView1 end -->
         </div>
-        <div class="col">
-            <!-- table-showlist start -->
-            <div id="tablelist" class="table-showlist">
-
-            </div>
-            <input type="hidden" id="parentId" value="0"/>
-            <!-- table-showlist end -->
+        <div class="col-9">
+            <div class="row row-cols-4" id="queryForm">
+                <div class="form-group col">
+                    <label for="category_text">名称</label>
+                    <input id="category_text" type="text" class="form-control input-sm input-control len224"
+                           placeholder="名称">
+                </div>
+                <div class="col-auto align-self-center mt-3">
+                    <button type="button" onclick="queryClickHandler();return false;"
+                            class="btn btn-outline-primary mr-2"><i class="fa fa-search"></i> 查询
+                    </button>
+                    <button type="button" class="btn btn-outline-primary mr-2"
+                            onclick="javascript:$('#queryForm .form-control').val('');"><i class="fa fa-refresh"></i> 清空
+                    </button>
+                    <#resource code="cc_add">
+                    <button class="btn btn-outline-primary" id="addButton" onclick="addClickHandler();return false;"><i
+                            class="fa fa-plus"></i> 新增
+                    </button>
+                </#resource>
         </div>
     </div>
+    <!-- table-showlist start -->
+    <div id="tablelist" class="table-showlist">
+
+    </div>
+    <input type="hidden" id="parentId" value="0"/>
+    <!-- table-showlist end -->
+</div>
+</div>
 
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="addModal">
+<div class="modal" tabindex="-1" data-backdrop="static"  role="dialog" id="addModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">新增科目</h5>
+                <h5 class="modal-title">新增财务科目</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -59,19 +83,15 @@
             <div class="modal-body">
 
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary px-5" id="saveBtn">保存</button>
-                <button type="button" class="btn  btn-secondary px-5" data-dismiss="modal">关闭</button>
-            </div>
         </div>
     </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="editModal">
+<div class="modal" tabindex="-1" role="dialog" data-backdrop="static" id="editModal">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">修改科目</h5>
+                <h5 class="modal-title">修改财务科目</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -79,90 +99,12 @@
             <div class="modal-body">
 
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary px-5" id="editBtn">保存</button>
-                <button type="button" class="btn btn-secondary px-5" data-dismiss="modal">关闭</button>
-            </div>
         </div>
     </div>
 </div>
 
 
-<script type="text/javascript" src="${contextPath}/resources/ztree/js/jquery.ztree.core-3.5.js"></script>
-<script type="text/javascript" src="${contextPath}/resources/ztree/js/jquery.ztree.excheck-3.5.js"></script>
-<script type="text/javascript" src="${contextPath}/resources/ztree/js/jquery.ztree.exedit-3.5.js"></script>
-<script type="text/javascript" src="${contextPath}/resources/ztree/js/jquery.ztree.exhide-3.5.js"></script>
 <script type="text/javascript">
-    jQuery(function ($) {
-        bui.loading.show();
-        loadTree();
-    });
-    //加载树
-    var settings = {
-        callback: {
-            onClick: treeClickHandler
-        },
-        data: {
-            simpleData: {
-                enable: true,
-                pIdKey: "parent",
-                rootPId: 0
-            }
-        },
-        view: {
-            showIcon: false,
-            txtSelectedEnable: true
-        }
-    };
-
-    function loadTree() {
-        $.ajax({
-            type: "GET",
-            dataType: "json",
-            url: '/subject/getTree.action',
-            success: function (data) {
-                if (data.code != '200') {
-                    tips("提示", data.message);
-                    bui.loading.hide();
-                    return;
-                }
-                if (data.data) {
-                    data.data.push({code: "", id: 0, name: "根目录", parent: -1, path: "0", pyInitials: ""});
-                }
-                $.fn.zTree.init($("#treeView1"), settings, data.data);
-                bui.loading.hide();
-            },
-            error: function () {
-                tips("提示", "加载科目树失败");
-                bui.loading.hide();
-            }
-        });
-    }
-
-    function addTreeNode(tid, node, isSilent) {
-        var treeObj = $.fn.zTree.getZTreeObj("treeView1");
-        if (treeObj) {
-            var parentNode = treeObj.getNodeByParam("id", tid);
-            treeObj.addNodes(parentNode, node, isSilent);
-        }
-    }
-
-    function updateTreeNode(data) {
-        var treeObj = $.fn.zTree.getZTreeObj("treeView1");
-        if (treeObj) {
-            var node = treeObj.getNodeByParam("id", data.id);
-            node.name = data.name;
-            treeObj.updateNode(node);
-        }
-    }
-
-    function removeTreeNode(tid) {
-        var treeObj = $.fn.zTree.getZTreeObj("treeView1");
-        if (treeObj) {
-            var parentNode = treeObj.getNodeByParam("id", tid);
-            treeObj.removeNode(parentNode, false);
-        }
-    }
 
     var tableurl;
     var status;
@@ -170,12 +112,7 @@
     var isQuery = true;
 
     function loadTable() {
-        bui.loading.show();
         if (isQuery) {
-            loadTree();
-            if (status) {
-                $("#category_status option[value=" + status + "]")[0].selected = "selected";
-            }
             $("#category_text").val(text);
         }
         if (tableurl) {
@@ -183,34 +120,18 @@
         }
     }
 
-    //树单击事件 加载列表
-    function treeClickHandler(e, treeId, treeNode) {
-        var path = treeNode.path;
-        var pid = treeNode.id;
-        var arr = path.split(",");
-
-        $("#parentId").val(pid);
-
-        $("#category_status option[value='']")[0].selected = "selected";
-        $("#category_text").val("");
-        tableurl = '/subject/table.html' + '?parent=' + pid;
-        isQuery = false;
-        loadTable();
-        bui.loading.hide();
-    }
-
     function tips(title, msg) {
         bs4pop.alert(msg, {type: 'success'});
     }
 
     function queryClickHandler() {
-        status = $("#category_status").val();
+        bui.loading.show();
         text = $("#category_text").val();
         $("#parentId").attr("value", "");
-        tableurl = '/subject/table.html' + '?state=' + status + '&keyword=' + text;
+        tableurl = '/subject/table.html' + '?keyword=' + text;
         isQuery = true;
         loadTable();
-        loadTree();
+        bui.loading.hide();
     }
 
     function addClickHandler() {
@@ -220,5 +141,65 @@
 
         $('#addModal .modal-body').load("/subject/addView.html?pid=" + pid);
     }
+
+    var treeApp = new Vue({
+        el: '#treeView',
+        watch: {
+            filterText(val) {
+                this.$refs.tree.filter(val);
+            }
+        },
+        methods: {
+            loadTree() {
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: '/subject/getTree.action',
+                    success: function (data) {
+                        if (data.code != '200') {
+                            tips("提示", data.message);
+                            treeApp.loading = false;
+                            return;
+                        }
+                        if (data.data) {
+                            data.data.push({code: "", id: 0, name: "根目录", parent: -1, path: "0", pyInitials: ""});
+                        }
+                        treeApp.data = toEleTree(data.data, {label: "name", pid: "parent"});
+                        treeApp.loading = false;
+                    },
+                    error: function () {
+                        tips("提示", "加载品类树失败");
+                        treeApp.loading = false;
+                    }
+                });
+            },
+            filterNode(value, data) {
+                if (!value) return true;
+                return data.label.indexOf(value) !== -1;
+            },
+            nodeClick(data) {
+                const pid = data.id;
+                $("#parentId").val(pid);
+                $("#category_text").val("");
+                tableurl = '/subject/table.html' + '?parent=' + pid;
+                isQuery = false;
+                loadTable();
+            }
+        },
+
+        data() {
+            return {
+                filterText: '',
+                loading: true,
+                data: [],
+                defaultProps: {
+                    children: 'children',
+                    label: 'label'
+                }
+            };
+        }
+    });
+
+    treeApp.loadTree();
 </script>
 </#bs4Body>

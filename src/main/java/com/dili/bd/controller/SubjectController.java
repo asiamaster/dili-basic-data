@@ -1,5 +1,10 @@
 package com.dili.bd.controller;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
+import com.dili.assets.sdk.dto.CusCategoryDTO;
+import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.assets.sdk.dto.SubjectDTO;
 import com.dili.assets.sdk.dto.SubjectQuery;
 import com.dili.assets.sdk.rpc.AssetsRpc;
@@ -16,11 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * CategoryController
@@ -45,15 +52,6 @@ public class SubjectController {
      */
     @RequestMapping("addView.html")
     public String toAdd(Long pid, ModelMap map) {
-        // 品类未选择或者选择根品类时，添加页面不显示上级品类字段
-        if (pid == null) {
-            pid = 0L;
-        }
-        if (pid != 0) {
-            map.put("pid", pid);
-            SubjectDTO data = assetsRpc.getSubject(pid).getData();
-            map.put("parentName", data.getName());
-        }
         return "subject/add";
     }
 
@@ -63,7 +61,8 @@ public class SubjectController {
     @RequestMapping("editView.html")
     public String toEdit(Long id, ModelMap map) {
         SubjectDTO subjectDTO = assetsRpc.getSubject(id).getData();
-        map.put("obj", subjectDTO);
+        JSONObject jsonObject = JSONUtil.parseObj(subjectDTO);
+        map.put("data", jsonObject);
         return "subject/edit";
     }
 
@@ -87,15 +86,18 @@ public class SubjectController {
     @RequestMapping(value = "/save.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput save(SubjectDTO input) {
+    public BaseOutput save(@RequestBody SubjectDTO input) {
         try {
+            if (input.getId() != null) {
+                if(!input.getMarketId().equals(SessionContext.getSessionContext().getUserTicket().getFirmId())){
+                    return BaseOutput.failure("集团固定科目不允许修改");
+                }
+                LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
+            }
             input.setCreateTime(new Date());
             input.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
             input.setModifyTime(new Date());
             input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
-            if (input.getId() != null) {
-                LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
-            }
             BaseOutput save = assetsRpc.save(input);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
@@ -122,6 +124,7 @@ public class SubjectController {
             }
         }
         Map<String, Object> map = new HashMap<>();
+        input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         List<SubjectDTO> list = assetsRpc.listSubject(input).getData();
         results.addAll(list);
         map.put("obj", results);
@@ -139,6 +142,10 @@ public class SubjectController {
     @BusinessLogger(businessType = LogBizTypeConst.CATEGORY, content = "", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
     public BaseOutput batchUpdate(Long id, Integer value) {
         try {
+            SubjectDTO dto = assetsRpc.getSubject(id).getData();
+            if (!dto.getMarketId().equals(SessionContext.getSessionContext().getUserTicket().getFirmId())) {
+                return BaseOutput.failure("集团固定科目不允许修改");
+            }
             BaseOutput baseOutput = assetsRpc.batchUpdateSubject(id, value);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             if (value.equals(EnabledStateEnum.ENABLED.getCode())) {
@@ -150,7 +157,6 @@ public class SubjectController {
             if (value.equals(3)) {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "del");
             }
-
 
             LoggerUtil.buildLoggerContext(id, String.valueOf(value), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;

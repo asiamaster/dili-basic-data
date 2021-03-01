@@ -81,7 +81,7 @@
                     },
                     success: function (data) {
                         if (data.code != '200') {
-                            tips("提示", data.message);
+                            bs4pop.alert(data.message, {type: 'error'});
                             return;
                         }
                         loadTable();
@@ -118,7 +118,7 @@
                     },
                     success: function (data) {
                         if (data.code != '200') {
-                            tips("提示", data.message);
+                            bs4pop.alert(data.message, {type: 'error'});
                             return;
                         }
                         loadTable();
@@ -153,7 +153,7 @@
                     },
                     success: function (data) {
                         if (data.code != '200') {
-                            tips("提示", data.message);
+                            bs4pop.alert(data.message, {type: 'error'});
                             return;
                         }
                         loadTable();

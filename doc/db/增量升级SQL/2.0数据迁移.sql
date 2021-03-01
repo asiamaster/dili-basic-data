@@ -2,7 +2,7 @@ UPDATE `dili-basic-data`.booth_rent br SET type = 1,`user` = (SELECT customer_na
 
 UPDATE `dili-basic-data`.assets a SET a.`user` = (SELECT b.`user` from `dili-basic-data`.booth_rent b WHERE a.id = b.booth_id and now() >= b.start and now() <= b.end);
 
-UPDATE `dili-basic-data`.`subject` SET market_id = 8;
+UPDATE `dili-basic-data`.`subject` SET market_id = 1;
 
 TRUNCATE TABLE `dili-basic-data`.config;
 

@@ -54,18 +54,10 @@
     <div class="row">
         <div class="col-12">
             <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
+                <#resource code="funditem_add">
                 <button onclick="openDialog()" type="button" class="btn btn-primary">
                     <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
                 </button>
-                <#resource code="funditem_add">
-                    <button onclick="$.operate.add()" type="button" class="btn btn-primary">
-                        <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
-                    </button>
-                </#resource>
-                <#resource code="funditem_edit">
-                    <button onclick="$.operate.edit()" type="button" class="btn btn-primary">
-                        <i class="fa fa-pencil-square-o"></i>&nbsp;&nbsp;修改
-                    </button>
                 </#resource>
             </div>
             <table id="dataTable" class="table" data-page-size="6" data-icons="bui.variable.icons">

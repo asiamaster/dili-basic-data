@@ -54,11 +54,9 @@
     <div class="row">
         <div class="col-12">
             <div id="toolbar" class="btn-group" role="group" aria-label="工具栏">
-                <#resource code="funditem_add">
                 <button onclick="openDialog()" type="button" class="btn btn-primary">
                     <i class="fa fa-plus"></i>&nbsp;&nbsp;新增
                 </button>
-                </#resource>
             </div>
             <table id="dataTable" class="table" data-page-size="6" data-icons="bui.variable.icons">
 
@@ -247,6 +245,7 @@
                     .then(function (response) {
                         let result = response.data;
                         if (result.code == web_status.SUCCESS) {
+                            diaApp.formData.name = "";
                             diaApp.$message({
                                 message: '保存成功',
                                 type: 'success'

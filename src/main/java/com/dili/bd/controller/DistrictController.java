@@ -81,7 +81,7 @@ public class DistrictController {
     @RequestMapping("insert.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.DISTRICT, content = "", operationType = "add", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput save(DistrictDTO input) {
+    public BaseOutput save(@RequestBody DistrictDTO input) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setCreateTime(new Date());

@@ -1,38 +1,3 @@
-
-<script type="text/javascript">
-    var okButton = $("#form-submit");
-
-    function saveOrUpdateHandler() {
-        if ($("#addForm").valid()) {
-            okButton.attr("disabled", "disabled");
-            bui.loading.show('努力提交中，请稍候。。。');
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: '/district/insert.action',
-                data: $("#addForm").serialize(),
-                success: function (data) {
-                    bui.loading.hide();
-                    if (data.code != '200') {
-                        bs4pop.alert(data.message, {type: 'error'});
-                        okButton.removeAttr("disabled");
-                        return;
-                    }
-                    bs4pop.alert('成功', {type: 'success'}, function () {
-                        window.location.reload();
-                    });
-                    okButton.removeAttr("disabled");
-                },
-                error: function () {
-                    bui.loading.hide();
-                    okButton.removeAttr("disabled");
-                    bs4pop.alert("区域信息新增失败!", {type: 'error'});
-                }
-            });
-        }
-    }
-</script>
-
 <form id="addForm">
     <ele-form
             v-bind="formConfig"
@@ -51,6 +16,7 @@
                 formConfig: {
                     isDialog: true,
                     isShowCancelBtn: false,
+                    isShowErrorNotify: false,
                     formBtnSize: 'small',
                     formAttrs:{size:'small'},
                     formDesc: {
@@ -86,7 +52,7 @@
                         departmentId: {
                             options: function (data) {
                                 return loadProvider({
-                                    provider: 'authDepartmentProvider'})
+                                    provider: 'authDepartmentProvider',queryParams: {required: true}})
                             },
                             label: "所属部门",
                             type: "select",
@@ -115,18 +81,30 @@
         },
         methods: {
             handleRequest(data) {
+                app.loading = true;
                 axios.post("/district/insert.action", data)
                     .then(function (response) {
+                        app.loading = false;
                         if (response.data.code != '200') {
-                            bs4pop.alert(response.data.message, {type: 'error'});
+                            app.$message({
+                                message: response.data.message,
+                                type: 'error'
+                            });
                             return;
                         }
-                        $('#addModal').modal('hide');
-                        bs4pop.alert("品类信息新增成功", {type: 'success'});
-                        bui.loading.hide();
+                        $("#_modal").modal('hide');
+                        app.$message({
+                            message: '新增成功',
+                            type: 'success'
+                        });
+                        queryDataHandler();
                     })
                     .catch(function (error) {
-                        bs4pop.alert("品类新增失败", {type: 'error'});
+                        app.loading = false;
+                        app.$message({
+                            message: '新增失败',
+                            type: 'error'
+                        });
                     });
             }
         }

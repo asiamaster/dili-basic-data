@@ -1,73 +1,116 @@
 <form id="editForm">
-    <input name="id" type="hidden" value="${obj.id!}">
-    <div class="row row-cols-1  mx-auto w-50">
-        <div class="form-group col">
-            <label for="number">区域编号</label>
-                <input type="text" class="form-control" name="number" id="number" value="${obj.number!}" maxlength="4" required/>
-        </div>
-        <div class="form-group col">
-            <label for="editForm_name">区域名称</label>
-                <input type="text" id="editForm_name" name="name" class="form-control" value="${obj.name!}" maxlength="10"
-                       required/>
-        </div>
-        <div class="form-group col">
-            <label for="editKind">性质</label>
-            <select id="editKind" name="kind" class="form-control">
-                <option value="1">临时</option>
-                <option value="2">固定</option>
-            </select>
-        </div>
-        <div class="form-group col">
-            <label for="editDepartmentId">部门</label>
-                <select id="editDepartmentId"  name="departmentId" class="form-control"></select>
-                <#bcomboProvider _id="editDepartmentId" _value="${obj.departmentId}" _provider="authDepartmentProvider"/>
-        </div>
-        <div class="form-group col">
-            <label for="notes">备注</label>
-            <textarea class="form-control" id="notes" name="notes" rows="1" maxlength="50">${obj.notes!}</textarea>
-        </div>
-    </div>
-    <br>
-    <div class="text-right">
-        <button type="button" class="btn btn-secondary px-5" data-dismiss="modal" id="cancel">取消</button>
-        <button type="button" class="btn btn-primary px-5" id="form-submit" onclick="saveOrUpdateHandler()">提交</button>
-    </div>
-
+    <ele-form
+            v-bind="formConfig"
+            v-model="formData"
+            v-loading="loading"
+            :request-fn="handleRequest"
+    />
 </form>
 <script type="text/javascript">
-    $(function () {
-        $("#editForm").validate();
-        var kind = "${obj.kind!}";
-        $("#editKind").val(kind);
-    });
-
-    var okButton = $("#form-submit");
-
-    function saveOrUpdateHandler() {
-        if ($("#editForm").valid()) {
-            okButton.attr("disabled", "disabled");
-            bui.loading.show('努力提交中，请稍候。。。');
-            $.ajax({
-                type: "POST",
-                dataType: "json",
-                url: '/district/edit.action',
-                data: $("#editForm").serialize(),
-                success: function (data) {
-                    bui.loading.hide();
-                    if (data.code != '200') {
-                        bs4pop.alert(data.message, {type: 'error'});
-                        okButton.removeAttr("disabled");
-                        return;
+    var editApp = new Vue({
+        created: function () {
+            const data = ${data!};
+            this.formData = data;
+        },
+        el: '#editForm',
+        data() {
+            return {
+                loading: false,
+                formData: {},
+                formConfig: {
+                    isDialog: true,
+                    isShowCancelBtn: false,
+                    isShowErrorNotify: false,
+                    formBtnSize: 'small',
+                    formAttrs:{size:'small'},
+                    formDesc: {
+                        number: {
+                            type: "input",
+                            label: "区域编号",
+                            attrs: {
+                                clearable: true,
+                                maxlength: 4,
+                                showWordLimit: true
+                            },
+                            required: true
+                        },
+                        name: {
+                            type: "input",
+                            label: "区域名称",
+                            attrs: {
+                                clearable: true,
+                                maxlength: 10,
+                                showWordLimit: true
+                            },
+                            required: true
+                        },
+                        kind: {
+                            options: [
+                                {text: '固定', value: 2, attrs: {size: 'small'}},
+                                {text: '临时', value: 1, attrs: {size: 'small'},}
+                            ],
+                            label: "性质",
+                            type: "select",
+                            required: true
+                        },
+                        departmentId: {
+                            options: function (data) {
+                                return loadProvider({
+                                    provider: 'authDepartmentProvider',queryParams: {required: true}})
+                            },
+                            label: "所属部门",
+                            type: "select",
+                            attrs: {
+                                multiple: true,
+                                clearable: true,
+                                collapseTags: false
+                            },
+                            required: false
+                        },
+                        notes: {
+                            label: "备注",
+                            type: "textarea",
+                            attrs: {
+                                maxlength: 50,
+                                showWordLimit: true,
+                                autosize: {
+                                    minRows: 2,
+                                    maxRows: 4
+                                }
+                            }
+                        }
                     }
-                    window.location.reload();
-                    okButton.removeAttr("disabled");
-                },
-                error: function () {
-                    bui.loading.hide();
-                    okButton.removeAttr("disabled");
-                    bs4pop.alert("区域信息新增失败!", {type: 'error'});
                 }
-            });
+            }
+        },
+        methods: {
+            handleRequest(data) {
+                editApp.loading = true;
+                axios.post("/district/edit.action", data)
+                    .then(function (response) {
+                        editApp.loading = false;
+                        if (response.data.code != '200') {
+                            editApp.$message({
+                                message: response.data.message,
+                                type: 'error'
+                            });
+                            return;
+                        }
+                        $("#_modal").modal('hide');
+                        editApp.$message({
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        queryDataHandler();
+                    })
+                    .catch(function (error) {
+                        editApp.loading = false;
+                        editApp.$message({
+                            message: '修改失败',
+                            type: 'error'
+                        });
+                    });
+            }
         }
-    }
+    });
 </script>

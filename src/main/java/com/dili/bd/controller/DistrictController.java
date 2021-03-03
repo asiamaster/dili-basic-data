@@ -2,6 +2,9 @@
 package com.dili.bd.controller;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.dili.assets.sdk.dto.DistrictDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
@@ -57,8 +60,10 @@ public class DistrictController {
      */
     @RequestMapping("edit.html")
     public String toEdit(Long id, ModelMap map) {
-        BaseOutput<DistrictDTO> districtById = assetsRpc.getDistrictById(id);
-        map.put("obj", districtById.getData());
+        DistrictDTO data = assetsRpc.getDistrictById(id).getData();
+        JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
+        map.put("data", jsonObject);
         return "district/edit";
     }
 
@@ -88,6 +93,10 @@ public class DistrictController {
             input.setCreatorId(userTicket.getId());
             input.setModifyTime(new Date());
             input.setMarketId(userTicket.getFirmId());
+            input.setParentId(0L);
+            if (StrUtil.isNotBlank(input.getDepartmentId())) {
+                input.setDepartmentId(input.getDepartmentId().replace("[", "").replace("]", ""));
+            }
             BaseOutput baseOutput = assetsRpc.addDistrict(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getNumber(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;
@@ -124,11 +133,13 @@ public class DistrictController {
     @RequestMapping("edit.action")
     @ResponseBody
     @BusinessLogger(businessType = LogBizTypeConst.DISTRICT, content = "", operationType = "edit", systemCode = "INTELLIGENT_ASSETS")
-    public BaseOutput edit(DistrictDTO input) {
+    public BaseOutput edit(@RequestBody DistrictDTO input) {
         try {
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             input.setModifyTime(new Date());
-            input.setMarketId(userTicket.getFirmId());
+            if (StrUtil.isNotBlank(input.getDepartmentId())) {
+                input.setDepartmentId(input.getDepartmentId().replace("[", "").replace("]", ""));
+            }
             BaseOutput baseOutput = assetsRpc.editDistrict(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getNumber(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), null);
             return baseOutput;

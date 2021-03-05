@@ -89,6 +89,7 @@ public class TradeTypeController {
     @PostMapping("/query.action")
     @ResponseBody
     public Object query(@RequestBody TradeTypeQuery query) {
+        query.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         TableResult<TradeTypeDto> result = tradeTypeRpc.query(query);
         try {
             List<Map> dataByProvider = ValueProviderUtils.buildDataByProvider(query.getMetadata(), result.getRows());
@@ -109,6 +110,7 @@ public class TradeTypeController {
         dto.setModifyTime(LocalDateTime.now());
         dto.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
         dto.setCreatorUser(SessionContext.getSessionContext().getUserTicket().getRealName());
+        dto.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
         return tradeTypeRpc.add(dto);
     }
 

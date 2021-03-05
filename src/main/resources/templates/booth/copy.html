@@ -1,0 +1,23 @@
+<div id=assets>
+    <ele-form
+            :form-attrs="{
+            size: 'small'
+            }"
+            :is-show-cancel-btn="false"
+            submit-btn-text="提交"
+            form-btn-size="small"
+            :form-btns="formBtns"
+            :inline="true"
+            :is-dialog="true"
+            label-position="top"
+            :form-desc="formDesc"
+            v-model="formData"
+            :request-fn="handleRequest">
+    </ele-form>
+</div>
+
+<#booth_save _url="/booth/save.action" _type="booth_type" />
+
+<script>
+    assets.formData = ${data!};
+</script>

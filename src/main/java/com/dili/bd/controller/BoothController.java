@@ -328,4 +328,26 @@ public class BoothController {
             return BaseOutput.failure("系统异常");
         }
     }
+
+    /**
+     * 复制
+     */
+    @GetMapping("/copy.action")
+    public String toCopy(Long id, ModelMap map){
+        AssetsDTO data = assetsRpc.getAssetsById(id).getData();
+        data.setId(null);
+        data.setCreateTime(null);
+        data.setCreatorId(null);
+        cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(data);
+        jsonObject.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        JSONArray array = new JSONArray();
+        array.put(data.getArea());
+        if (data.getSecondArea() != null) {
+            array.put(data.getSecondArea());
+        }
+        jsonObject.set("areaArray", array);
+        jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
+        map.put("data", jsonObject);
+        return "booth/copy";
+    }
 }

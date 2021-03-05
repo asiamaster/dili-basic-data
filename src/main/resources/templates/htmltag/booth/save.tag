@@ -58,6 +58,9 @@
                         label: "楼层",
                         type: "select",
                         layout: 6,
+                        attrs: {
+                            clearable: true
+                        },
                         optionsLinkageFields: ['areaArray'],
                         prop: { text: 'name', value: 'name' },
                         options: data => {
@@ -119,7 +122,8 @@
                     type: {
                         options: [
                             {text: '固定', value: 0, attrs: {size: 'medium'}},
-                            {text: '临时', value: 1, attrs: {size: 'medium'}}
+                            {text: '临时', value: 1, attrs: {size: 'medium'}},
+                            {text: '办公', value: 2, attrs: {size: 'medium'}}
                         ],
                         label: "性质",
                         type: "select",
@@ -137,6 +141,20 @@
                         type: "select",
                         layout: 6,
                         required: true
+                    },
+                    level: {
+                        options: function (data) {
+                            return loadProvider({
+                                provider: 'dataDictionaryValueProvider',
+                                queryParams: {dd_code: "level", required: true}
+                            })
+                        },
+                        attrs: {
+                            clearable: true
+                        },
+                        label: "等级",
+                        type: "select",
+                        layout: 6,
                     },
                     number: {
                         label: "数量",

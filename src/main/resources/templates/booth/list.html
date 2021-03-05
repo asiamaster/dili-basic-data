@@ -1,14 +1,4 @@
 <#bs4Body>
-<link rel="stylesheet" type="text/css" href="${contextPath}/resources/easyui/css/themes/bootstrap/easyui.css">
-<link rel="stylesheet" type="text/css" href="${contextPath}/resources/easyui/css/themes/icon.css">
-<link rel="stylesheet" type="text/css" href="${contextPath}/resources/easyui/css/themes/color.css">
-<link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/common.css">
-<script type="text/javascript" src="${contextPath}/resources/easyui/js/jquery.easyui.min.js"></script>
-<!-- easyui中文语言包 -->
-<script type="text/javascript" src="${contextPath}/resources/easyui/js/easyui-lang-zh_CN.js"></script>
-<!-- easyui扩展 -->
-<script type="text/javascript" src="${contextPath}/common/easyui/js/easyui_extend.js"></script>
-
 <!-- Automatically provides/replaces `Promise` if missing or broken. -->
 <script src="${contextPath}/resources/design/es6-promise.js"></script>
 <script src="${contextPath}/resources/design/es6-promise.auto.js"></script>
@@ -20,14 +10,6 @@
 <script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
 <script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
 
-<style>
-    table > tbody > tr.treegrid-tr-tree > td {
-        height: auto
-    }
-    table > tbody > tr > td {
-        max-width: fit-content;
-    }
-</style>
 <div class="modal fade" id="_modal" data-backdrop="static" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
     <!--modal-lg modal-sm(默认) 通过设置mw大小调整宽度（如mw-100） modal-dialog-centered垂直居中-->
@@ -190,33 +172,8 @@
     </button>
 </div>
 
-<table title="" id="grid" class="easyui-treegrid" idField="id"
-       data-options="
-                                                    method: 'get',
-                                                    idField: 'id',
-                                                    singleSelect:true,
-                                                    remoteSort:false,
-                                                    multiSort:false,
-                                                    pagination: true,
-                                                    pageSize: 10,
-                                                    pageList: [10,20,50]
-                                                ">
-    <thead>
-    <tr>
-        <th data-options="field:'ck',checkbox:true"></th>
-        <th data-options="field:'name',sortable:true,formatter:formatterView" width="10%">资产编号</th>
-        <th data-options="field:'businessType',sortable:true,formatter:formatterBusinessType" width="10%">资产类型</th>
-        <th data-options="field:'number',sortable:true" width="5%">数量</th>
-        <th data-options="field:'unit',_provider:'dataDictionaryValueProvider'" width="10%">单位</th>
-        <th data-options="field:'area',_provider:'districtProvider'" width="10%">区域</th>
-        <th data-options="field:'floor'" width="10%">楼层</th>
-        <th data-options="field:'type',formatter:formatterType" width="10%">性质</th>
-        <th data-options="field:'user',_provider:'dataDictionaryValueProvider'" width="10%">使用方</th>
-        <th data-options="field:'departmentId',_provider:'departmentProvider'" width="10%">部门</th>
-        <th data-options="field:'createTime',_provider:'datetimeProvider'" width="10%">创建时间</th>
-        <th data-options="field:'state',_provider:'boothStateProvider',formatter:stateFormatter" width="5%">状态</th>
-    </tr>
-    </thead>
+<table id="dataTable" class="table" data-page-size="6" data-icons="bui.variable.icons">
+
 </table>
 </div>
 </div>
@@ -227,9 +184,16 @@
 </div>
 
 </#bs4Body>
+<script type="text/javascript">
+    window.rootPath = '${contextPath}';
+</script>
+<!-- 通用js -->
+<script src="${contextPath}/resources/bui/js/base_list.js" type="text/javascript"></script>
+<!-- 遮罩层 -->
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
 
-<script type="text/javascript" src="${contextPath}/resources/blockUI/jquery.blockUI.js"></script>
-<script type="text/javascript" src="${contextPath}/resources/bui/js/base_treegrid.js"></script>
 <script type="text/javascript">
     var hasView = false;
     <#resource code="booth_view">
@@ -238,61 +202,156 @@
 </script>
 <script type="text/javascript">
 
-    window.rootPath = '${contextPath}';
+    // var dataUrl = window.rootPath + "/booth/listPage.action";
+    // var removeUrl = window.rootPath + "/booth/delete.action";
+    // var changeStatusUrl = window.rootPath + "/booth/changeStatus.action";
+    // var createUrl = window.rootPath + "/booth/add.html";
+    // var viewUrl = window.rootPath + "/booth/view.html?id={id}";
+    // var updateUrl = window.rootPath + "/booth/update.html?id={id}";
+    // var splitUrl = window.rootPath + "/booth/split.html?id={id}";
+    // var exportUrl = window.rootPath + "/BoothController/export";
+    // var options = {
+    //     dataUrl: dataUrl,
+    //     createUrl: createUrl,
+    //     updateUrl: updateUrl,
+    //     changeStatusUrl: changeStatusUrl,
+    //     viewUrl: viewUrl,
+    //     splitUrl: splitUrl,
+    //     removeUrl: removeUrl,
+    //     exportUrl: exportUrl,
+    //     sortName: "roleSort",
+    //     modalName: "资产管理"
+    // };
+    //
+    //
+    // function formatterView(value, row, index) {
+    //     if (hasView) {
+    //         return '<a class="like" href="javascript:void(0)" onclick="$.operate.view(' + row.id + ')" title="Like">' + value + '</a>'
+    //     } else {
+    //         return row.name;
+    //     }
+    // }
+    //
+    // function formatterBusinessType(value, row, index) {
+    //     if(value == 1){
+    //         return "摊位"
+    //     } else if(value == 2){
+    //         return "冷库";
+    //     } else{
+    //         return "公寓";
+    //     }
+    // }
+    //
+    // function formatterType(value, row, index) {
+    //     if(value == 0){
+    //         return "固定"
+    //     } else if(value == 1){
+    //         return "临时";
+    //     } else{
+    //         return "";
+    //     }
+    // }
+    //
+    // function stateFormatter(value, row, index) {
+    //     return row.status;
+    // }
 
     var dataUrl = window.rootPath + "/booth/listPage.action";
-    var removeUrl = window.rootPath + "/booth/delete.action";
-    var changeStatusUrl = window.rootPath + "/booth/changeStatus.action";
-    var createUrl = window.rootPath + "/booth/add.html";
-    var viewUrl = window.rootPath + "/booth/view.html?id={id}";
-    var updateUrl = window.rootPath + "/booth/update.html?id={id}";
-    var splitUrl = window.rootPath + "/booth/split.html?id={id}";
-    var exportUrl = window.rootPath + "/BoothController/export";
+    var removeUrl = window.rootPath + "/configController/deleteAll.action";
+    var createUrl = window.rootPath + "/configController/add.action";
+    var updateUrl = window.rootPath + "/configController/edit.action?id={id}";
+    var viewUrl = window.rootPath + "/configController/view?id={id}";
+    var enableUrl = window.rootPath + "/configController/enableAll.action";
+    var disableUrl = window.rootPath + "/configController/disableAll.action";
+    var exportUrl = window.rootPath + "/configController/export";
     var options = {
         dataUrl: dataUrl,
         createUrl: createUrl,
         updateUrl: updateUrl,
-        changeStatusUrl: changeStatusUrl,
         viewUrl: viewUrl,
-        splitUrl: splitUrl,
+        dialogWidth: 500,
+        dialogHeight: 730,
+        enableUrl: enableUrl,
+        disableUrl: disableUrl,
         removeUrl: removeUrl,
         exportUrl: exportUrl,
         sortName: "roleSort",
-        modalName: "资产管理"
+        modalName: "配置项",
+        search: false,
+        dataColumns: [
+            {
+                checkbox: true
+            },
+            {
+                field: 'id',
+                title: 'id'
+            },
+            {
+                field: 'name',
+                title: '资产编号'
+            },
+            {
+                field: 'businessType',
+                title: '资产类型'
+            },
+            {
+                field: 'number',
+                title: '数量'
+            },
+            {
+                field: 'unit',
+                title: '单位'
+            },
+            {
+                field: 'area',
+                title: '区域'
+            },
+            {
+                field: 'state',
+                title: '状态',
+                formatter: function (value, row, index) {
+                    if (value == 1) {
+                        return '启用';
+                    } else {
+                        return '禁用';
+                    }
+                }
+            },
+            {
+                field: 'marketId',
+                title: '市场',
+                provider: 'marketProvider'
+            },
+            {
+                field: 'type',
+                title: '分组'
+            },
+            /*
+            参照修改注释
+                    {
+                            field: 'xxstate',
+                            title: 'xx状态',
+                            visible: false, //隐藏
+                            searchable: false,//搜索
+                               sortable:false,//设置true为允许列可以排序
+                            order: 'asc', //排序顺序
+                            formatter: function (value, row, index) {
+                                var actions = [];
+                                if(value==0){
+                                     actions.push('<span class="label label-primary">关闭</span>');
+                                }else if(value==1){
+                                     actions.push('<span class="label label-danger">开启</span>');
+                                }
+                                  return actions.join('');
+                             }
+                        }
+            */
+        ]
     };
-
-
-    function formatterView(value, row, index) {
-        if (hasView) {
-            return '<a class="like" href="javascript:void(0)" onclick="$.operate.view(' + row.id + ')" title="Like">' + value + '</a>'
-        } else {
-            return row.name;
-        }
-    }
-
-    function formatterBusinessType(value, row, index) {
-        if(value == 1){
-            return "摊位"
-        } else if(value == 2){
-            return "冷库";
-        } else{
-            return "公寓";
-        }
-    }
-
-    function formatterType(value, row, index) {
-        if(value == 0){
-            return "固定"
-        } else if(value == 1){
-            return "临时";
-        } else{
-            return "";
-        }
-    }
-
-    function stateFormatter(value, row, index) {
-        return row.status;
-    }
+    $(function () {
+        var oTab = $.table.oTableInit(options);
+        oTab.Init();
+    })
 
     function refresh() {
         $('#queryForm .form-control').val('');
@@ -367,8 +426,7 @@
                             app.$refs.tree.setCurrentKey(app.formData.area);
                         });
 
-                        var oGrid = $.bs_treegrid.oGridInit(options);
-                        oGrid.Init();
+
                         app.fullscreenLoading = false;
                         app.loading = false;
                     },

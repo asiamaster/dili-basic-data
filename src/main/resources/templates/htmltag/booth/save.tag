@@ -1,13 +1,13 @@
 <script>
-    var app = new Vue({
-        el: '#app',
+    var assets = new Vue({
+        el: '#assets',
         data() {
             return {
                 formBtns: [
                     {
                         text: '关闭',
                         click: () => {
-                            $.modal.close();
+                            $("#_modal").modal('hide');
                         }
                     }
                 ],
@@ -84,11 +84,15 @@
                     departmentId: {
                         options: function (data) {
                             return loadProvider({
-                                provider: 'authDepartmentProvider'})
+                                provider: 'authDepartmentProvider',queryParams: {required: true}})
                         },
                         label: "所属部门",
                         type: "select",
-                        layout: 6,
+                        attrs: {
+                            multiple: true,
+                            clearable: true,
+                            collapseTags: false
+                        },
                         required: false
                     },
                     name: {
@@ -195,7 +199,19 @@
 
                 axios.post(rootPath + "${_url}", data)
                     .then(function (response) {
-                        $.operate.saveSuccess(response.data);
+                        if (response.data.code != '200') {
+                            assets.$message({
+                                message: response.data.message,
+                                type: 'error'
+                            });
+                            return;
+                        }
+                        $("#_modal").modal('hide');
+                        assets.$message({
+                            message: '保存成功',
+                            type: 'success'
+                        });
+                        search();
                     })
                     .catch(function (error) {
                         $.modal.alertError("系统错误");

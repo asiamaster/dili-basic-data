@@ -199,7 +199,15 @@ public class DistrictController {
         if (input == null) {
             input = new DistrictDTO();
         }
+        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
         input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        if (input.getDepartmentId() == null) {
+            List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
+            long[] ids = departments.stream().mapToLong(Department::getId).toArray();
+            if (ids.length > 0) {
+                input.setDeps(ArrayUtil.join(ids, ","));
+            }
+        }
         return assetsRpc.searchDistrict(input);
     }
 

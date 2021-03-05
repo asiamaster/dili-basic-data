@@ -1,6 +1,7 @@
 package com.dili.bd.controller;
 
 import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
@@ -88,6 +89,9 @@ public class BoothController {
                 input.setDeps(ArrayUtil.join(ids, ","));
             }
         }
+        if (input.getArea() == 0) {
+            input.setArea(null);
+        }
         return assetsRpc.listPage(input);
     }
 
@@ -150,7 +154,8 @@ public class BoothController {
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
         }
-        jsonObject.put("areaArray", array);
+        jsonObject.set("areaArray", array);
+        jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
         map.put("data", jsonObject);
         return "booth/edit";
     }
@@ -218,7 +223,9 @@ public class BoothController {
             input.setCreatorId(userTicket.getId());
             input.setMarketId(userTicket.getFirmId());
             input.setState(RentEnum.FREE.getCode());
-            LoggerUtil.buildLoggerContext(null, input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
+            if (StrUtil.isNotBlank(input.getDepartmentId())) {
+                input.setDepartmentId(input.getDepartmentId().replace("[", "").replace("]", ""));
+            }
             BaseOutput save = assetsRpc.save(input);
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());
             return save;
@@ -239,6 +246,9 @@ public class BoothController {
     public BaseOutput update(@RequestBody AssetsDTO input) {
         try {
             input.setModifyTime(new Date());
+            if (StrUtil.isNotBlank(input.getDepartmentId())) {
+                input.setDepartmentId(input.getDepartmentId().replace("[", "").replace("]", ""));
+            }
             BaseOutput baseOutput = assetsRpc.updateAssets(input);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
             LoggerUtil.buildLoggerContext(input.getId(), input.getName(), userTicket.getId(), userTicket.getRealName(), userTicket.getFirmId(), input.getNotes());

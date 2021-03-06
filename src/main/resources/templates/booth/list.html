@@ -27,6 +27,10 @@
     table > tbody > tr > td {
         max-width: fit-content;
     }
+    .datagrid-header-check input, .datagrid-cell-check input {
+
+        height: 15px!important;
+    }
 </style>
 <div class="modal fade" id="_modal" data-backdrop="static" tabindex="-1" role="dialog"
      aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -153,6 +157,7 @@
 
             </form>
             <hr>
+            <span>已使用:{{used}}</span>&nbsp;<span>空闲中:{{free}}</span>
             <div class="row">
                 <div class="col-12">
                     <div id="toolbar" class="btn-group" role="group" aria-label="Toolbar with button groups">
@@ -165,8 +170,10 @@
                         <button id="btn_add" type="button" class="btn btn-primary" onclick="openInsertHandler()"><i class="fa fa-plus"></i> 新增
                         </button>
                     </#resource>
+                <#resource code="booth_copy">
                 <button id="btn_copy" type="button" class="btn btn-primary" onclick="copy()"><i class="fa fa-copy"></i> 复制
                 </button>
+            </#resource>
                 <#resource code="booth_edit">
                 <button type="button" class="btn btn-primary" onclick="openUpdateHandler()">
                     <i class="fa fa-pencil-square-o"></i> 修改
@@ -209,10 +216,11 @@
         <th data-options="field:'name',sortable:true,formatter:formatterView" width="10%">资产编号</th>
         <th data-options="field:'businessType',sortable:true,formatter:formatterBusinessType" width="10%">资产类型</th>
         <th data-options="field:'number',sortable:true" width="5%">数量</th>
-        <th data-options="field:'unit',_provider:'dataDictionaryValueProvider'" width="10%">单位</th>
+        <th data-options="field:'unit',_provider:'dataDictionaryValueProvider'" width="5%">单位</th>
         <th data-options="field:'area',_provider:'districtProvider'" width="10%">区域</th>
         <th data-options="field:'floor'" width="10%">楼层</th>
-        <th data-options="field:'type',formatter:formatterType" width="10%">性质</th>
+        <th data-options="field:'type',formatter:formatterType" width="5%">性质</th>
+        <th data-options="field:'level',_provider:'dataDictionaryValueProvider'" width="10%">等级</th>
         <th data-options="field:'user',_provider:'dataDictionaryValueProvider'" width="10%">使用方</th>
         <th data-options="field:'departmentId',_provider:'departmentProvider'" width="10%">部门</th>
         <th data-options="field:'createTime',_provider:'datetimeProvider'" width="10%">创建时间</th>
@@ -342,6 +350,8 @@
         },
         data() {
             return {
+                used: 0,
+                free: 0,
                 fullscreenLoading: true,
                 path: [],
                 filterText: '',
@@ -415,11 +425,27 @@
 
     $(function () {
         app.loadTree();
+        calUsed();
     })
 
     function search() {
         app.formData.area = 0;
         app.$refs.tree.setCurrentKey(app.formData.area);
         $.bs_treegrid.refresh();
+        calUsed();
+    }
+    function calUsed(){
+        $.ajax({
+            type: "GET",
+            data:$.extend({area:app.formData.area},bindTreegridMeta2Form("grid", "queryForm")),
+            dataType: "json",
+            url: '/booth/listUsed.action',
+            success: function (data) {
+                app.free = data.free;
+                app.used = data.used;
+            },
+            error: function () {
+            }
+        });
     }
 </script>

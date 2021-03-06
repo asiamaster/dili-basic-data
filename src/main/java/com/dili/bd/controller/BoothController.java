@@ -92,7 +92,17 @@ public class BoothController {
         if (input.getArea() == 0) {
             input.setArea(null);
         }
-        return assetsRpc.listPage(input);
+        final String json = assetsRpc.listPage(input);
+        final cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);
+        final JSONArray rows = jsonObject.getJSONArray("rows");
+        if(rows.size() > 0){
+            for (int i = 0; i < rows.size(); i++) {
+                final cn.hutool.json.JSONObject assetsJson = rows.getJSONObject(i);
+                assetsJson.set("status",assetsJson.getStr("state"));
+            }
+            jsonObject.set("rows",rows);
+        }
+        return jsonObject.toString();
     }
 
     /**
@@ -333,7 +343,7 @@ public class BoothController {
      * 复制
      */
     @GetMapping("/copy.action")
-    public String toCopy(Long id, ModelMap map){
+    public String toCopy(Long id, ModelMap map) {
         AssetsDTO data = assetsRpc.getAssetsById(id).getData();
         data.setId(null);
         data.setCreateTime(null);
@@ -349,5 +359,51 @@ public class BoothController {
         jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
         map.put("data", jsonObject);
         return "booth/copy";
+    }
+
+    /**
+     * 使用情况
+     *
+     * @param input
+     * @return
+     */
+    @RequestMapping("/listUsed.action")
+    @ResponseBody
+    public String listUsed(AssetsDTO input) {
+        if (input == null) {
+            input = new AssetsDTO();
+        }
+        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        input.setIsDelete(YesOrNoEnum.NO.getCode());
+        input.setMarketId(userTicket.getFirmId());
+        input.setMetadata(null);
+        // 部门过滤
+        if (input.getDepartmentId() == null) {
+            List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
+            long[] ids = departments.stream().mapToLong(Department::getId).toArray();
+            if (ids.length > 0) {
+                input.setDeps(ArrayUtil.join(ids, ","));
+            }
+        }
+        if (input.getArea() == 0) {
+            input.setArea(null);
+        }
+        final var json = assetsRpc.listPage(input);
+        final cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);
+        int used = 0;
+        int free = 0;
+        final var rows = jsonObject.getJSONArray("rows");
+        for (int i = 0; i < rows.size(); i++) {
+            final Integer state = rows.getJSONObject(i).getInt("state");
+            if (state == 1) {
+                free++;
+            } else {
+                used++;
+            }
+        }
+        final cn.hutool.json.JSONObject resultObject = JSONUtil.createObj();
+        resultObject.set("used", used);
+        resultObject.set("free", free);
+        return resultObject.toString();
     }
 }

@@ -145,7 +145,7 @@
                     level: {
                         options: function (data) {
                             return loadProvider({
-                                provider: 'dataDictionaryValueProvider',
+                                provider: 'dataDictionaryValueProvider',stringValue:true,
                                 queryParams: {dd_code: "level", required: true}
                             })
                         },

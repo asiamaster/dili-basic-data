@@ -1,5 +1,10 @@
 package com.dili.bd.controller;
 
+import cn.afterturn.easypoi.entity.vo.MapExcelConstants;
+import cn.afterturn.easypoi.entity.vo.NormalExcelConstants;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.handler.inter.IExcelDataHandler;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
@@ -8,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
 import com.dili.assets.sdk.dto.AssetsRentDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
+import com.dili.bd.export.AssetsExport;
 import com.dili.bd.provider.RentEnum;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
@@ -22,14 +28,14 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.rpc.DepartmentRpc;
 import com.dili.uap.sdk.rpc.UserRpc;
 import com.dili.uap.sdk.session.SessionContext;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 摊位控制器
@@ -95,12 +101,12 @@ public class BoothController {
         final String json = assetsRpc.listPage(input);
         final cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);
         final JSONArray rows = jsonObject.getJSONArray("rows");
-        if(rows.size() > 0){
+        if (rows.size() > 0) {
             for (int i = 0; i < rows.size(); i++) {
                 final cn.hutool.json.JSONObject assetsJson = rows.getJSONObject(i);
-                assetsJson.set("status",assetsJson.getStr("state"));
+                assetsJson.set("status", assetsJson.getStr("state"));
             }
-            jsonObject.set("rows",rows);
+            jsonObject.set("rows", rows);
         }
         return jsonObject.toString();
     }
@@ -405,5 +411,95 @@ public class BoothController {
         resultObject.set("used", used);
         resultObject.set("free", free);
         return resultObject.toString();
+    }
+
+
+    /**
+     * 导出
+     */
+    @RequestMapping("/download.action")
+    public String download(AssetsDTO input, ModelMap modelMap) {
+
+        if (input == null) {
+            input = new AssetsDTO();
+        }
+        UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+        input.setIsDelete(YesOrNoEnum.NO.getCode());
+        input.setMarketId(userTicket.getFirmId());
+        // 部门过滤
+        if (input.getDepartmentId() == null) {
+            List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
+            long[] ids = departments.stream().mapToLong(Department::getId).toArray();
+            if (ids.length > 0) {
+                input.setDeps(ArrayUtil.join(ids, ","));
+            }
+        }
+        if (input.getArea() == 0) {
+            input.setArea(null);
+        }
+        final String json = assetsRpc.listPage(input);
+        final cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);
+        final JSONArray rows = jsonObject.getJSONArray("rows");
+        final List<AssetsExport> assetsExports = JSONUtil.toList(rows, AssetsExport.class);
+
+        ExportParams params = new ExportParams(null, "资产列表", ExcelType.XSSF);
+        params.setDataHandler(new IExcelDataHandler() {
+            @Override
+            public Object exportHandler(Object o, String s, Object o2) {
+                if (s.equals("资产类型")) {
+                    int value = Integer.parseInt(o2.toString());
+                    if (value == 1) {
+                        return "摊位";
+                    } else if (value == 2) {
+                        return "冷库";
+                    } else {
+                        return "公寓";
+                    }
+                }
+                if (s.equals("性质")) {
+                    int value = Integer.parseInt(o2.toString());
+                    if (value == 0) {
+                        return "固定";
+                    } else if (value == 1) {
+                        return "临时";
+                    } else {
+                        return "办公";
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            public String[] getNeedHandlerFields() {
+                return new String[]{"资产类型", "性质"};
+            }
+
+            @Override
+            public Object importHandler(Object o, String s, Object o2) {
+                return null;
+            }
+
+            @Override
+            public void setNeedHandlerFields(String[] strings) {
+
+            }
+
+            @Override
+            public void setMapValue(Map map, String s, Object o) {
+
+            }
+
+            @Override
+            public Hyperlink getHyperlink(CreationHelper creationHelper, Object o, String s, Object o2) {
+                return null;
+            }
+        });
+
+        modelMap.put(NormalExcelConstants.DATA_LIST, assetsExports);
+        modelMap.put(NormalExcelConstants.CLASS, AssetsExport.class);
+        modelMap.put(NormalExcelConstants.PARAMS, params);
+        modelMap.put(MapExcelConstants.FILE_NAME, "资产列表");
+        return NormalExcelConstants.EASYPOI_EXCEL_VIEW;
+
     }
 }

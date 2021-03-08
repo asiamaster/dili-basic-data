@@ -84,8 +84,7 @@
                             bs4pop.alert(data.message, {type: 'error'});
                             return;
                         }
-                        loadTable();
-                        removeTreeNode(id);
+                        treeApp.loadTree();
                         $("#parentId").val(0);
                         tips("提示", "删除科目成功!");
                         bui.loading.hide();

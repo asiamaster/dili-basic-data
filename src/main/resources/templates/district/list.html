@@ -175,10 +175,12 @@
     function emptyFormatter(){return ''}
 
     function formatter(value, row) {
-        if(value == 1){
+        if (value == 1) {
             return "临时";
-        }else if(value == 2){
+        } else if (value == 2) {
             return '固定';
+        } else if (value == 3) {
+            return '办公';
         }
         return '';
     }

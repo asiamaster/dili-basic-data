@@ -437,6 +437,12 @@ public class BoothController {
         if (input.getArea() == 0) {
             input.setArea(null);
         }
+        Map metaData = new HashMap();
+        metaData.put("unit","{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"unit\"}");
+        metaData.put("level","{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"level\"}");
+        metaData.put("area","{\"provider\":\"districtProvider\",\"index\":50,\"field\":\"area\"}");
+        metaData.put("departmentId","{\"provider\":\"departmentBatchProvider\",\"index\":50,\"field\":\"departmentId\"}");
+        input.setMetadata(metaData);
         final String json = assetsRpc.listPage(input);
         final cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);
         final JSONArray rows = jsonObject.getJSONArray("rows");
@@ -446,24 +452,26 @@ public class BoothController {
         params.setDataHandler(new IExcelDataHandler() {
             @Override
             public Object exportHandler(Object o, String s, Object o2) {
-                if (s.equals("资产类型")) {
-                    int value = Integer.parseInt(o2.toString());
-                    if (value == 1) {
-                        return "摊位";
-                    } else if (value == 2) {
-                        return "冷库";
-                    } else {
-                        return "公寓";
+                if (o2 != null) {
+                    if (s.equals("资产类型")) {
+                        int value = Integer.parseInt(o2.toString());
+                        if (value == 1) {
+                            return "摊位";
+                        } else if (value == 2) {
+                            return "冷库";
+                        } else {
+                            return "公寓";
+                        }
                     }
-                }
-                if (s.equals("性质")) {
-                    int value = Integer.parseInt(o2.toString());
-                    if (value == 0) {
-                        return "固定";
-                    } else if (value == 1) {
-                        return "临时";
-                    } else {
-                        return "办公";
+                    if (s.equals("性质")) {
+                        int value = Integer.parseInt(o2.toString());
+                        if (value == 0) {
+                            return "固定";
+                        } else if (value == 1) {
+                            return "临时";
+                        } else {
+                            return "办公";
+                        }
                     }
                 }
                 return null;

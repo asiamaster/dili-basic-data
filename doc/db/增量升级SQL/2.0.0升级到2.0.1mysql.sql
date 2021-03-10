@@ -7,6 +7,9 @@ ALTER TABLE `dili-basic-data`.`assets`
 ALTER TABLE `dili-basic-data`.`assets`
     ADD COLUMN `level` varchar(50) NULL COMMENT '等级' AFTER `business_type`;
 
+ALTER TABLE `dili-basic-data`.`assets`
+    MODIFY COLUMN `user` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '使用方' AFTER `rent_state`;
+
 TRUNCATE TABLE `dili-basic-data`.subject;
 
 INSERT INTO `subject` VALUES (1, '摊位租金', 0, '1,', '', 1, '2020-09-03 16:12:15', '2020-09-03 16:12:15', 3, 1);

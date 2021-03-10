@@ -221,7 +221,7 @@
         <th data-options="field:'floor'" width="10%">楼层</th>
         <th data-options="field:'type',formatter:formatterType" width="5%">性质</th>
         <th data-options="field:'level',_provider:'dataDictionaryValueProvider'" width="10%">等级</th>
-        <th data-options="field:'user',_provider:'dataDictionaryValueProvider'" width="10%">使用方</th>
+        <th data-options="field:'user'" width="10%">使用方</th>
         <th data-options="field:'departmentId',_provider:'departmentProvider'" width="10%">部门</th>
         <th data-options="field:'createTime',_provider:'datetimeProvider'" width="10%">创建时间</th>
         <th data-options="field:'state',_provider:'boothStateProvider',formatter:stateFormatter" width="5%">状态</th>
@@ -453,7 +453,7 @@
 
     function doExport() {
         let extend = $.extend({area: app.formData.area}, bindTreegridMeta2Form("grid", "queryForm"));
-        window.location.href = "/booth/download.action?" + parseParam(extend) + "&metadata%5Bunit%5D=%7B%22provider%22%3A%22dataDictionaryValueProvider%22%2C%22index%22%3A10%2C%22field%22%3A%22unit%22%7D&metadata%5Barea%5D=%7B%22provider%22%3A%22districtProvider%22%2C%22index%22%3A20%2C%22field%22%3A%22area%22%7D&metadata%5Blevel%5D=%7B%22provider%22%3A%22dataDictionaryValueProvider%22%2C%22index%22%3A30%2C%22field%22%3A%22level%22%7D&metadata%5Buser%5D=%7B%22provider%22%3A%22dataDictionaryValueProvider%22%2C%22index%22%3A40%2C%22field%22%3A%22user%22%7D&metadata%5BdepartmentId%5D=%7B%22provider%22%3A%22departmentProvider%22%2C%22index%22%3A50%2C%22field%22%3A%22departmentId%22%7D&metadata%5BcreateTime%5D=%7B%22provider%22%3A%22datetimeProvider%22%2C%22index%22%3A60%2C%22field%22%3A%22createTime%22%7D&metadata%5Bstate%5D=%7B%22provider%22%3A%22boothStateProvider%22%2C%22index%22%3A70%2C%22field%22%3A%22state%22%7D"
+        window.location.href = "/booth/download.action?" + parseParam(extend);
     }
 
     var parseParam = function (param, key) {

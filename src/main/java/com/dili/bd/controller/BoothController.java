@@ -441,6 +441,7 @@ public class BoothController {
         metaData.put("unit","{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"unit\"}");
         metaData.put("level","{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"level\"}");
         metaData.put("area","{\"provider\":\"districtProvider\",\"index\":50,\"field\":\"area\"}");
+        metaData.put("state","{\"provider\":\"boothStateProvider\",\"index\":50,\"field\":\"state\"}");
         metaData.put("departmentId","{\"provider\":\"departmentBatchProvider\",\"index\":50,\"field\":\"departmentId\"}");
         input.setMetadata(metaData);
         final String json = assetsRpc.listPage(input);

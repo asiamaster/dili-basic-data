@@ -411,6 +411,7 @@
                 app.formData.area = data.id;
                 app.parentId = data.parentId;
                 $.bs_treegrid.refresh()
+                calUsed();
                 if (data.parentId === 0) {
                     app.path = [data.name]
                 } else {
@@ -431,7 +432,6 @@
     })
 
     function search() {
-        app.formData.area = 0;
         app.$refs.tree.setCurrentKey(app.formData.area);
         $.bs_treegrid.refresh();
         calUsed();

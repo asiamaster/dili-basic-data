@@ -12,7 +12,9 @@
                     }
                 ],
                 formData: {
-                    businessType:1
+                    businessType: 1,
+                    self: 0,
+                    sale: 0
                 },
                 formDesc: {
                     businessType: {
@@ -154,6 +156,38 @@
                         },
                         label: "等级",
                         type: "select",
+                        layout: 6,
+                    },
+                    self: {
+                        isOptions: true,
+                        options: [
+                            {
+                                text: "是",
+                                value: 1
+                            },
+                            {
+                                text: "否",
+                                value: 0
+                            }
+                        ],
+                        type: "radio-button",
+                        label: "自助租赁",
+                        layout: 6,
+                    },
+                    sale: {
+                        isOptions: true,
+                        options: [
+                            {
+                                text: "是",
+                                value: 1
+                            },
+                            {
+                                text: "否",
+                                value: 0
+                            }
+                        ],
+                        type: "radio-button",
+                        label: "多租赁折扣",
                         layout: 6,
                     },
                     number: {

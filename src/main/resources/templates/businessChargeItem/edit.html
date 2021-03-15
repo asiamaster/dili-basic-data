@@ -181,7 +181,7 @@
                     chargeSubjectPath: {
                         options: function (data) {
                             return new Promise((resolve, reject) => {
-                                axios.post('/subject/getTree.action')
+                                axios.post('/subject/getTree.action?state=1')
                                     .then((res) => {
                                         resolve(toEleTree(res.data.data,{label:"name",pid:"parent"}));
                                         // console.log(res);

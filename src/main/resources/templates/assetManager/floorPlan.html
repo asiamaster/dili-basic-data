@@ -1,0 +1,1764 @@
+<#bs4Body>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<link rel="stylesheet" href="${contextPath}/resources/design/index.css">
+<script src="${contextPath}/resources/design/index.js"></script>
+
+
+<script src="${contextPath}/resources/design/es6-promise.js"></script>
+<script src="${contextPath}/resources/design/es6-promise.auto.js"></script>
+<script src="${contextPath}/resources/design/axios.min.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/blockUI/jquery.blockUI.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/bui/js/base_treegrid.js" type="text/javascript"></script>
+<script src="${contextPath}/resources/design/vue-ele-form.umd.min.js"></script>
+
+
+
+<script type="text/javascript" src="/resources/floorPlan/js/jquery.min.js" ></script>
+<script type="text/javascript" src="/resources/floorPlan/js/layer/layer.js"></script>
+<script type="text/javascript" src="/resources/floorPlan/js/context/context.js"></script>
+<script type="text/javascript" src="/resources/floorPlan/js/drag.js" ></script>
+<script type="text/javascript" src="/resources/floorPlan/js/CanvasInput.js" ></script>
+<script type="text/javascript" src="/resources/floorPlan/topology/html2canvas.js" ></script>
+
+<link rel="stylesheet" type="text/css" href="/resources/floorPlan/js/context/context.standalone.css">
+
+<style type="text/css">
+    html,body{margin:0;padding:0;font:14px/1.5em simsun;overflow:hidden;}
+    #canvas{position:absolute;left:0px;top:0px;z-index:9;border:2px dashed #ccc;padding:10px;background:#fff;}
+    .transparent{filter:alpha(opacity=50);-moz-opacity:0.5;-khtml-opacity:0.7;opacity:0.7;}
+    .box{width:200px;height:100px;cursor:move;position:absolute;top:30px;left:30px;z-index:99;border: 1px solid #8fbad3;}
+    .box .bg{width:100%;height:100%;background-color:orange;}
+    .box .coor{width:10px;height:10px;overflow:hidden;cursor:se-resize;position:absolute;right:0;bottom:0;background-color:#9b9b9b;display: none}
+    .box .content{position:absolute;left:50%;top:50%;z-index:99;text-align:center;font:bold 14px/1.5em simsun;}
+
+    .fa{margin-right: 5px}
+    #toolbar{position:absolute;left:10px;top:10px;z-index:88;}
+
+    #canvas img[src=""], img:not([src]) {
+        opacity: 0;
+        min-height: 800px;
+        min-width: 1600px
+    }
+    #floor_tool{
+        position:absolute;left:32px;top:120px;z-index:88;
+    }
+    .navbar{
+        width: fit-content;
+        padding: 5px;
+        text-align: center;
+    }
+    .nav-item{
+        padding: 5px;
+    }
+    .nav-item.active{
+        padding: 0 5px;
+        background-color: #007bff;
+        border: 1px solid #007bff;
+        border-radius: 7px;
+    }
+    .nav-item.active a{
+        color: #FFFFFF;
+    }
+
+    .navbar-nav{
+        max-height: 478px;
+        overflow-y: auto;
+    }
+    .navbar-nav h5{
+        position: absolute;
+        width: 100%;
+        background: white;
+        margin: -5px;
+        border-bottom: 1px solid #004fff;
+    }
+    .floor-plan-li:first-of-type{
+        margin-top: 24px;
+    }
+    .toolHead{
+        padding: 5px;
+    }
+    .toolHead.active{
+        background-color: #007bff;
+        border: 1px solid #007bff;
+        color: #FFFFFF;
+    }
+</style>
+<div class="container-fluid">
+    <div id="roleList" style="display: none">
+        <#resource code="floorPlan#updateShape">
+        <div id="updateShape"></div>
+        </#resource>
+        <#resource code="floorPlan#view">
+        <div id="view"></div>
+        </#resource>
+        <#resource code="floorPlan#split">
+        <div id="split"></div>
+        </#resource>
+        <#resource code="floorPlan#doDeleteBooth">
+        <div id="delete"></div>
+        </#resource>
+        <#resource code="floorPlan#edit">
+        <div id="edit"></div>
+        </#resource>
+        <#resource code="floorPlan#updateBg">
+        <div id="updateBg"></div>
+        </#resource>
+    </div>
+    <div id=app>
+        <div id="toolbar">
+            <#resource code="floorPlanEdit5#Edit">
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_lock1" onclick="gotoBackground()"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>绘制图形</button>
+            </#resource>
+            <#resource code="floorPlan#history">
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_history"><i class="fa fa-clock-o" aria-hidden="true"></i>历史快照</button>
+            </#resource>
+            <#resource code="floorPlan#add">
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_add"><i class="fa fa-plus-circle" aria-hidden="true"></i>添加资产</button>
+            </#resource>
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_return" style="display: none" ><i class="fa fa-arrow-left" aria-hidden="true"></i>返回上层</button>
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_enlarge"><i class="fa fa-search-plus" aria-hidden="true"></i>放大</button>
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_reset"><i class="fa fa-search" aria-hidden="true"></i>还原</button>
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_narrow"><i class="fa fa-search-minus" aria-hidden="true"></i>缩小</button>
+            <#resource code="floorPlan#editFP">
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_lock"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>编辑</button>
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_cancel"  style="display: none"><i class="fa fa-ban" aria-hidden="true"></i>取消</button>
+            <button type="button" class="btn btn-outline-primary mr-2" id="btn_save" style="display: none"><i class="fa fa-floppy-o" aria-hidden="true"></i>保存</button>
+            </#resource>
+            <!--<button type="button" class="btn btn-outline-primary mr-2" id="btn_download"  ><i class="fa fa-download" aria-hidden="true"></i>导出平面图</button>-->
+        </div>
+        <div id="floor_tool" style="display: none">
+            <nav class="navbar bg-light">
+                <ul class="navbar-nav" >
+                    <h5>区域</h5>
+                </ul>
+            </nav>
+        </div>
+        <div id="canvas">
+            <canvas style="position: absolute;z-index: 98;display: none;opacity: 0.7;"
+                     id="canvas1"></canvas>
+            <img id="canvasBack" onerror="javascript:$(this).css({'height':400,'width':400})" />
+            <input type="hidden" id="refId" value="${ref_id}">
+            <input type="hidden" id="cur_districtId" value="${curDistrictId}">
+            <input type="hidden" id="p_districtId" value="${districtId}">
+            <div class="c" id="canvas_coor" style="display: block;width: 10px;height: 10px;color: red;
+    overflow: hidden;
+    cursor: se-resize;
+    position: absolute;
+    display: none;
+    right: 0;
+    bottom: 0;
+    background-color: #9b9b9b;"></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="_modal" data-backdrop="static" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="up_background_modal" data-backdrop="static" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document" style="margin-top: 104px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel2"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-1">
+                    <div class="form-group col">
+                        <label for="backUrl">背景图Url<i class="red">*</i>
+                            <button type="button" id="uploadBackBtn" onclick="javascript:$('#addFileImg').click();" class="btn btn-sm btn-primary" style="margin-left: 10px">上传背景图</button>
+                        </label>
+                        <input type="file" id="addFileImg" data-maxSize="28388608" style="display: none"/>
+                        <textarea type="text" id="backUrl" class="form-control" name="backUrl"
+                                  maxlength="254"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveBackImg()">确认</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+</#bs4Body>
+
+<script>
+    var addCount=1;
+    var openCanvas=false;
+    var editDia;
+    let updateBoothId;
+    //默认锁定 区块锁定标识
+    var lock = true;
+    window.rootPath = '${contextPath}';
+    //楼层分类
+    let regionCatalog = {
+        //区域
+        region : 0,
+        //区域楼层,即
+        region_floor : 1,
+    }
+    //平面图类型
+    let floorType = {
+        //规则
+        rule : 'box',
+        //不规则
+        unRule : 'otherBox',
+        background:"background",
+        is_irregular: "1",
+        un_irregular: "2",
+    }
+    //资产服务
+    let assetsCategory = {
+        //新增
+        add : "/booth/add.html",
+        add_title : "新增资产",
+        //修改
+        update : "/booth/update.html",
+        update_title : "修改资产",
+        //拆分
+        split:"/booth/split.html",
+        split_title : "拆分资产",
+        //查看
+        view:"/booth/view.html",
+        view_title : "查看资产",
+        //删除
+        delete:"/booth/delete.action"
+    }
+    //颜色分类
+    let planColorCategory = {
+        planColor: "rgb(106, 178, 190)",
+        areaFree: "rgb(93, 184, 112)",
+        areaOccupied: "rgb(227, 30, 30)"
+    }
+    //右键菜单
+    let rightBtnCategory = {
+        header: "操作",
+        right_edit: "编辑",
+        right_view: "查看",
+        right_in: "进入区域",
+        right_split:"拆分资产",
+        right_delete:"删除",
+        right_lease:"租赁",
+        right_up_type:"修改形状",
+    }
+
+    function getRegionalCategory(){
+        let c_d = $("#cur_districtId").val();
+        let p_d = $("#p_districtId").val();
+        let res = 1;
+        //当区域id不为空且不相等时，为摊位类型
+        if(undefined!=c_d&&null!=c_d&&undefined!=p_d&&null!=p_d){
+            if(p_d!=c_d){
+                res=2;
+            }
+        }
+        return res;
+    }
+
+    function saveBackImg(){
+        $("#canvasBack").attr("src",$("#backUrl").val());
+        $("#up_background_modal").modal('hide');
+    }
+
+    function gotoBackground(){
+        diaPNGEdit = bs4pop.dialog({
+            title: '绘制图形',//对话框title
+            className: 'dialog-center',
+            content: 'floorPlanPngEdit5.html',
+            width: '100%',//宽度
+            height: '100%',//高度
+            backdrop: 'static',
+            isIframe: true//默认是页面层，非iframe
+        });
+    }
+
+    //缩小整体
+    function doNarrow(){
+        let $P=$("#canvas");
+        let $p_b=$P.find("#canvasBack");
+        let _b = 1.2;
+        let p_h=$P.height();
+        let p_w=$P.width();
+
+        let _h=$p_b.height();
+        let _w=$p_b.width();
+        if(undefined==$P.attr("data-page-height")){
+            $P.attr("data-page-height",p_h)
+        }
+        if(undefined==$P.attr("data-page-width")){
+            $P.attr("data-page-width",p_w)
+        }
+        if(undefined==$p_b.attr("data-page-width")){
+            $p_b.attr("data-page-width",_w)
+        }
+        if(undefined==$p_b.attr("data-page-height")){
+            $p_b.attr("data-page-height",_h)
+        }
+        $P.css({'width':parseInt(Number(p_w/_b)),'height':parseInt(Number(p_h/_b))});
+        $p_b.css({'width':parseInt(_w/_b)-20,'height':parseInt(_h/_b)-20});
+
+        $P.find(".box,.otherBox").each(function(){
+            let b_h=$(this).height();
+            let b_w=$(this).width();
+            let b_t=$(this).position().top;
+            let b_l=$(this).position().left;
+            if(undefined==$(this).attr("data-page-width")){
+                $(this).attr("data-page-width",b_w)
+            }
+            if(undefined==$(this).attr("data-page-height")){
+                $(this).attr("data-page-height",b_h)
+            }
+            if(undefined==$(this).attr("data-page-top")){
+                $(this).attr("data-page-top",b_t)
+            }
+            if(undefined==$(this).attr("data-page-left")){
+                $(this).attr("data-page-left",b_l)
+            }
+            $(this).css({'width':parseInt(b_w/_b),'height':parseInt(b_h/_b),'top':parseInt(b_t/_b)-4,'left':parseInt(b_l/_b)-4})
+        });
+    }
+    //放大整体
+    function doEnlarge(){
+        let $P=$("#canvas");
+        let $p_b=$P.find("#canvasBack");
+        let _b = 1.2;
+        let p_h=$P.height();
+        let p_w=$P.width();
+        let _h=$p_b.height();
+        let _w=$p_b.width();
+        if(undefined==$P.attr("data-page-height")){
+            $P.attr("data-page-height",p_h)
+        }
+        if(undefined==$P.attr("data-page-width")){
+            $P.attr("data-page-width",p_w)
+        }
+        if(undefined==$p_b.attr("data-page-width")){
+            $p_b.attr("data-page-width",_w)
+        }
+        if(undefined==$p_b.attr("data-page-height")){
+            $p_b.attr("data-page-height",_h)
+        }
+        $P.css({'width':parseInt(Number(p_w*_b)),'height':parseInt(Number(p_h*_b))});
+        $p_b.css({'width':parseInt(_w*_b)-20,'height':parseInt(_h*_b)-20});
+        $P.find(".box,.otherBox").each(function(){
+            let b_h=$(this).height();
+            let b_w=$(this).width();
+            let b_t=$(this).position().top;
+            let b_l=$(this).position().left;
+            if(undefined==$(this).attr("data-page-width")){
+                $(this).attr("data-page-width",b_w)
+            }
+            if(undefined==$(this).attr("data-page-height")){
+                $(this).attr("data-page-height",b_h)
+            }
+            if(undefined==$(this).attr("data-page-top")){
+                $(this).attr("data-page-top",b_t)
+            }
+            if(undefined==$(this).attr("data-page-left")){
+                $(this).attr("data-page-left",b_l)
+            }
+            $(this).css({'width':parseInt(b_w*_b),'height':parseInt(b_h*_b),'top':parseInt(b_t*_b)-5,'left':parseInt(b_l*_b)-4})
+        });
+    }
+
+    function doReset(){
+        let $P=$("#canvas");
+        let $p_b=$P.find("#canvasBack");
+        let p_w=$P.attr("data-page-width");
+        let p_h=$P.attr("data-page-height");
+        let b_w=$p_b.attr("data-page-width");
+        let b_h=$p_b.attr("data-page-height");
+        if(undefined!=p_w&&null!=p_w&&undefined!=p_h&&null!=p_h){
+            $P.css({'width':Number(p_w),'height':Number(p_h)});
+        }
+        if(undefined!=b_w&&null!=b_w&&undefined!=b_h&&null!=b_h){
+            $p_b.css({'width':Number(b_w),'height':Number(b_h)});
+        }
+        $P.removeAttr("data-page-width");
+        $P.removeAttr("data-page-height");
+        $p_b.removeAttr("data-page-width");
+        $p_b.removeAttr("data-page-height");
+        $P.find(".box,.otherBox").each(function(){
+            let b_h=$(this).attr("data-page-height");
+            let b_w=$(this).attr("data-page-width");
+            let b_t=$(this).attr("data-page-top");
+            let b_l=$(this).attr("data-page-left");
+            if(undefined!=b_h&&undefined!=b_w&&undefined!=b_t&&undefined!=b_l){
+                console.log(Number(b_w));
+                $(this).css({"width":Number(b_w),"height":Number(b_h),"top":Number(b_t),"left":Number(b_l)})
+            }
+            $(this).removeAttr("data-page-width");
+            $(this).removeAttr("data-page-height");
+            $(this).removeAttr("data-page-top");
+            $(this).removeAttr("data-page-left");
+        });
+
+    }
+
+    $(function(){
+        //模拟网络延时
+        initBaseImage();
+        window['floorPlan']= this;
+
+        //加载layer拓展
+        layer.config({
+             extend: 'extend/layer.ext.js'
+         });
+        //跳转历史快照
+        $("#btn_history").click(function(){
+            let d_id = getCurDistrictId();
+            let ref_id = getRefId();
+            let p_did = $("#p_districtId").val();
+            let _rd=getRegionalCategory();
+            window.location.href="floorPlanHistory.html?districtId="+d_id+"&refId="+ref_id+"&pDistrictId="+p_did+"&regionalCategory="+_rd;
+        });
+        //放大缩小
+        $("#btn_enlarge").click(function(){
+            doEnlarge();
+        });
+        $("#btn_narrow").click(function(){
+            doNarrow();
+        })
+        $("#btn_reset").click(function(){
+            doReset();
+        })
+        //右键菜单参数
+        context.init({
+            fadeSpeed: 100,
+            filter: function ($obj){},
+            above: 'auto',
+            preventDoubleContext: true,
+            compress: false
+        });
+        //添加区域--调用新增资产服务
+        $("#btn_add").click(function(){
+            //弹出区域说明输入框
+            openUpdateHandler(assetsCategory.add,assetsCategory.add_title)
+        });
+        //锁定区域
+        $('#btn_lock').click(function(){
+            lock = changeLock("l");
+        });
+        $('#btn_cancel').click(function(){
+            lock = changeLock("u");
+        });
+        $('#btn_return').click(function(){
+            showArea(null,null,'top');
+        })
+        $('#btn_download').click(function(){
+            let oDiv = document.getElementById('canvas');
+            html2canvas(oDiv,{
+                allowTaint: true,
+                useCORS: true
+            }).then(function(canvas) {
+                $(canvas).attr("id","download_floor_plan_canvas")
+                document.body.appendChild(canvas);
+                let oCavans=document.getElementById('download_floor_plan_canvas');
+                let strDataURI = oCavans.toDataURL("image/png",1);
+                downLoadFn(strDataURI);
+            });
+        })
+        //获取所有区块
+        $('#btn_save').click(function(){
+            bs4pop.prompt('修改说明:','',{
+                title: '提示',
+                hideRemove: true,
+                width: 500,
+            },function(sure,val){
+                if(sure){
+                    //删除隐藏的box
+                    $(".box:hidden").remove();
+                    $(".otherBox:hidden").remove();
+                    //规则图形位置
+                    let data = [];
+                    if($('.box').length>0){
+                        $('.box').each(function(){
+                            let box =buildBox($(this),"box");
+                            box['updateNotes']=val;
+                            data.push(box);
+                        });
+                    }
+                    if($('.otherBox').length>0){
+                        $(".otherBox").each(function () {
+                            console.log($(this));
+                            let box =buildBox($(this),"otherBox");
+                            box['updateNotes']=val;
+                            data.push(box);
+                        })
+                    }
+                    let box =buildBox($(this),"back");
+                    box['updateNotes']=val;
+                    data.push(box);
+                    doSaveCanvasData(data);
+                }
+
+            });
+        });
+        //创建拖拽方法
+        $("#canvas").mousedown(function(e){
+            let canvas = $(this);
+            e.preventDefault();
+            let pos = $(this).position();
+            this.posix = {'x': e.pageX - pos.left, 'y': e.pageY - pos.top};
+            $.extend(document, {'move': true, 'move_target': this, 'call_down' : function(e, posix){
+                    canvas.css({
+                        'cursor': 'move',
+                        'top': e.pageY - posix.y,
+                        'left': e.pageX - posix.x
+                    });
+                    console.log("move");
+                }, 'call_up' : function(){
+                    console.log("move up");
+                    canvas.css('cursor', 'default');
+                }});
+        }).on('mousedown', '.box,.otherBox', function(e) {
+            let _this = this;
+            if(lock) return;
+            let pos = $(_this).position();
+            _this.posix = {'x': e.pageX - pos.left, 'y': e.pageY - pos.top};
+            $.extend(document, {'move': true, 'move_target': _this});
+            $(".box,.otherBox").removeClass("move_div");
+            $(_this).addClass("move_div");
+            e.stopPropagation();
+        }).on('dblclick', '.box,.otherBox', function(e) {
+            e.stopPropagation();
+            const id=$(this).attr("dataid");
+            const district_id=$(this).attr("data-districtid");
+            if(getRefId()==-1){
+                showArea(id,district_id);
+            }else if($("#cur_districtId").val()==$("#p_districtId").val()){
+                $(".toolHead").removeClass("active");
+                $(".nav-item").removeClass("active");
+                $(".nav-item a[data-floorid='"+district_id+"']").parent().addClass("active");
+                $("#cur_districtId").val(district_id);
+                //重置按钮组
+                lock=changeLock("u");
+                //刷新图层
+                initBaseImage(district_id);
+            }
+        }).on('mousedown', '.box .coor', function(e) {
+            let $box = $(this).parent();
+            let posix = {
+                'w': $box.width(),
+                'h': $box.height(),
+                'x': e.pageX,
+                'y': e.pageY
+            };
+            $.extend(document, {'move': true, 'call_down': function(e) {
+                    $box.css({
+                        'width': Math.max(30, e.pageX - posix.x + posix.w),
+                        'height': Math.max(30, e.pageY - posix.y + posix.h)
+                    });
+                }});
+            e.stopPropagation();
+        }).on('mousedown', '#canvas_coor', function(e) {
+            let $box = $(this).parent();
+            let $boxImg = $(this).parent().find("img");
+            let $box_g = $(this).parent().find(".box");
+            let $box_bg = $(this).parent().find(".otherBox");
+            let posix = {
+                'w': $box.width(),
+                'h': $box.height(),
+                'x': e.pageX,
+                'y': e.pageY
+            };
+            $.extend(document, {'move': true, 'call_down': function(e) {
+                    $box.css({
+                        'width': Math.max(30, e.pageX - posix.x + posix.w),
+                        'height': Math.max(30, e.pageY - posix.y + posix.h)
+                    });
+                    $boxImg.css({
+                        'width': Math.max(30, e.pageX - posix.x + posix.w) - Number(20),
+                        'height': Math.max(30, e.pageY - posix.y + posix.h)- Number(20)
+                    });
+                }});
+            e.stopPropagation();
+        });
+
+        $(document).keydown(function (event) {
+            let keyCode = event.keyCode;
+            let space = 2;
+            let div = $('.move_div');
+            if($('.move_div').length>0){
+                switch(keyCode){
+                    case 37: div.offset({left:(div.offset().left - space)}); break;
+                    case 38: div.offset({top:(div.offset().top - space)}); break;
+                    case 39: div.offset({left:(div.offset().left + space)}); break;
+                    case 40: div.offset({top:(div.offset().top + space)}); break;
+                    default: break;
+                }
+            };
+        });
+    });
+
+
+    //判断浏览器类型
+    function myBrowserType() {
+        let userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+        let isOpera = userAgent.indexOf("Opera") > -1;
+        if(isOpera) {
+            return "Opera"
+        }; //判断是否Opera浏览器
+        if(userAgent.indexOf("Firefox") > -1) {
+            return "FF";
+        } //判断是否Firefox浏览器
+        if(userAgent.indexOf("Chrome") > -1) {
+            return "Chrome";
+        }
+        if(userAgent.indexOf("Safari") > -1) {
+            return "Safari";
+        } //判断是否Safari浏览器
+        if(userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+            return "IE";
+        }; //判断是否IE浏览器
+        if(userAgent.indexOf("Trident") > -1) {
+            return "Edge";
+        } //判断是否Edge浏览器
+    }
+    //IE浏览器图片保存本地
+    function saveAs5(imgURL) {
+        var oPop = window.open(imgURL, "", "width=1, height=1, top=5000, left=5000");
+        for(; oPop.document.readyState != "complete";) {
+            if(oPop.document.readyState == "complete") break;
+        }
+        oPop.document.execCommand("SaveAs");
+        oPop.close();
+    }
+    function download(strDataURI) {
+        let canvas2png = document.createElement("a");
+        canvas2png.setAttribute("download", "平面图快照.png");
+        canvas2png.setAttribute("href", strDataURI);
+        const o = document.createEvent("MouseEvents");
+        o.initEvent("click", !0, !0), canvas2png.dispatchEvent(o)
+    };
+    function downLoadFn(url) {
+        if(myBrowserType() === "IE" || myBrowserType() === "Edge") {
+            saveAs5(url);
+        } else {
+            download(url);
+        }
+    }
+
+    //上方按钮组控制
+    function changeLock(t){
+        let lock_s=true;
+        if("l"!=t){
+            lock_s = true;
+            $(".box").removeClass("move_div");
+            $("#btn_lock").show();
+            $("#btn_cancel").hide();
+            $("#btn_Irregular").hide();
+            $("#btn_save").hide();
+            $('.box .coor').hide();
+            $("#canvas_coor").hide();
+        }else{
+            lock_s = false;
+            $("#btn_lock").hide();
+            $("#btn_cancel").show();
+            $("#btn_Irregular").show();
+            $("#btn_save").show();
+            $('.box .coor').show();
+            $("#canvas_coor").show();
+        }
+        let r_id=getRefId();
+        if(r_id!=-1){
+            $("#btn_return").show();
+        }else{
+            $("#btn_return").hide();
+        }
+        return lock_s;
+    }
+    //构建保存json数据
+    function  buildBox(obj,boxType){
+        let box = {};
+        const  refId = getRefId();
+        const  districtId=getCurDistrictId();
+        box['refId'] =refId||-1;
+        box['regionalCategory'] = getRegionalCategory();
+        if("box"==boxType){
+            box['planText'] = obj.find('.content').text();
+            box['planColor'] = obj.find('.bg').css('background-color');
+            box['itemHeight'] = obj.get(0).offsetHeight
+            box['itemWidth'] = obj.get(0).offsetWidth;
+            box['itemXSite'] = obj.position().left;
+            box['itemYSite'] = obj.position().top;
+            box['boothId'] = obj.attr('data-boothid')||null;
+            box['boothName'] = obj.attr('data-boothname')||null;
+            box['boothState'] = obj.attr('data-boothstate')||null;
+            box['boothRentState'] = obj.attr('data-boothrentstate')||null;
+            box['districtId'] = obj.attr('data-districtid')||districtId;
+            box['isIrregular'] = 1;
+            box['planType'] =2;
+        }else if("otherBox"==boxType){
+            box['planText'] = obj.attr('data-text');
+            box['planColor'] = obj.attr('data-color');
+            box['itemXSite'] = obj.position().left;
+            box['itemYSite'] = obj.position().top;
+            box['irregular_point'] = obj.attr("data-tempcanvasdata");
+            box['boothId'] = obj.attr('data-boothid')||null;
+            box['boothName'] = obj.attr('data-boothname')||null;
+            box['boothState'] = obj.attr('data-boothstate')||null;
+            box['boothRentState'] = obj.attr('data-boothrentstate')||null;
+            box['districtId'] = obj.attr('data-districtid')||districtId;
+            box['isIrregular'] =2;
+            box['planType'] =2;
+        }else{
+            box['planUrl'] = $("#canvasBack").attr('src');
+            box['itemHeight'] = $("#canvasBack").get(0).offsetHeight
+            box['itemWidth'] = $("#canvasBack").get(0).offsetWidth;
+            box['isIrregular'] =1;
+            box['planType'] =1;
+            box['districtId'] = districtId;
+        }
+        return box;
+    }
+    //调用资产服务页面
+    function openAssetsHtml(url,id,i_title){
+        editDia = bs4pop.dialog({
+            title: i_title,
+            content: url+'?id=' + id,
+            isIframe: true,
+            backdrop: 'static',
+            closeBtn: true,
+            width: '95%',
+            height: '95%',
+            btns: []
+        });
+    }
+    //删除块
+    function deleteBox(box_type,boxNum){
+        if("box"==box_type){
+            $('.box[rel='+boxNum+']').remove();
+        }else{
+            $('.otherBox[rel='+boxNum+']').remove();
+        }
+    }
+
+    //开始绘制不规则图形
+    function beginLn(_data_obj){
+        localStorage.setItem("floorPlanDrawData",JSON.stringify(_data_obj));
+        //删除描点
+        $(".floorSpot_key").remove();
+        layer.msg('提示：鼠标右键描点，左键绘制',{icon:3,time : 2000});
+        openCanvas=true;
+        localStorage.removeItem("canvasFloorPlanList");
+        $("#canvas").bind("contextmenu", function(){
+            return false;
+        })
+        $("#canvas").on('mousedown', function (e) {
+            if (openCanvas&&e.which == 3) {
+                e.preventDefault();
+                let pos = $(this).position();
+                this.posix = {'x': e.pageX - pos.left, 'y': e.pageY - pos.top};
+                let obj = new Object();
+                obj.x = e.pageX - pos.left;
+                obj.y = e.pageY - pos.top;
+                let canvasListStr = localStorage.getItem("canvasFloorPlanList");
+                let canvasList= new Array();
+                if (undefined != canvasListStr && null != canvasListStr) {
+                    canvasList=JSON.parse(canvasListStr);
+                }
+                canvasList.push(obj);
+                localStorage.setItem("canvasFloorPlanList", JSON.stringify(canvasList));
+                $('<div class="floorSpot_key" id="floorPlan'+canvasList.length+'" style="position:absolute;z-index:99;background: red"></div>').css({
+                    width : "6px",
+                    height : "6px",
+                    border : "1px solid red",
+                    "border-radius":"10px",
+                    top : (obj.y > 0 ? obj.y : (pos.top > 0 ? 0 : pos.top * -1 + 50))-3,
+                    left : (obj.x > 0 ? obj.x : (pos.left > 0 ? 0 : pos.left * -1 + 30))-3
+                }).appendTo("#canvas");
+            }else{
+                if(openCanvas){
+                    let d_data=JSON.parse(localStorage.getItem("floorPlanDrawData"));
+                    doCanvas(d_data);
+                }
+                openCanvas=false;
+                $("#canvas").unbind("contextmenu");
+            }
+        })
+    }
+    //以标记的点绘画区域
+    function doCanvas(_data_obj){
+        addCount++;
+        let canvasListStr = localStorage.getItem("canvasFloorPlanList");
+        console.log(canvasListStr);
+        if(undefined == canvasListStr || null == canvasListStr){
+            console.log("绘画内容为空");
+            $(".box:hidden").show();
+            return;
+        }
+        //绘制内容不为空时删除隐藏摊位
+        $(".box:hidden").remove();
+        $(".otherBox:hidden").remove();
+        if(undefined==_data_obj||null==_data_obj||""==_data_obj){
+            _data_obj ={};
+        }
+        _data_obj.irregularPoint=canvasListStr;
+        doCanvasByData(addCount,_data_obj);
+    }
+    //根据新增id加描点位置绘画区域
+    function doCanvasByData(in_addCount,canvasObj){
+        let canvasData=canvasObj.irregularPoint||canvasObj.irregularpoint;
+        let canvasTxt=canvasObj.planText ||canvasObj.plantext;
+        let itemXSite = canvasObj.itemXSite ||canvasObj.itemxSite;
+        let itemYSite = canvasObj.itemYSite ||canvasObj.itemySite;
+        let canvasColor=canvasObj.planColor ||canvasObj.plancolor;
+        let canvasId=canvasObj.id||-1;
+        let rel=canvasObj.rel||in_addCount;
+        if(!canvasData){
+            console.log("绘制数据为空");
+            return;
+        }
+        let canvasList=JSON.parse(canvasData);
+        let canvas_i =$("#canvas1").clone();
+        for(let  item in canvasObj){
+            if(item!='style'&&item!='class'&&item!='rel'&&item!='dataId'){
+                let itemName = "data-"+item;
+                canvas_i.attr(itemName,canvasObj[item]);
+            }
+        }
+        canvas_i.attr({"rel":rel,
+            "data-color":canvasColor,
+            dataId:canvasId,
+            id:"newCanvas_"+rel,"data-tempCanvasData":canvasData,"class":"otherBox"});
+        canvas_i.hide();
+        canvas_i.appendTo("#canvas");
+        let begin_y=canvasList[0].y;
+        let begin_x=canvasList[0].x;
+        let page_y=canvasList[0].y;
+        let page_x=canvasList[0].x;
+
+        //获取最小的x与最大的x从而获取canvas最适合的宽度与高度
+        let min_x=begin_x;
+        let min_y=begin_y;
+        let max_x=begin_x;
+        let max_y=begin_y;
+        for(let i =1 ;i<canvasList.length;i++){
+            min_x=canvasList[i].x<min_x?canvasList[i].x:min_x;
+            min_y=canvasList[i].y<min_y?canvasList[i].y:min_y;
+            max_x=canvasList[i].x>max_x?canvasList[i].x:max_x;
+            max_y=canvasList[i].y>max_y?canvasList[i].y:max_y;
+        }
+        canvas_i.attr({"width":(max_x-min_x),"height":(max_y-min_y)});
+        let ctx_i= canvas_i[0].getContext('2d');
+        ctx_i.beginPath();
+        ctx_i.moveTo(begin_x-min_x, begin_y-min_y);
+        let move_left = (begin_x-min_x);
+        let move_top = page_y;
+        let min_top = (begin_y-min_y);
+        //设置默认颜色
+        if(undefined!=canvasColor&&null!=canvasColor){
+            ctx_i.fillStyle=canvasColor;
+        }else{
+            ctx_i.fillStyle="rgb(88, 200, 63)";
+            canvas_i.attr("data-color",ctx_i.fillStyle);
+        }
+        for(let i =1 ;i<canvasList.length;i++){
+            min_top=min_top>(canvasList[i].y-min_y)?(canvasList[i].y-min_y):min_top;
+            //描点小于等于最高点，取最左点
+            if(min_top>=(canvasList[i].y-min_y)){
+                min_top=(canvasList[i].y-min_y);
+                move_top = canvasList[i].y;
+                move_left=move_left>(canvasList[i].x-min_x)?(canvasList[i].x-min_x):move_left;
+            }
+            ctx_i.lineTo((canvasList[i].x-min_x),(canvasList[i].y-min_y));
+        }
+        if(undefined!=itemXSite&&undefined!=itemYSite){
+            page_y = itemYSite;
+            page_x = itemXSite;
+            //不规则图片固定位置
+            canvas_i.css({top:page_y,left:page_x});
+        }else{
+            //不规则图片重新定位
+            canvas_i.css({top:move_top,left:(page_x-move_left)});
+        }
+        ctx_i.closePath();
+        ctx_i.stroke();
+        ctx_i.fill();
+        //文字初始化
+        if(undefined!=canvasTxt&&null!=canvasTxt){
+            let canvas_width =canvas_i.attr("width");
+            canvas_i.attr("data-text",canvasTxt);
+            // 设置文字居中但是fillText的第二个参数必须为画布宽度一半
+            ctx_i.textAlign = 'center'
+            ctx_i.font = 'bold 14px/1.5em simsun'
+            ctx_i.fillStyle = '#212529'
+            ctx_i.fillText(canvasTxt , canvas_width/2, 50)
+            ctx_i.stroke()
+        }
+        //删除描点
+        $(".floorSpot_key").remove();
+        canvas_i.show();
+        //附加右键菜单
+        initMenus(floorType.unRule,rel);
+        return canvas_i;
+    }
+
+    //绘制区域摊位
+    function drawRegionList(_refId,_obj){
+
+    }
+    //获取所选区域摊位详情
+    function getBoothList(district_id,resData){
+        $(".box").remove();
+        //取上级区域id，查询当前节点
+        $.ajax({
+            type: "GET",
+            url: "${contextPath}/booth/listPage.action?area="+district_id+"&page=1&rows=1000",
+            dataType: "json",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                    //取最高层区域
+                    let list = ret.rows;
+                    //未分配区域的资产
+                    let pushList=new Array();
+                    //所有以及分配的区域
+                    let id_map = new Map();
+                    for(let i=0;i<resData.length;i++){
+                        let re_dit=resData[i].boothId;
+                        id_map.set(re_dit,i);
+                    }
+                    for(let i=0;i<list.length;i++){
+                        let di = list[i].id;
+                        if(!id_map.has(di)){
+                            pushList.push(list[i]);
+                        }else{
+                            resData[id_map.get(di)].state=list[i].state;
+                        }
+                    }
+                    //遍历取没有对应平面图数据的列表
+                    let unBoxList = serializeToBox(pushList,'b');
+                    for(let i=0;i<unBoxList.length;i++){
+                        let num = $(".box").length+1;
+                        createBox((Number(num)+1),unBoxList[i]);
+                    }
+            },
+            error: function (e) {
+                console.log(e);
+            },complete:function(ce){
+                bui.loading.hide();
+            }
+        });
+    }
+
+
+    function getRegionData(_distId,resData){
+        let ref_data = {"parentId":_distId};
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/district/search.action",
+            dataType: "json",
+            data:JSON.stringify(ref_data),
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.code!="200"){
+                    bui.loading.hide();
+                    layer.msg('获取数据失败',{icon:2,time : 2000});
+                    return;
+                }
+                let pushList=new Array();
+                let list = ret.data;
+                //所有以及分配的区域
+                let id_map = new Map();
+                for(let i=0;i<resData.length;i++){
+                    let re_dit=resData[i].districtId;
+                    id_map.set(re_dit,re_dit);
+                }
+                if(null!=list&&undefined!=list){
+                    for(let i=0;i<list.length;i++){
+                        let di = list[i].id;
+                        if(!id_map.has(di)){
+                            pushList.push(list[i]);
+                        }
+                    }
+                }
+                let unBoxList = serializeToBox(pushList,'d');
+                for(let i=0;i<unBoxList.length;i++){
+                    let num = $(".box").length+1;
+                    createBox((Number(num)+1),unBoxList[i]);
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            },complete:function(ce){
+            }
+        });
+    }
+    //获取当前区域列表
+    function getRegionList(refId,resData){
+        //取上级区域id，查询当前节点
+        let distId = $("#p_districtId").val();
+        console.log("getRegionList"+distId);
+        let refdata = {"parentId":distId};
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/district/search.action",
+            dataType: "json",
+            data:JSON.stringify(refdata),
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.code!="200"){
+                    bui.loading.hide();
+                    layer.msg('获取数据失败',{icon:2,time : 2000});
+                    return;
+                }
+                //区域分组
+                let group_data=regionGroupBy(ret.data,'parentId');
+                if(refId==-1){
+                    //取最高层区域
+                    let list = group_data[regionCatalog.region];
+                    //未分配区域的资产
+                    let pushList=new Array();
+                    //所有以及分配的区域
+                    let id_map = new Map();
+                    for(let i=0;i<resData.length;i++){
+                        let re_dit=resData[i].districtId;
+                        id_map.set(re_dit,re_dit);
+                    }
+                    if(null!=list&&undefined!=list){
+                        for(let i=0;i<list.length;i++){
+                            let di = list[i].id;
+                            if(!id_map.has(di)){
+                                pushList.push(list[i]);
+                            }
+                        }
+                    }
+                    //遍历取没有对应平面图数据的列表
+                    let unBoxList = serializeToBox(pushList,'d');
+                    for(let i=0;i<unBoxList.length;i++){
+                        let num = $(".box").length+1;
+                        createBox((Number(num)+1),unBoxList[i]);
+                    }
+                }else
+                {
+                    //非最高级初始化区域楼道等信息
+                    if(null!=distId){
+                        initFloorTool(ret.data,distId);
+                    }
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            },complete:function(ce){
+            }
+        });
+    }
+
+    //初始化规则区域
+    function serializeToBox(list,t){
+        let itmList=new Array();
+        //d区域
+        let is_d ='d'==t;
+        list.forEach(function(item,inx){
+            let floorItem ={
+                "id":inx,
+                "isIrregular": 1,
+                "itemHeight": 60,
+                "itemWidth": 60,
+                "itemXSite": 0,
+                "itemYSite": 0,
+                "planType": 2,
+                "planText": item.name,
+                "marketId":item.marketId,
+            }
+            if(is_d){
+                floorItem.districtId=item.id;
+                floorItem.planColor = planColorCategory.planColor;
+            }else{
+                floorItem.boothId=item.id;
+                floorItem.boothRentState=item.status;
+                floorItem.districtId=item.secondArea;
+                if(null==item.state||undefined==item.state||"1"==item.state){
+                    floorItem.planColor = planColorCategory.areaFree
+                }else{
+                    floorItem.planColor = planColorCategory.areaOccupied
+                }
+            }
+
+            itmList.push(floorItem);
+        })
+        return itmList;
+    }
+
+    //分组方法
+    let regionGroupBy = (list, key) => {
+        const obj = {};
+        list.map(item => {
+            if (!obj.hasOwnProperty(item[key])) { //如果不存在这个属性
+                obj[item[key]] = [];
+            }
+            obj[item[key]].push(item);
+        });
+        return obj;
+    }
+    //获取所有点图
+    function initBaseImage(i_refId) {
+        bui.loading.show();
+        let refId= getRefId();
+        let _regionalCategory = getRegionalCategory();
+        let q_data={itemState:0,refId:refId,regionalCategory:_regionalCategory}
+        if(i_refId!=undefined&&_regionalCategory==2){
+            q_data.districtId=i_refId;
+        }
+        //初始化
+        $("#canvasBack").removeAttr("src");
+        $(".box").remove();
+        $(".otherBox").remove();
+        $("#canvas").css({'width':'','height':''});
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/assetManagement/getFloorPlanList.action",
+            data:JSON.stringify(q_data),
+            dataType: "json",
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.code!="200"){
+                    bui.loading.hide();
+                    layer.msg('获取数据失败',{icon:2,time : 2000});
+                    return;
+                }
+                //初始化
+                $("#canvasBack").removeAttr("src");
+                $(".box").remove();
+                $(".otherBox").remove();
+                $("#canvas").css({'width':'','height':''});
+                //获取区域,与左侧区域栏
+                if(i_refId==undefined){
+                    getRegionList(refId,ret.data);
+                }else{
+                    //当点击的是区域主节点,不需要查询摊位
+                    if(null!=$("#cur_districtId").val()&&""!=$("#cur_districtId").val()
+                        && undefined!=$("#cur_districtId").val()&&$("#p_districtId").val()!=$("#cur_districtId").val()){
+                        getBoothList(i_refId,ret.data);
+                    }else{
+                        getRegionData(i_refId,ret.data);
+                    }
+                }
+                if(null!=$("#cur_districtId").val()&&""!=$("#cur_districtId").val()
+                    && undefined!=$("#cur_districtId").val()&&$("#p_districtId").val()==$("#cur_districtId").val()){
+                    getRegionData($("#cur_districtId").val(),ret.data);
+                }
+                if (ret) {
+                    console.log(ret.data)
+                    for (let i = 0; i < ret.data.length; i++) {
+                        let itemData = ret.data[i];
+                        //type=1为背景图
+                        if (itemData.planType == 1) {
+                            $("#canvasBack").attr("src",itemData.planUrl);
+                            if(undefined!=itemData.itemWidth&&null!=itemData.itemWidth&&""!=itemData.itemWidth){
+                                $("#canvasBack").css({
+                                    'height':itemData.itemHeight,
+                                    'width':itemData.itemWidth,
+                                });
+                            }
+                        }
+                        else if(itemData.isIrregular==1){
+                            createBox(i,itemData);
+                        }else{
+                            doCanvasByData(i,itemData);
+                        }
+                    }
+                    //更新计数器并记录当前计数
+                    initMenus(floorType.background);
+                }
+                if(undefined!=editDia){
+                    editDia.hide();
+                }
+                bui.loading.hide();
+            },
+            error: function (e) {
+                console.log(e);
+                bui.loading.hide();
+            },complete:function(ce){
+                //bui.loading.hide();
+            }
+        });
+    }
+
+    /**
+     * 创建规则区域
+     * @param curNum
+     * @param data
+     */
+    function createBox(curNum,data){
+        console.log("createBox data:"+JSON.stringify(data))
+        let dataId = data.id || -1;
+        let value = data.planText || data.plantext ||'';
+        let color = data.planColor || data.plancolor || '';
+        let height = data.itemHeight || data.itemheight || 0;
+        let width = data.itemWidth || data.itemwidth || 0;
+        let pageX = data.itemXSite || data.itemxsite || 0;
+        let pageY = data.itemYSite || data.itemysite || 0;
+        let rel = curNum||data.rel;
+        //状态判断
+        if("1"==data.state){
+            color=planColorCategory.areaFree
+        }else if("2"==data.state){
+            color=planColorCategory.areaOccupied
+        }
+        //创建区域块
+        let pos = $("#canvas").position();
+        let box = $('<div class="box" rel="'+rel+'" dataId="'+dataId+'"><pre class="content">'
+            +value+'</pre><div class="bg transparent" style="background-color:'
+            +color+'"></div><div class="coor transparent"></div></div>');
+        //添加属性
+        for(let  item in data){
+            if(item!='style'&&item!='class'&&item!='rel'&&item!='dataid'){
+                let itemName = "data-"+item;
+                box.attr(itemName,data[item]);
+            }
+        }
+        box.css({
+            width : width,
+            height : height,
+            top : Number(pageY > 0 ? pageY : (pos.top > 0 ? 0 : pos.top * -1 + 50)),
+            left : Number(pageX > 0 ? pageX : (pos.left > 0 ? 0 : pos.left * -1 + 30))
+        });
+        box.appendTo("#canvas")
+        //更新计数器并记录当前计数
+        initMenus(floorType.rule,rel);
+        //计算文本位置
+        box.find('.content').css({
+            marginLeft : box.find('.content').width()/2*-1,
+            marginTop : box.find('.content').height()/2*-1
+        });
+    }
+    function doSaveCanvasData(save_data){
+        bui.loading.show();
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/assetManagement/updateFloorPlanList.action",
+            dataType: "json",
+            data:JSON.stringify(save_data),
+            async: true,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                console.log(ret);
+                if(ret.code!="200"){
+                    layer.msg('保存失败',{icon:2,time : 1888});
+                }else{
+                    layer.msg('保存成功',{icon:1,time : 1888});
+                    doRefresh();
+
+                }
+                bui.loading.hide();
+            },
+            error: function (e) {
+                bui.loading.hide();
+                console.log(e);
+            },complete:function(ce){
+            }
+        });
+    }
+
+    function doRefresh(){
+        let ref_id = getRefId();
+        lock=changeLock("u");
+        if(ref_id==-1){
+            initBaseImage();
+        }else if(undefined !=$("#p_districtId").val() && ($("#p_districtId").val()==$("#cur_districtId").val())){
+            initBaseImage($("#p_districtId").val());
+        }else{
+            let florId = $(".navbar-nav .active").find("a").attr("data-floorid");
+            initBaseImage(florId);
+        }
+    }
+
+    function showArea(_id,districtId,new_type){
+        if('top'!=new_type&&(null==_id||undefined==_id||""==_id)){
+            bs4pop.alert('请保存当前主区域布局', {type: "warning"});
+            return;
+        }
+        let url ='/assetManagement/floorPlan.html';
+        if(null!=_id){
+            url+='?id='+_id;
+        }
+        if(null!=districtId){
+            url+='&districtId='+districtId;
+        }
+        window.location.href=url;
+    }
+    //导航
+    function goNavigation(id,curNum){
+        if(undefined==id){
+            id=0;
+        }
+        mapDia = bs4pop.dialog({
+            title: '位置导航',
+            content: '/assetManagement/floorPlanNavigation.html?id=' + id,
+            isIframe: true,
+            backdrop: 'static',
+            closeBtn: true,
+            width: '90%',//宽度
+            height: '90%'
+        });
+
+    }
+
+    function addFloor(_id){
+        axios.post(rootPath + "/floorController/queryAll.action",{area:_id})
+            .then(function (response) {
+                app.splitTemp.splitList = response.data;
+                app.visible = true;
+            })
+            .catch(function (error) {
+                $.modal.alertError("系统错误");
+            });
+    }
+
+    function showFloor(_id){
+        $("#cur_districtId").val(_id);
+        $(".nav-item").removeClass("active");
+        $(".toolHead").addClass("active");
+        initBaseImage(_id)
+    }
+
+    function initFloorTool(dataObj,_parentId){
+        let itemHtml="";
+        let _pId=$("#p_districtId").val();
+        let _cid = $("#cur_districtId").val();
+        for(let di=0;di<dataObj.length;di++){
+            let id =dataObj[di].id;
+            let name  = dataObj[di].name;
+            if(di==0){
+                itemHtml+='<h5 class="toolHead ';
+                if(_cid==_pId){
+                    itemHtml+='active '
+                }
+                itemHtml+='" onclick="showFloor('+_pId+')">'+dataObj[di].parentName+'</h5>';
+                //itemHtml+='<button type="button" style="width: 100%;position: absolute" onclick="addFloor('+_parentId+')">新增</button>';
+            }
+
+            itemHtml+= '<li class="nav-item floor-plan-li ';
+            if(di==0){
+                //$("#cur_districtId").val(id);
+                itemHtml+=' ';
+            }
+            if(_cid==id){
+                itemHtml+='active';
+            }
+            itemHtml+='"><a class="nav-link" data-floorId="'+id+'" href="javascript:void(0)">'+
+                name
+                +'</a></li>';
+
+        }
+        $(".navbar-nav").html(itemHtml);
+        $("#floor_tool").show();
+        $(".navbar-nav .nav-item").click(function(){
+            $(".toolHead").removeClass("active");
+            $(".nav-item").removeClass("active");
+            $(this).addClass("active");
+            const floorId =$(this).find("a").attr("data-floorId");
+            $("#cur_districtId").val(floorId);
+            //重置按钮组
+            lock=changeLock("u");
+            //刷新图层
+            initBaseImage(floorId);
+        });
+    }
+
+    function getCurDistrictId(){
+        let curDistrictId= $("#cur_districtId").val();
+        if(undefined==curDistrictId||""==curDistrictId){
+            curDistrictId=null;
+        }
+        return curDistrictId;
+    }
+    function getRefId(){
+        let refId= '${ref_id}';
+        if(undefined==refId||null==refId||""==refId){
+            refId=-1;
+        }
+        return refId;
+    }
+    function initRightRole(){
+        let right_role = new Map();
+        right_role.set("updateShape",$("#roleList").find("#updateShape").length);
+        right_role.set("view",$("#roleList").find("#view").length);
+        right_role.set("split",$("#roleList").find("#split").length);
+        right_role.set("delete",$("#roleList").find("#delete").length);
+        right_role.set("edit",$("#roleList").find("#edit").length);
+        return  right_role;
+    }
+    //配置右键按钮
+    function initMenusBtn(menus_type,curNum){
+        let right_role = initRightRole();
+        let btn_list=new Array();
+        btn_list.push(initBtnObj(rightBtnCategory.header));
+        if(right_role.get("updateShape")>0){
+            btn_list.push(initBtnObj(rightBtnCategory.right_up_type,menus_type,curNum));
+        }
+        if(getRefId()==-1){
+            btn_list.push(initBtnObj(rightBtnCategory.right_in,menus_type,curNum));
+        }else if(getRegionalCategory()==1){
+
+        }else{
+            if(right_role.get("edit")>0) {
+                btn_list.push(initBtnObj(rightBtnCategory.right_edit, menus_type, curNum));
+            }
+            if(right_role.get("view")>0) {
+                btn_list.push(initBtnObj(rightBtnCategory.right_view, menus_type, curNum));
+            }
+            if(right_role.get("split")>0) {
+                btn_list.push(initBtnObj(rightBtnCategory.right_split, menus_type, curNum));
+            }
+            if(right_role.get("delete")>0) {
+                btn_list.push(initBtnObj(rightBtnCategory.right_delete, menus_type, curNum));
+            }
+        }
+        return btn_list;
+    }
+
+    //关闭编辑后同步一次摊位信息
+    $('#_modal').on('hide.bs.modal', function () {
+        doSyncBooth();
+    })
+
+    function doSyncBooth(){
+        if(undefined==updateBoothId||null==updateBoothId){
+            return;
+        }
+        let sy_data= {boothId:updateBoothId};
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/assetManagement/updateBooth.action",
+            dataType: "json",
+            data:JSON.stringify(sy_data),
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                if(ret.code=="200"){
+                    //layer.msg('操作成功',{icon:1,time : 1888});
+                    doRefresh();
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            },complete:function(){
+                bui.loading.hide();
+                updateBoothId=null;
+            }
+        });
+    }
+    /**
+     * 摊位编辑
+     *  */
+    function openUpdateHandler(url,title) {
+        $("#_modal").modal();
+        $('#_modal .modal-body').load(url);
+        $("#_modal").find('.modal-title').text(title);
+    }
+
+    //右键按钮
+    function initBtnObj(_type,menus_type,curNum){
+        let btn_item = new Object();
+        if(_type==rightBtnCategory.header){
+            btn_item.header=rightBtnCategory.header;
+        }else if(_type==rightBtnCategory.right_edit){
+            btn_item.text=rightBtnCategory.right_edit;
+            btn_item.action= function(e){
+                e.preventDefault();
+                let id=$('.'+menus_type+'[rel='+curNum+']').attr("data-boothid");
+                //openAssetsHtml(assetsCategory.update,id,assetsCategory.update_title);
+                updateBoothId=id;
+                openUpdateHandler(assetsCategory.update+'?id=' + id,assetsCategory.update_title,'修改资产')
+            }
+        }else if(_type== rightBtnCategory.right_view){
+            btn_item.text=rightBtnCategory.right_view;
+            btn_item.action= function(e){
+                e.preventDefault();
+                let id=$('.'+menus_type+'[rel='+curNum+']').attr("data-boothid");
+                openAssetsHtml(assetsCategory.view,id,assetsCategory.view_title);
+            }
+        }else if(_type==rightBtnCategory.right_in){
+            btn_item.text=rightBtnCategory.right_in;
+            btn_item.action= function(e){
+                e.preventDefault();
+                const id=$('.'+menus_type+'[rel='+curNum+']').attr("dataid");
+                const district_id=$('.'+menus_type+'[rel='+curNum+']').attr("data-districtid");
+                showArea(id,district_id);
+            }
+        }else if(_type==rightBtnCategory.right_split){
+            btn_item.text=rightBtnCategory.right_split;
+            btn_item.action= function(e){
+                e.preventDefault();
+                let id=$('.'+menus_type+'[rel='+curNum+']').attr("data-boothid");
+                openAssetsHtml(assetsCategory.split,id,assetsCategory.split_title);
+            }
+        }else if(_type==rightBtnCategory.right_lease){
+            btn_item.text=rightBtnCategory.right_lease;
+            btn_item.action= function(e){
+                e.preventDefault();
+                let id=$('.'+menus_type+'[rel='+curNum+']').attr("data-boothid");
+            }
+        }else if(_type==rightBtnCategory.right_delete){
+            btn_item.text=rightBtnCategory.right_delete;
+            btn_item.action= function(e){
+                e.preventDefault();
+                let id=$('.'+menus_type+'[rel='+curNum+']').attr("data-boothid");
+                deleteBooth(id);
+            }
+        }else if(_type==rightBtnCategory.right_up_type){
+            btn_item.text=rightBtnCategory.right_up_type;
+            btn_item.action= function(e){
+                e.preventDefault();
+                let id=$('.'+menus_type+'[rel='+curNum+']').attr("data-boothid");
+                let _data_id=$('.'+menus_type+'[rel='+curNum+']').attr("dataid");
+                let is_irregular=$('.'+menus_type+'[rel='+curNum+']').attr("data-isirregular");
+                if(undefined==is_irregular){
+                    if($('.'+menus_type+'[rel='+curNum+']').hasClass("otherBox")){
+                        is_irregular=floorType.unRule;
+                    }else{
+                        is_irregular=floorType.rule;
+                    }
+                }
+                updateTypeBooth(_data_id,is_irregular);
+            }
+        }
+        return btn_item;
+    }
+
+    //修改图形类型
+    function updateTypeBooth(_dataid,_isr){
+        if(undefined==_dataid||null==_dataid||""==_dataid){
+            return;
+        }
+        if(floorType.is_irregular==_isr){
+            $(".box[dataid='"+_dataid+"']").hide();
+            let _newBox = {};
+            let elem =$(".box[dataid='"+_dataid+"']");
+            $.each(elem.get(0).attributes, function(v,n) {
+                let nen = n.nodeName||n.name;
+                let _v = elem.attr(nen);
+                nen= nen.replace("data-","");
+                _newBox[nen]=_v;
+            })
+            _newBox.isirregular=floorType.un_irregular;
+            _newBox.class=floorType.unRule;
+            console.log(_newBox)
+            beginLn(_newBox);
+        }else{
+            //let num = $(".box:visible").length+1;
+            let _newBox = {};
+            let elem =$(".otherBox[dataid='"+_dataid+"']");
+            elem.hide();
+            $.each(elem.get(0).attributes, function(v,n) {
+                let nen = n.nodeName||n.name;
+                let _v = elem.attr(nen);
+                nen= nen.replace("data-","");
+                _newBox[nen]=_v;
+            })
+            _newBox.isirregular=floorType.is_irregular;
+            _newBox.class=floorType.rule;
+            if(undefined==_newBox.itemwidth){
+                _newBox.itemwidth=90;
+                _newBox.itemheight=90;
+            }
+            if(undefined==_newBox.itemxsite){
+                _newBox.itemxsite=elem.position().left;
+                _newBox.itemysite=elem.position().top;
+            }
+            createBox(null,_newBox);
+        }
+
+    }
+
+    function deleteBooth(booth_id){
+        bs4pop.confirm('确认删除?', {title: "确认提示"}, function(sure){
+            if(sure){
+                bui.loading.show();
+                let _formData=new FormData();
+                _formData.append("id",booth_id);
+                $.ajax({
+                    type: "POST",
+                    url: "${contextPath}/booth/delete.action",
+                    dataType: "json",
+                    data:_formData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    async: true,
+                    success: function (ret) {
+                        console.log(ret);
+                        if(ret.code!="200"){
+                            layer.msg('删除失败',{icon:2,time : 1888});
+                        }else{
+                            updateBoothId=booth_id;
+                            doSyncBooth();
+                        }
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },complete:function(){
+                        bui.loading.hide();
+                    }
+                });
+            }});
+    }
+
+    //初始化右键菜单
+    function initMenus(menusType,curNum){
+        //创建右键菜单
+        if(floorType.background==menusType){
+            //创建右键菜单
+            if($("#updateBg").length>0){
+                context.attach('#canvasBack', [
+                    {header: '操作'},
+                    {text: '替换背景图', action: function(e){
+                            e.preventDefault();
+                            $("#up_background_modal").modal('show');
+                            $("#backUrl").val("");
+                            $("#addFileImg").on("change",function(){
+                                addImage_upload(this)
+                            })
+                        }
+                    },{text: '删除背景图', action: function(e){
+                            e.preventDefault();
+                            bs4pop.confirm('确认删除?', {title: "确认提示"}, function(sure){
+                                $("#canvasBack").removeAttr("src");
+                            })
+                        }
+                    },
+                ]);
+            }else{
+                context.attach('#canvasBack', [
+                    {header: '背景图'},
+                ]);
+            }
+        }else{
+            //创建右键菜单
+            let btnList=initMenusBtn(menusType,curNum);
+            context.attach('.'+menusType+'[rel='+curNum+']', btnList);
+        }
+    }
+
+    /**
+     * dfs服务器未设置允许跨域，会导致canvas图片跨域异常，选择图片不再通过后台
+     * */
+    function addImage_upload(obj){
+        let $file =document.getElementById("addFileImg").files[0];
+        let maxSize = $("#addFileImg").attr("data-maxSize");
+        console.log(maxSize);
+        if($file.size > maxSize)
+        {
+            bs4pop.alert("图片过大",{type:'warning'});
+            return false;
+        }
+
+        let formData = new FormData();
+        console.log($file);
+        compressImage($file)
+            .then(ret => {
+                let fileObj = new window.File([ret], ret.name, {
+                    type: ret.type
+                });
+                console.log(ret)
+                formData.append('file', fileObj);
+                doUpload(formData)
+            })
+            .catch(err => {
+                console.log(err);
+                formData.append('file', $file);
+                // 压缩失败把原文件传递
+                doUpload(formData)
+            });
+    }
+    function doUpload(formData){
+        bui.loading.show('努力提交中，请稍候。。。');
+        $.ajax({
+            url: "doUpload.action",
+            type: 'POST',
+            data: formData,
+            async: true,
+            cache: false,
+            lock: true,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                console.log(res);
+                if (res.code == "200") {
+                    bs4pop.alert("上传成功",{type:'success'});
+                    let url = res.data;
+                    console.log(res.data);
+                    $("#canvasBack").attr("src",url);
+                    $("#up_background_modal").modal('hide');
+                }else{
+                    bs4pop.alert("上传失败",{type:'error'});
+                }
+            },
+            error: function (error) {
+                bs4pop.alert(error.result, {type: 'error'});
+            },
+            complete: function (e) {
+                bui.loading.hide();
+                $("#addFileImg").val('');
+            }
+        });
+    }
+
+    /**
+     * 图片压缩
+     * @param file
+     * @returns {Promise<unknown>}
+     */
+    function compressImage(imgFile) {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader();
+            reader.onload = e => {
+                let img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    let canvas = document.createElement("canvas");
+                    let ctx = canvas.getContext("2d");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    // 铺底色
+                    ctx.fillStyle = "#fff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                    // 进行压缩
+                    let ndata = canvas.toDataURL("image/jpeg", 0.3);
+                    resolve(dataURLtoFile(ndata, imgFile.name));
+                };
+            };
+            reader.onerror = e => reject(e);
+            reader.readAsDataURL(imgFile);
+        });
+    }
+
+    // base64 转 Blob
+    function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(","),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+</script>

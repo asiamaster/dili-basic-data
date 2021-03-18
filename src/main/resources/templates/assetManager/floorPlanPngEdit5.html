@@ -1,0 +1,1261 @@
+<#bs4Body>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.5 -->
+    <link href="/resources/floorPlan/plugins/bootstrap/3.3.5/bootstrap.min.css" rel="stylesheet">
+    <link href="/resources/floorPlan/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.css" rel="stylesheet">
+    <link href="/resources/floorPlan/plugins/topology/layout.css" rel="stylesheet">
+    <!-- 矢量图标库 -->
+    <link href="http://at.alicdn.com/t/font_1113798_0532l8oa6jqp.css" rel="stylesheet"/>
+    <link href="http://at.alicdn.com/t/font_1331132_5lvbai88wkb.css" rel="stylesheet"/>
+    <style>
+        .tools{
+            width: 160px;
+            height: 79vh;
+            border: #DDDDDD solid 1px;
+            float: left;
+            z-index: 999999999;
+            overflow: auto;
+        }
+        .imgBtn{
+            margin: 3px;
+            padding: 3px;
+            float: left;
+        }
+
+        .otherImgDiv {
+            line-height: 60px;
+            width: 60px;
+            height: 60px;
+            cursor: pointer;
+            color: #bfbfbf;
+            border: 1px solid #1890ff;
+            margin: .2rem .05rem 0;
+            display: inline-block;
+            text-align: center;
+            position: relative;
+            margin: 5px;
+        }
+        .otherImg{
+            width: 60px;
+            height: 60px;
+        }
+
+        .otherBox {
+            min-width: 1.8rem;
+            align-content: flex-start;
+            flex-wrap: wrap;
+            display: flex;
+            overflow: visible;
+        }
+        .icon-close{
+            position: absolute;
+            top: -24px;
+            right: 0px;
+            font-size: 10px;
+            color: #b3b3b3;
+            font-weight: bold;
+        }
+    </style>
+<div class="wrapper">
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <section class="content" id="content">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <nav class="navbar navbar-default" style="justify-content: flex-start;">
+                        <ul class="nav nav-pills">
+                            <!--<li><a href="#" id="canvas_save">保存</a></li>-->
+                            <li><a href="#" id="down_png">下载PNG</a></li>
+                            <!--<li><a href="#" id="down_svg">下载SVG</a></li>-->
+                            <li><a href="#" id="down_canvas2svg">下载SVG</a></li>
+                           <!-- <li><a href="#" onclick="addMyNode()">addMyNode</a></li>-->
+                        </ul>
+                    </nav>
+
+                    <div class="flex" id="main_canvas">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" class="active"><a href="#base" role="tab" data-toggle="tab">基本</a></li>
+                            <li role="presentation"><a href="#other" role="tab" data-toggle="tab">其他</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="base">
+                                <div class="tools" id="flex_tools">
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="other">
+                                <div class="tools" >
+                                        <app-user-images   class="block mt20" >
+                                                <div   class="nowrap" style="line-height: 1;">
+                                                    <button id="selectImgBtn" class="btn btn-sm btn-primary imgBtn "  > 选择图片
+                                                    </button>
+                                                    <button id="onlineImgBtn" class="btn btn-sm btn-primary imgBtn "> 在线图片
+                                                    </button>
+                                                </div>
+                                                <div class="otherBox" style="width: 100%">
+                                                    <div class="otherImgDiv">空</div>
+                                                    <!--<div draggable="true" class="otherImgDiv"
+                                                         ondragstart="onDragStart(event,{'name':'image','icon':'icon-image','data':{'text':'','rect':{'width':100,'height':100},'name':'image','image':'https://fanyi-cdn.cdn.bcebos.com/static/translation/img/header/logo_40c4f13.svg'}})"
+                                                    >
+                                                        <img  parentdom="tools" class="otherImg"
+                                                             src="https://fanyi-cdn.cdn.bcebos.com/static/translation/img/header/logo_40c4f13.svg">
+                                                        <i title="从图片库中移除，但不删除图片" class="iconfont icon-close"></i>
+                                                    </div>
+                                                    <div draggable="true" class="otherImgDiv"
+                                                         ondragstart="onDragStart(event,{'name':'image','icon':'icon-image','data':{'text':'','rect':{'width':100,'height':100},'name':'image','image':'https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3150086618,3969881775&fm=11&gp=0.jpg'}})"
+                                                    >
+                                                        <img  parentdom="tools" class="otherImg"
+                                                             src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3150086618,3969881775&fm=11&gp=0.jpg">
+                                                        <i title="从图片库中移除，但不删除图片" class="iconfont icon-close"></i>
+                                                    </div>-->
+                                                </div>
+                                        </app-user-images>
+                                    <div id="selectImgDiv" style="display: none"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="flex_canvas">
+                            <div class="canvas" id="topo_canvas"></div>
+                        </div>
+                        <div class="props" id="flex_props">
+                            <div class="pv5">
+                                <div id="flex_props_home">
+                                    <div style="bottom:.2rem">
+                                        <div class="sub-title"
+                                             style="margin-left: 20px;font-weight: bold;margin-top: 10px">
+                                            小提示
+                                        </div>
+                                        <ul>
+                                            <li>方向键：控制节点移动5个像素</li>
+                                            <li>Ctrl + 方向键：控制节点移动1个像素</li>
+                                            <li>Ctrl + 鼠标移动：移动整个画布</li>
+                                            <li>Ctrl + 鼠标滚轮：缩放</li>
+                                            <li>Delete：删除选中节点</li>
+                                            <li>添加或选中节点，右侧属性支持上传各种图片哦</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div id="flex_props_node" class="hidden">
+                                    <form role="form" action="javascript:void(0);" method="post" id="query_form">
+                                        <div id="right_show">
+
+                                            <div class="node-show">
+                                                <div class="group col-xs-12">
+                                                    <div class="title">位置和大小</div>
+                                                    <div class="flex">
+                                                        <div class="col-xs-6 sub-title">X（px）</div>
+                                                        <div class="col-xs-6 sub-title">Y（px）</div>
+                                                    </div>
+                                                    <div class="flex grid mt5">
+                                                        <div class="col-xs-6">
+                                                            <input type="number" name="node_x"
+                                                                   class="form-control input-sm" min="0" max="5000"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <input type="number" name="node_y"
+                                                                   class="form-control input-sm" min="0" max="5000"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex grid mt5">
+                                                        <div class="col-xs-6 sub-title">宽（px）</div>
+                                                        <div class="col-xs-6 sub-title">高（px）</div>
+                                                    </div>
+                                                    <div class="flex grid">
+                                                        <div class="col-xs-6">
+                                                            <input type="number" name="node_width"
+                                                                   class="form-control input-sm" min="0" max="5000"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <input type="number" name="node_height"
+                                                                   class="form-control input-sm" min="0" max="5000"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex grid mt5">
+                                                        <div title="百分比%对应的小数值" class="col-xs-6 sub-title">圆角（0 - 1）
+                                                        </div>
+                                                        <div class="col-xs-6 sub-title">旋转（°）</div>
+                                                    </div>
+                                                    <div class="flex grid">
+                                                        <div class="col-xs-6">
+                                                            <input type="number" name="borderRadius"
+                                                                   class="form-control input-sm" min="0" max="1"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <input type="number" name="rotate"
+                                                                   class="form-control input-sm" min="0" max="360"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex grid mt5">
+                                                        <div title="padding-left" class="sub-title col-xs-6">内边距-左</div>
+                                                        <div title="padding-right" class="sub-title col-xs-6">内边距-右
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex grid">
+                                                        <div class="mr5 col-xs-6">
+                                                            <input name="paddingLeft" class="input form-control"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <input name="paddingRight" class="input form-control"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex grid mt5">
+                                                        <div title="padding-top" class="sub-title col-xs-6">内边距-上</div>
+                                                        <div title="padding-bottom" class="sub-title col-xs-6">内边距-下
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex grid">
+                                                        <div class="mr5 col-xs-6">
+                                                            <input name="paddingTop" class="input form-control" required
+                                                                   onchange="onChangeProp()"/>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <input name="paddingBottom" class="input form-control"
+                                                                   required onchange="onChangeProp()"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="mt5 gray col-xs-12 hint">
+                                                        内边距：输入数字表示像素；输入%表示百分比
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group col-xs-12 line-show">
+                                            <div class="line-show">
+                                                <div class="title">位置</div>
+                                                <div class="col-xs-12 sub-title">
+                                                    起点
+                                                </div>
+                                                <div>
+                                                    <div class="col-xs-6">
+                                                        <input type="number" name="from_x" class="form-control input-sm"
+                                                               placeholder="X（px）" min="0" max="5000" required
+                                                               onchange="onChangeProp()"/>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="number" name="from_y" class="form-control input-sm"
+                                                               placeholder="Y（px）" min="0" max="5000" required
+                                                               onchange="onChangeProp()"/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-12 sub-title">
+                                                    终点
+                                                </div>
+                                                <div class="flex grid">
+                                                    <div class="col-xs-6">
+                                                        <input type="number" name="to_x" class="form-control input-sm"
+                                                               placeholder="X（px）" min="0" max="5000" required
+                                                               onchange="onChangeProp()"/>
+                                                    </div>
+                                                    <div class="col-xs-6">
+                                                        <input type="number" name="to_y" class="form-control input-sm"
+                                                               placeholder="Y（px）" min="0" max="5000" required
+                                                               onchange="onChangeProp()"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex grid mt5">
+                                                <div class="col-xs-6 sub-title">起点箭头</div>
+                                                <div class="col-xs-6 sub-title">终点箭头</div>
+                                            </div>
+                                            <div class="flex grid">
+                                                <!--Line起点箭头-->
+                                                <div class="mr5 select-box col-xs-6">
+                                                    <div class="rel">
+                                                        <div class="input" id="start_line_head">
+                                                            <div class="icon-item">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,15 4,15 14"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,15 4,15 14"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,10 6,20 9,10 12"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,10 6,20 9,10 12"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l85 0"/>
+                                                                        <circle cx="6" cy="9" r="5" fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l85 0"/>
+                                                                        <circle cx="6" cy="9" r="5" fill="#ffffff"
+                                                                                stroke="#000000" stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <path d="M0 9 l12 6"/>
+                                                                        <path d="M0 9 l12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <path d="M0 9 l12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <path d="M0 9 l12 6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <div class="dropdown hidden" id="start_line_dropdown">
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('',0)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l100 0"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('triangleSolid',1)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,15 4,15 14"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('triangle',2)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,15 4,15 14"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('diamondSolid',3)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,10 6,20 9,10 12"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('diamond',4)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="0 9,10 6,20 9,10 12"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('circleSolid',5)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l85 0"/>
+                                                                        <circle cx="6" cy="9" r="5" fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('circle',6)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l85 0"/>
+                                                                        <circle cx="6" cy="9" r="5" fill="#ffffff"
+                                                                                stroke="#000000" stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('line',7)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <path d="M0 9 l12 6"/>
+                                                                        <path d="M0 9 l12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('lineUp',8)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <path d="M0 9 l12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickFromArrow('lineDown',9)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <path d="M0 9 l12 6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--Line结束箭头-->
+                                                <div class="select-box col-xs-6">
+                                                    <div class="rel">
+                                                        <div class="input" id="end_line_head">
+                                                            <div class="icon-item">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l80 0"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l79 0"/>
+                                                                        <polygon points="79 9,65 4,65 14"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l79 0"/>
+                                                                        <polygon points="79 9,65 4,65 14"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l79 0"/>
+                                                                        <polygon points="79 9,70 6,60 9,70 12"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="79 9,70 6,60 9,70 12"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l78 0"/>
+                                                                        <circle cx="74" cy="9" r="5"
+                                                                                fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l78 0"/>
+                                                                        <circle cx="74" cy="9" r="5" fill="#ffffff"
+                                                                                stroke="#000000" stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l78 0"/>
+                                                                        <path d="M78 9 l-12 6"/>
+                                                                        <path d="M78 9 l-12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l78 0"/>
+                                                                        <path d="M78 9 l-12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item hidden">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l78 0"/>
+                                                                        <path d="M78 9 l-12 6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                        <div class="dropdown hidden" id="end_line_dropdown">
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('',0)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l100 0"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('triangleSolid',1)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="79 9,65 4,65 14"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('triangle',2)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="79 9,65 4,65 14"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('diamondSolid',3)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="79 9,70 6,60 9,70 12"
+                                                                                 fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('diamond',4)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l85 0"/>
+                                                                        <polygon points="79 9,70 6,60 9,70 12"
+                                                                                 fill="#ffffff" stroke="#000000"
+                                                                                 stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('circleSolid',5)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l78 0"/>
+                                                                        <circle cx="74" cy="9" r="5"
+                                                                                fill="#000000"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('circle',6)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M1 9 l78 0"/>
+                                                                        <circle cx="74" cy="9" r="5" fill="#ffffff"
+                                                                                stroke="#000000" stroke-width="1"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('line',7)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l78 0"/>
+                                                                        <path d="M78 9 l-12 6"/>
+                                                                        <path d="M78 9 l-12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('lineUp',8)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l78 0"/>
+                                                                        <path d="M78 9 l-12 -6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                            <div class="icon-item ph10 pv5"
+                                                                 onclick="onClickToArrow('lineDown',9)">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     version="1.1">
+                                                                    <g fill="none" stroke="black" stroke-width="1">
+                                                                        <path d="M0 9 l78 0"/>
+                                                                        <path d="M78 9 l-12 6"/>
+                                                                    </g>
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group col-xs-12">
+                                            <div class="title">外观</div>
+                                            <div class="flex grid node-show">
+                                                <div class="col-xs-12 sub-title">边框样式</div>
+                                            </div>
+                                            <div class="flex grid line-show">
+                                                <div class="col-xs-6 sub-title">连线类型</div>
+                                                <div class="col-xs-6 sub-title">连线样式</div>
+                                            </div>
+                                            <div class="select-box">
+                                                <div class="col-xs-6 line-show">
+                                                    <div class="input" id="line_style_head">
+                                                        <div class="icon-item">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 9 a100,50 0 0,1 85,0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item hidden">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 4 l40 0 l0 12 l40 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item hidden">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="dropdown hidden" id="line_style_dropdown">
+                                                        <div class="icon-item ph10 pv5"
+                                                             onclick="onClickName('curve',0)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 9 a100,50 0 0,1 85,0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item ph10 pv5"
+                                                             onclick="onClickName('polyline',1)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 4 l40 0 l0 12 l40 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item ph10 pv5"
+                                                             onclick="onClickName('line',2)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 9 l100 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <div class="input" id="line_type_head">
+                                                        <div class="icon-item" [class.hidden]="props.data.dash">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item hidden">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path stroke-dasharray="5,5" d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item hidden">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path stroke-dasharray="10,10" d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item hidden">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path stroke-dasharray="10,10,2,10"
+                                                                          d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                    <div class="dropdown hidden" id="line_type_dropdown">
+                                                        <div class="icon-item ph10 pv5" onclick="onClickDash(0,0)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item ph10 pv5" onclick="onClickDash(1,1)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path stroke-dasharray="5,5" d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item ph10 pv5" onclick="onClickDash(2,2)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path stroke-dasharray="10,10" d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                        <div class="icon-item ph10 pv5" onclick="onClickDash(3,3)">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+                                                                <g fill="none" stroke="black" stroke-width="1">
+                                                                    <path stroke-dasharray="10,10,2,10"
+                                                                          d="M0 9 l85 0"/>
+                                                                </g>
+                                                            </svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 node-show"></div>
+                                            <div class="flex grid mt5">
+                                                <div class="col-xs-6 sub-title" id="node_line_color">边框颜色</div>
+                                                <div class="col-xs-6 sub-title">线宽（px）</div>
+                                            </div>
+                                            <div class="flex grid">
+                                                <div class="mr5 col-xs-6">
+                                                    <div class="input-group colorpicker colorpicker-element">
+                                                        <input type="text" name="strokeStyle"
+                                                               class="form-control input-sm" onchange="onChangeProp()">
+                                                        <div class="input-group-addon">
+                                                            <i></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <input type="number" name="lineWidth" class="form-control input-sm"
+                                                           min="0" max="100" onchange="onChangeProp()"/>
+                                                </div>
+                                            </div>
+                                            <div class="node-show">
+                                                <div id="node_color">
+                                                    <div class="mt5 col-xs-12 sub-title">
+                                                        背景颜色
+                                                    </div>
+                                                    <div class="col-xs-12">
+                                                        <div class="input-group colorpicker colorpicker-element">
+                                                            <input type="text" name="fillStyle"
+                                                                   class="form-control input-sm"
+                                                                   onchange="onChangeProp()">
+                                                            <div class="input-group-addon">
+                                                                <i style="background-color: rgb(173,173,173);"></i>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="group col-xs-12 node-show">
+                                            <div class="title">文字</div>
+                                            <div class="mt5 col-xs-12 sub-title">
+                                                字体
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <input name="fontFamily" class="form-control input-sm"
+                                                       onchange="onChangeProp()"/>
+                                            </div>
+                                            <div class="flex grid mt5">
+                                                <div class="col-xs-12 sub-title">颜色</div>
+                                            </div>
+                                            <div class="flex grid">
+                                                <div class="col-xs-12">
+                                                    <div class="input-group colorpicker colorpicker-element">
+                                                        <input type="text" name="fontColor"
+                                                               class="form-control input-sm" onchange="onChangeProp()">
+                                                        <div class="input-group-addon">
+                                                            <i style="background-color: rgb(173,173,173);"></i>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex grid mt5">
+                                                <div class="col-xs-12 sub-title">大小</div>
+                                            </div>
+                                            <div class="col-xs-12">
+                                                <input type="number" name="fontSize" class="form-control input-sm"
+                                                       min="0"
+                                                       max="500"
+                                                       onchange="onChangeProp()"/>
+                                            </div>
+                                            <div class="flex grid mt5 ">
+                                                <div class="col-xs-6 sub-title">倾斜</div>
+                                                <div class="col-xs-6 sub-title">加粗</div>
+                                            </div>
+                                            <div class="flex grid">
+                                                <div class="mr5 col-xs-6">
+                                                    <select name="fontStyle" class="form-control input-sm"
+                                                            onchange="onChangeProp()">
+                                                        <option value="normal">正常</option>
+                                                        <option value="italic">倾斜</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <select name="fontWeight" class="form-control input-sm"
+                                                            onchange="onChangeProp()">
+                                                        <option value="normal">正常</option>
+                                                        <option value="bold">加粗</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex grid mt5">
+                                                <div class="col-xs-6 sub-title">水平对齐</div>
+                                                <div class="col-xs-6 sub-title">垂直对齐</div>
+                                            </div>
+                                            <div class="flex grid">
+                                                <div class="mr5 col-xs-6">
+                                                    <select name="textAlign" class="form-control input-sm"
+                                                            onchange="onChangeProp()">
+                                                        <option value="left">左对齐</option>
+                                                        <option value="center" selected>居中</option>
+                                                        <option value="right">右对齐</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <select name="textBaseline" class="form-control input-sm"
+                                                            onchange="onChangeProp()">
+                                                        <option value="top">顶部对齐</option>
+                                                        <option value="middle" selected>居中</option>
+                                                        <option value="bottom">底部对齐</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="flex grid mt5">
+                                                <div class="col-xs-6 sub-title">行高</div>
+                                                <div class="col-xs-6 sub-title">最大行数</div>
+                                            </div>
+                                            <div class="flex grid">
+                                                <div class="mr5 col-xs-6">
+                                                    <input type="number" name="lineHeight" class="form-control input-sm"
+                                                           min="1"
+                                                           max="5"
+                                                           onchange="onChangeProp()"/>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <input type="number" name="textMaxLine"
+                                                           class="form-control input-sm" min="0"
+                                                           max="500"
+                                                           placeholder="0：自动匹配高度" onchange="onChangeProp()"/>
+                                                </div>
+                                            </div>
+                                            <div class="mt5 col-xs-12 sub-title">
+                                                内容
+                                            </div>
+                                            <div class="col-xs-12">
+                                                    <textarea name="text" class="form-control input-sm" rows="2"
+                                                              onchange="onChangeProp()"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="group col-xs-12 node-show">
+                                            <div class="title">备注</div>
+                                            <div class="col-xs-12">
+                                                <textarea name="data" class="form-control input-sm" rows="3"
+                                                          onchange="onChangeProp()"></textarea>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!--右键菜单定义-->
+                <div class="context-menus" id="canvas_menus" style="display: none">
+                    <div disabled>
+                        <a onclick="onTop()" class="menu-a-disabled" id="menu_top" disabled>
+                            置顶
+                        </a>
+                    </div>
+                    <div>
+                        <a onclick="onBottom()" class="menu-a-disabled" id="menu_bottom" disabled>
+                            置底
+                        </a>
+                    </div>
+                    <div class="line"></div>
+                    <div>
+                        <a onclick="onCombine()" class="menu-a-disabled" id="menu_combine" disabled>
+                            组合
+                        </a>
+                    </div>
+                    <div>
+                        <a onclick="onUncombine()" class="menu-a-disabled" id="menu_unCombine" disabled
+                           style="display: none">
+                            取消组合
+                        </a>
+                    </div>
+                    <div>
+                        <a onclick="onLock()" class="menu-a-disabled" id="menu_lock" disabled>
+                            锁定
+                        </a>
+                    </div>
+                    <div class="line"></div>
+                    <div>
+                        <a onclick="onDelete()" class="menu-a">
+                            删除
+                        </a>
+                    </div>
+                    <div class="line"></div>
+                    <div>
+                        <a onclick="undo()" class="menu-a">
+                            撤消
+                            <span class="ml50">Ctrl + Z</span>
+                        </a>
+                    </div>
+                    <div>
+                        <a onclick="redo()" class="menu-a">
+                            恢复
+                            <span class="ml50">Ctrl + Shift+ Z</span>
+                        </a>
+                    </div>
+                    <div class="line"></div>
+                    <div>
+                        <a onclick="cut()" class="menu-a">
+                            剪切
+                            <span class="ml50">Ctrl + X</span>
+                        </a>
+                    </div>
+                    <div>
+                        <a onclick="copy()" class="menu-a">
+                            复制
+                            <span class="ml50">Ctrl + C</span>
+                        </a>
+                    </div>
+                    <div>
+                        <a onclick="parse()" class="menu-a">
+                            粘贴
+                            <span class="ml50">Ctrl + V</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+</div>
+<input type="file" id="addFileImg" data-maxSize="8388608" style="display: none"/>
+<div id="img_template" draggable="true" class="otherImgDiv"
+     style="display: none">
+    <img parentdom="tools" class="otherImg" >
+    <i title="从图片库中移除，但不删除图片" class="iconfont icon-close"></i>
+</div>
+
+<div class="modal fade" id="onlineModal" tabindex="-1" role="dialog" aria-labelledby="onlineModalLabel" aria-hidden="true">
+        <div class="modal-content modal-dialog">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="mb10 col-sm-3" style="line-height: 34px;text-align: right;">图片URL</div>
+                    <div class="col-sm-6">
+                        <input class="form-control" type="text" name="add_imagUrl" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="confirmImg()">确认</button>
+            </div>
+        </div>
+</div>
+</#bs4Body>
+<!-- 引入Vue -->
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<script src="/resources/floorPlan/plugins/jquery/3.3.1/jquery-3.3.1.min.js"></script>
+<script src="/resources/floorPlan/plugins/bootstrap/3.3.5/bootstrap.min.js"></script>
+<script src="/resources/floorPlan/plugins/bootstrap-colorpicker/bootstrap-colorpicker.min.js"></script>
+<script src="/resources/floorPlan/plugins/topology/topology.bundle.js"></script>
+<script src="/resources/floorPlan/topology/topology_es5.js"></script>
+<script>
+    $(document).ready(function() {
+        $("#addFileImg").on("change",function(){
+            addImage(this)
+        })
+        $("#selectImgBtn").on("click",function(){
+            $("#addFileImg").click();
+        });
+        $("#onlineImgBtn").on("click",function(){
+            $("#onlineModal").find("[name='add_imagUrl']").val('');
+            $("#onlineModal").modal("show");
+        })
+        $(".icon-close").on("click",function(e){
+            $(this).closest(".otherImgDiv").remove();
+        })
+    })
+
+    function confirmImg(){
+        let iml=$("[name='add_imagUrl']").val();
+        if(""==iml&&""==iml.trim()){
+            bs4pop.alert("图片地址不能为空");
+            return;
+        }
+        console.log(iml);
+        addOtherDiv(iml);
+        $("#onlineModal").modal("hide");
+    }
+
+    function addOtherDiv(imgBase64){
+        let addFile = $("#img_template").clone();
+        let leh = $(".otherImgDiv").length;
+        addFile.attr({
+            id:"addBox"+leh,
+            ondragstart: "onDragStart(event,{'name':'image','icon':'icon-image','data':{'text':'','rect':{'width':100,'height':100},'name':'image','image':'"+imgBase64+"'}})"
+        });
+        addFile.find(".otherImg").attr("src",imgBase64);
+        addFile.show();
+        $(".otherBox").append(addFile);
+        $(".icon-close").on("click",function(e){
+            $(this).closest(".otherImgDiv").remove();
+        })
+    }
+
+    function addImage(obj){
+        let $file =document.getElementById("addFileImg").files[0];
+        let imageType = /^image\//;
+        if ( !imageType.test($file.type) ) {
+            bs4pop.alert("请选择图片",{type:'warning'});
+            return;
+        }
+        let img = document.createElement("img");
+        let preview = document.getElementById('selectImgDiv');
+        img.classList.add("selectImg");
+        img.file = $file;
+        // 假设 "preview" 是将要展示图片的 div
+        preview.appendChild(img);
+        let reader = new FileReader();
+        reader.onload = (function(aImg) {
+            return function(e) {
+                aImg.src = e.target.result;
+                addOtherDiv(e.target.result);
+            };
+        })(img);
+        reader.readAsDataURL($file);
+    }
+
+    /**
+     * dfs服务器未设置允许跨域，会导致canvas图片跨域异常，选择图片不再通过后台
+     * */
+    function addImage_upload(obj){
+                let $file =document.getElementById("addFileImg").files[0];
+                let maxSize = $("#addFileImg").attr("data-maxSize");
+                console.log(maxSize);
+                if($file.size > maxSize)
+                {
+                    bs4pop.alert("图片过大，无法绘制，建议使用上传后的在线地址",{type:'warning'});
+                    return false;
+                }
+
+                let formData = new FormData();
+                console.log($file);
+                compressImage($file)
+                    .then(ret => {
+                        let fileObj = new window.File([ret], ret.name, {
+                            type: ret.type
+                        });
+                        console.log(ret)
+                        formData.append('file', fileObj);
+                        doUpload(formData)
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        formData.append('file', $file);
+                         // 压缩失败把原文件传递
+                        doUpload(formData)
+                    });
+    }
+    function doUpload(formData){
+
+        bui.loading.show('努力提交中，请稍候。。。');
+        $.ajax({
+            url: "doUpload.action",
+            type: 'POST',
+            data: formData,
+            async: false,
+            cache: false,
+            lock: true,
+            contentType: false,
+            processData: false,
+            success: function (res) {
+                console.log(res);
+                if (res.code == "200") {
+                    bs4pop.alert("上传成功",{type:'success'});
+                    let url = res.data;
+                    console.log(res.data);
+                    addOtherDiv(url);
+                }else{
+                    bs4pop.alert("上传失败",{type:'error'});
+                }
+            },
+            error: function (error) {
+                bs4pop.alert(error.result, {type: 'error'});
+            },
+            complete: function (e) {
+                bui.loading.hide();
+                $("#addFileImg").val('');
+            }
+        });
+    }
+
+    /**
+     * 图片压缩
+     * @param file
+     * @returns {Promise<unknown>}
+     */
+    function compressImage(imgFile) {
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader();
+            reader.onload = e => {
+                let img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    let canvas = document.createElement("canvas");
+                    let ctx = canvas.getContext("2d");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    // 铺底色
+                    ctx.fillStyle = "#fff";
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+
+                    // 进行压缩
+                    let ndata = canvas.toDataURL("image/jpeg", 0.3);
+                    resolve(dataURLtoFile(ndata, imgFile.name));
+                };
+            };
+            reader.onerror = e => reject(e);
+            reader.readAsDataURL(imgFile);
+        });
+    }
+
+    // base64 转 Blob
+    function dataURLtoFile(dataurl, filename) {
+        let arr = dataurl.split(","),
+            mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]),
+            n = bstr.length,
+            u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+    }
+
+</script>

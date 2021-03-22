@@ -69,3 +69,34 @@ ALTER TABLE `dili-basic-data`.`trade_type`
 UPDATE `dili-basic-data`.`trade_type` SET market_id = 8;
 
 INSERT INTO `dili-basic-data`.`type_market`(`type`, `market_id`, `name`) VALUES ('jmsf_vehicle', 9, '空车车辆明细');
+
+-- 资产平面图
+DROP TABLE IF EXISTS floor_plan;
+CREATE TABLE `floor_plan` (
+                              `id` BIGINT(20) NOT NULL AUTO_INCREMENT COMMENT 'oid',
+                              `plan_type` TINYINT(2) DEFAULT '2' COMMENT '类型：1背景图，2摊位图',
+                              `is_irregular` TINYINT(2) DEFAULT '1' COMMENT '是否规则图形,1规则，2不规则',
+                              `regional_category` TINYINT(2) DEFAULT '1' COMMENT '1为区域2为摊位',
+                              `irregular_point` VARCHAR(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '不规则图形描点json串',
+                              `item_state` TINYINT(1) DEFAULT '0' COMMENT '是否删除，0正常1删除',
+                              `plan_name` VARCHAR(50) COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '名称',
+                              `plan_url` VARCHAR(254) CHARACTER SET utf8mb4 COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '图片Url',
+                              `plan_color` VARCHAR(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '颜色',
+                              `plan_text` VARCHAR(100) COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '文本',
+                              `plan_version` BIGINT(20) DEFAULT '0' COMMENT '修改版本号',
+                              `booth_id` BIGINT(20) DEFAULT NULL COMMENT '摊位id',
+                              `booth_name` VARCHAR(32) COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '摊位名称',
+                              `booth_state` VARCHAR(20) COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '摊位状态',
+                              `booth_rent_state` VARCHAR(20) COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '租赁状态',
+                              `district_id` BIGINT(20) DEFAULT '-1' COMMENT '所属区域Id',
+                              `item_width` INT(4) DEFAULT NULL COMMENT '摊位图宽度',
+                              `item_height` INT(4) DEFAULT NULL COMMENT '摊位图高度',
+                              `item_x_site` INT(4) DEFAULT NULL COMMENT '摊位图x位置',
+                              `item_y_site` INT(4) DEFAULT NULL COMMENT '摊位图y位置',
+                              `creator_id` BIGINT(20) DEFAULT NULL COMMENT '创建人',
+                              `create_time` DATETIME DEFAULT NULL COMMENT '创建时间',
+                              `modify_time` DATETIME DEFAULT NULL COMMENT '更新时间',
+                              `ref_id` BIGINT(20) DEFAULT '-1' COMMENT 'refId,对应摊位id，如果为空则是最高层',
+                              `update_notes` VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_zh_0900_as_cs DEFAULT NULL COMMENT '更新备注',
+                              PRIMARY KEY (`id`)
+) ENGINE=INNODB  DEFAULT CHARSET=utf8mb4;

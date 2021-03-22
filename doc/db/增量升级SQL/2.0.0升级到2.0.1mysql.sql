@@ -67,3 +67,5 @@ ALTER TABLE `dili-basic-data`.`trade_type`
     ADD COLUMN `market_id` bigint(0) NULL COMMENT '市场' AFTER `scene`;
 
 UPDATE `dili-basic-data`.`trade_type` SET market_id = 8;
+
+INSERT INTO `dili-basic-data`.`type_market`(`type`, `market_id`, `name`) VALUES ('jmsf_vehicle', 9, '空车车辆明细');

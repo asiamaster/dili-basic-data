@@ -44,6 +44,23 @@
         font-size: 12px;
     }
 </style>
+<div class="modal fade" id="_modal" data-backdrop="static" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <!--modal-lg modal-sm(默认) 通过设置mw大小调整宽度（如mw-100） modal-dialog-centered垂直居中-->
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <!-- 标题 -->
+                <h5 class="modal-title" id="exampleModalLabel">客户新增</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
 <div class="main-container container-fluid" id=app>
     <div class="row">
         <div class="col-2">
@@ -162,14 +179,14 @@
             <button type="button" class="btn btn-primary" onclick="window.location.href='/booth/list'">
                 <i class="fa fa-th"></i> 列表模式
             </button>
-            <div class="row">
+            <div class="row" v-loading="listLoading">
                 <div class="col-12">
                     <el-row :gutter="12" class="infinite-list"  style="overflow:auto">
                         <el-col :span="8" v-for="item in card" :key="item.id" style="padding-bottom: 10px">
                             <el-card class="box-card" v-bind:class="{ 'assets-used': item.$_state==2}">
                                 <div slot="header" class="clearfix">
                                     <span>{{item.name}}</span>
-                                    <span style="float: right; padding: 3px 0">状态:{{item.status}}</span>
+                                    <span style="float: right; padding: 3px 0">状态:{{item.status | statusFormatter}}</span>
                                 </div>
                                 <div class="text item">
                                     资产类型:{{item.businessType | formatterBusinessType}}
@@ -235,6 +252,7 @@
                 options:[],
                 filterText: '',
                 loading: true,
+                listLoading: true,
                 data: [],
                 card:[],
                 page:1,
@@ -266,6 +284,15 @@
                 } else {
                     return "";
                 }
+            },
+            statusFormatter: function (value) {
+                if (value == 2) {
+                    return "使用中"
+                } else if (value == 1) {
+                    return "空闲";
+                } else {
+                    return "";
+                }
             }
         },
         computed: {
@@ -275,8 +302,9 @@
         },
         methods: {
             add() {
-                var url = "/booth/add.html";
-                $.modal.open("新增", url);
+                $("#_modal").modal();
+                $('#_modal .modal-body').load("/booth/add.html");
+                $("#_modal").find('.modal-title').text('新增资产');
             },
             view(id) {
                 var url = "/booth/view.html?id={id}".replace("{id}", id);
@@ -293,7 +321,9 @@
             },
             edit(id) {
                 var url = "/booth/update.html?id={id}".replace("{id}", id);
-                $.modal.open("修改", url);
+                $("#_modal").modal();
+                $('#_modal .modal-body').load(url);
+                $("#_modal").find('.modal-title').text('修改资产');
             },
             split(id) {
                 var url = "/booth/split.html?id={id}".replace("{id}", id);
@@ -329,7 +359,10 @@
             },
             search() {
                 app.page = 1;
+                app.listLoading = true;
                 var formData = $("#queryForm").serializeObject();
+                formData["metadata"] = {};
+                formData["metadata"]['departmentId'] = '{"provider":"departmentProvider","index":40,"field":"departmentId"}';
                 $.ajax({
                     type: "GET",
                     dataType: "json",
@@ -338,7 +371,7 @@
                     success: function (data) {
                         app.card = data.rows;
                         app.total = data.total;
-
+                        app.listLoading = false;
                     },
                     error: function () {
 
@@ -354,6 +387,9 @@
                         if (data.code != '200') {
                             app.loading = false;
                             return;
+                        }
+                        if (data.data) {
+                            data.data.push({id: 0, name: "根目录", parent: -1});
                         }
                         app.data = toEleTree(data.data, {label: "name", pid: "parentId"});
                         if (app.data.length > 0) {
@@ -373,6 +409,7 @@
                             success: function (data) {
                                 app.card = app.card.concat(data.rows)
                                 app.total = data.total;
+                                app.listLoading = false;
                             },
                             error: function () {
 
@@ -425,5 +462,9 @@
 
     function refresh() {
         $('#queryForm .form-control').val('');
+    }
+
+    function search(){
+        app.search();
     }
 </script>

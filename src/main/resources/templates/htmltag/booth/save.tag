@@ -132,18 +132,6 @@
                         layout: 6,
                         required: true
                     },
-                    unit: {
-                        options: function (data) {
-                            return loadProvider({
-                                provider: 'dataDictionaryValueProvider',
-                                queryParams: {dd_code: "unit", required: true}
-                            })
-                        },
-                        label: "单位",
-                        type: "select",
-                        layout: 6,
-                        required: true
-                    },
                     level: {
                         options: function (data) {
                             return loadProvider({
@@ -189,6 +177,18 @@
                         type: "radio-button",
                         label: "多租赁折扣",
                         layout: 6,
+                    },
+                    unit: {
+                        options: function (data) {
+                            return loadProvider({
+                                provider: 'dataDictionaryValueProvider',
+                                queryParams: {dd_code: "unit", required: true}
+                            })
+                        },
+                        label: "单位",
+                        type: "select",
+                        layout: 6,
+                        required: true
                     },
                     number: {
                         label: "数量",

@@ -1,0 +1,562 @@
+<style>
+    #queryForm .form-control {
+        margin-left: 5px;
+    }
+    .green{
+        color: green !important;
+    }
+    .container-fluid {
+        overflow: auto !important;
+    }
+</style>
+<style type="text/css">
+    html,body{margin:0;padding:0;font:14px/1.5em simsun;overflow:hidden;}
+    #canvas{/*position:absolute;*/left:0px;top:0px;z-index:9;border:2px dashed #ccc;padding:10px;background:#fff;}
+    .transparent{filter:alpha(opacity=50);-moz-opacity:0.5;-khtml-opacity:0.7;opacity:0.7;}
+    .box{width:200px;height:100px;cursor:move;position:absolute;top:30px;left:30px;z-index:99;border: 1px solid #8fbad3;}
+    .box .bg{width:100%;height:100%;background-color:orange;}
+    .box .coor{width:10px;height:10px;overflow:hidden;cursor:se-resize;position:absolute;right:0;bottom:0;background-color:#9b9b9b;display: none}
+    .box .content{position:absolute;left:50%;top:50%;z-index:99;text-align:center;font:bold 14px/1.5em simsun;}
+    .fa{margin-right: 5px}
+    #canvas img[src=""], img:not([src]) {
+        opacity: 0;
+        min-height: 800px;
+        min-width: 1600px
+    }
+</style>
+<#bs4Body>
+<script src="${contextPath}/resources/design/vue@2.6.11.js"></script>
+<!-- 引入element -->
+<script type="text/javascript" src="/resources/floorPlan/js/jquery.min.js" ></script>
+<script type="text/javascript" src="/resources/floorPlan/js/layer/layer.js"></script>
+<script type="text/javascript" src="/resources/floorPlan/js/context/context.js"></script>
+<script type="text/javascript" src="/resources/floorPlan/js/drag.js" ></script>
+<script type="text/javascript" src="/resources/floorPlan/js/CanvasInput.js" ></script>
+<link rel="stylesheet" type="text/css" href="/resources/floorPlan/js/context/context.standalone.css">
+
+<div class="container-fluid">
+    <input type="hidden" id="pDistrictId" value="${pDistrictId}">
+    <input type="hidden" id="regionalCategory" value="${regionalCategory}">
+    <div class="row">
+        <div class="col-sm-12 offset-sm-0">
+            <div class="card">
+                <div class="card-body">
+                    <button type="button" class="btn btn-outline-primary mr-2" id="btn_lock1" onclick="gotoBack()"><i class="fa fa-undo" aria-hidden="true"></i>返回平面图</button>
+                    <table id="grid" data-toggle="table" data-title="商品列表" class="table" data-toolbar="#toolbar"
+                           data-pagination="true" data-page-number="1" data-page-size="10"
+                           data-query-params="queryParams"
+                           data-side-pagination="server" data-method="POST"
+                           data-content-type="application/x-www-form-urlencoded" data-single-select="true"
+                           data-click-to-select="true" data-checkbox-header="true"
+                           data-unique-id="id" data-sort-name="id" data-sort-order="desc"
+                           data-icons="bui.variable.icons"
+                           data-buttons-class="primary" data-show-refresh="true" data-show-fullscreen="true"
+                           data-show-columns="true">
+                        <thead>
+                        <tr>
+                            <th data-radio="true"></th>
+                            <th data-field="createTime" data-align="center" data-provider="datetimeProvider" data-sortable="true" width="20">时间</th>
+                            <th data-field="planVersion"  data-align="center" width="20" >版本</th>
+                            <th data-field="updateNotes"  data-align="center"  width="20">修改备注</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="max-height: 50%">
+        <div class="col-sm-12 offset-sm-0">
+            <div class="card">
+                    <div id=app>
+                        <div id="canvas">
+                            <canvas style="position: absolute;z-index: 98;display: none;opacity: 0.7;"
+                                    id="canvas1"></canvas>
+                            <img id="canvasBack"  />
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</#bs4Body>
+<script>
+    /*********************变量定义区 begin*************/
+        //行索引计数器
+        //如 let itemIndex = 0;
+        //平面图类型
+    let floorType = {
+            //规则
+            rule : 'box',
+            //不规则
+            unRule : 'otherBox',
+            background:"background",
+            is_irregular: "1",
+            un_irregular: "2",
+        }
+
+    let _grid = $('#grid');
+    let _form = $('#_form');
+    let _modal = $('#_modal');
+
+    /*********************变量定义区 end***************/
+
+    /******************************驱动执行区 begin***************************/
+    $(function () {
+        $(window).resize(function () {
+            _grid.bootstrapTable('resetView')
+        });
+        let size = ($(window).height() - $('#queryForm').height() - 210) / 40;
+        size = size > 10 ? size : 10;
+        let distId = ${districtId};
+        let refId = ${refId};
+        let regionalCategory = ${regionalCategory};
+        let url = '/assetManagement/floorPlanHistoryList.action?1=1';
+        if(null!=distId&&distId!="null"&&undefined!=distId){
+            url+='&districtId='+distId;
+        }
+        if(null!=refId&&refId!="null"&&undefined!=refId){
+            url+='&refId='+refId;
+        }
+        if(null!=regionalCategory&&regionalCategory!="null"&&undefined!=regionalCategory){
+            url+='&regionalCategory='+regionalCategory;
+        }
+        _grid.bootstrapTable('refreshOptions', {url: url, pageSize: parseInt(size),
+            onLoadSuccess:function(data){
+                $("#grid").find("tbody tr:eq(0)").addClass("selected");
+                $("#grid").find("tbody tr:eq(0)").find("input[type='radio']").prop("checked","checked");
+                //let  _version=$("#grid").find("tbody tr:eq(0) td:eq(2)").text();
+                let  dat = data.rows;
+                if(undefined==dat||dat.length==0){
+                    return;
+                }
+                let  districtId=dat[0].districtId;
+                let  planVersion=dat[0].planVersion;
+                let  refId=dat[0].refId;
+                let  _regionalCategory=dat[0].regionalCategory;
+                initBaseImage(planVersion,districtId,refId,_regionalCategory);
+            },onClickRow:function(row, $element, field){
+                initBaseImage(row.planVersion,row.districtId,row.refId,row.regionalCategory);
+            }
+            });
+
+    });
+    /******************************驱动执行区 end****************************/
+
+    /*****************************************函数区 begin************************************/
+    /**
+     * 查询处理
+     */
+    function queryDataHandler() {
+        if (!$('#queryForm').valid()) {
+            return false;
+        }else{
+            _grid.bootstrapTable('refresh');
+        }
+    }
+
+    /**
+     * table参数组装
+     * 可修改queryParams向服务器发送其余的参数
+     * @param params
+     */
+    function queryParams(params) {
+        let temp = {
+            rows: params.limit,   //页面大小
+            page: ((params.offset / params.limit) + 1) || 1, //页码
+            sort: params.sort,
+            order: params.order
+        };
+        return $.extend(temp, bui.util.bindGridMeta2Form('grid', 'queryForm'));
+    }
+    function gotoBack(){
+        let url ='/assetManagement/floorPlan.html';
+        let distId = $("#pDistrictId").val();
+        let c_distId = ${districtId};
+        let refId = ${refId};
+        //let red =
+        if(null!=refId){
+            url+='?id='+refId;
+        }
+        if(null!=distId&&undefined!=distId&&""!=distId){
+            url+='&districtId='+distId;
+        }
+        if(null!=c_distId&&undefined!=c_distId&&""!=c_distId){
+            url+='&curDistrictId='+c_distId;
+        }
+        window.location.href=url;
+    }
+    /*****************************************函数区 end**************************************/
+
+    /*****************************************自定义事件区 begin************************************/
+
+    var addCount=1;
+    var openCanvas=false;
+    var editDia;
+    window['floorPlan']= this;
+    //默认锁定 区块锁定标识
+    var lock = true;
+    //加载layer拓展
+    layer.config({
+        extend: 'extend/layer.ext.js'
+    });
+    //右键菜单参数
+    context.init({
+        fadeSpeed: 100,
+        filter: function ($obj){},
+        above: 'auto',
+        preventDoubleContext: true,
+        compress: false
+    });
+
+    //打开模态框
+    function openModal(id){
+        viewDia = bs4pop.dialog({
+            title: '查看资产',
+            content: '/booth/view.html?id=' + id,
+            isIframe: true,
+            backdrop: 'static',
+            closeBtn: true,
+            width: '95%',
+            height: '95%',
+            btns: []
+        });
+    }
+    function beginLn(){
+        //删除描点
+        $(".floorSpot_key").remove();
+        layer.msg('提示：鼠标右键描点，左键绘制',{icon:3,time : 2000});
+        openCanvas=true;
+        localStorage.removeItem("canvasFloorPlanList");
+        $("#canvas").bind("contextmenu", function(){
+            return false;
+        })
+        $("#canvas").on('mousedown', function (e) {
+            if (openCanvas&&e.which == 3) {
+                e.preventDefault();
+                let pos = $(this).position();
+                this.posix = {'x': e.pageX - pos.left, 'y': e.pageY - pos.top};
+                let obj = new Object();
+                obj.x = e.pageX - pos.left;
+                obj.y = e.pageY - pos.top;
+                let canvasListStr = localStorage.getItem("canvasFloorPlanList");
+                let canvasList= new Array();
+                if (undefined != canvasListStr && null != canvasListStr) {
+                    canvasList=JSON.parse(canvasListStr);
+                }
+                canvasList.push(obj);
+                localStorage.setItem("canvasFloorPlanList", JSON.stringify(canvasList));
+                let box = $('<div class="floorSpot_key" id="floorPlan'+canvasList.length+'" style="position:absolute;z-index:99;background: red"></div>').css({
+                    width : "6px",
+                    height : "6px",
+                    border : "1px solid red",
+                    "border-radius":"10px",
+                    top : (obj.y > 0 ? obj.y : (pos.top > 0 ? 0 : pos.top * -1 + 50))-3,
+                    left : (obj.x > 0 ? obj.x : (pos.left > 0 ? 0 : pos.left * -1 + 30))-3
+                }).appendTo("#canvas");
+            }else{
+                if(openCanvas){
+                    doCanvas();
+                }
+                openCanvas=false;
+                $("#canvas").unbind("contextmenu")
+            }
+        })
+    }
+    //以标记的点绘画区域
+    function doCanvas(_data_obj){
+        addCount++;
+        let canvasListStr = localStorage.getItem("canvasFloorPlanList");
+        console.log(canvasListStr);
+        if(undefined == canvasListStr || null == canvasListStr){
+            console.log("绘画内容为空");
+            $(".box:hidden").show();
+            return;
+        }
+        //绘制内容不为空时删除隐藏摊位
+        if(undefined==_data_obj||null==_data_obj||""==_data_obj){
+            _data_obj ={};
+        }
+        _data_obj.irregularPoint=canvasListStr;
+        doCanvasByData(addCount,canvasListStr);
+    }
+    //根据新增id加描点位置绘画区域
+    //根据新增id加描点位置绘画区域
+    function doCanvasByData(in_addCount,canvasObj){
+        let canvasData=canvasObj.irregularPoint||canvasObj.irregularpoint;
+        let canvasTxt=canvasObj.planText ||canvasObj.plantext;
+        let itemXSite = canvasObj.itemXSite ||canvasObj.itemxSite;
+        let itemYSite = canvasObj.itemYSite ||canvasObj.itemySite;
+        let canvasColor=canvasObj.planColor ||canvasObj.plancolor;
+        let canvasId=canvasObj.id||-1;
+        let rel=canvasObj.rel||in_addCount;
+        if(!canvasData){
+            console.log("绘制数据为空");
+            return;
+        }
+        let canvasList=JSON.parse(canvasData);
+        let canvas_i =$("#canvas1").clone();
+        for(let  item in canvasObj){
+            if(item!='style'&&item!='class'&&item!='rel'&&item!='dataId'){
+                let itemName = "data-"+item;
+                canvas_i.attr(itemName,canvasObj[item]);
+            }
+        }
+        canvas_i.attr({"rel":rel,
+            "data-color":canvasColor,
+            dataId:canvasId,
+            id:"newCanvas_"+rel,"data-tempCanvasData":canvasData,"class":"otherBox"});
+        canvas_i.hide();
+        canvas_i.appendTo("#canvas");
+        let begin_y=canvasList[0].y;
+        let begin_x=canvasList[0].x;
+        let page_y=canvasList[0].y;
+        let page_x=canvasList[0].x;
+
+        //获取最小的x与最大的x从而获取canvas最适合的宽度与高度
+        let min_x=begin_x;
+        let min_y=begin_y;
+        let max_x=begin_x;
+        let max_y=begin_y;
+        for(let i =1 ;i<canvasList.length;i++){
+            min_x=canvasList[i].x<min_x?canvasList[i].x:min_x;
+            min_y=canvasList[i].y<min_y?canvasList[i].y:min_y;
+            max_x=canvasList[i].x>max_x?canvasList[i].x:max_x;
+            max_y=canvasList[i].y>max_y?canvasList[i].y:max_y;
+        }
+        canvas_i.attr({"width":(max_x-min_x),"height":(max_y-min_y)});
+        let ctx_i= canvas_i[0].getContext('2d');
+        ctx_i.beginPath();
+        ctx_i.moveTo(begin_x-min_x, begin_y-min_y);
+        let move_left = (begin_x-min_x);
+        let move_top = page_y;
+        let min_top = (begin_y-min_y);
+        //设置默认颜色
+        if(undefined!=canvasColor&&null!=canvasColor){
+            ctx_i.fillStyle=canvasColor;
+        }else{
+            ctx_i.fillStyle="rgb(88, 200, 63)";
+            canvas_i.attr("data-color",ctx_i.fillStyle);
+        }
+        for(let i =1 ;i<canvasList.length;i++){
+            min_top=min_top>(canvasList[i].y-min_y)?(canvasList[i].y-min_y):min_top;
+            //描点小于等于最高点，取最左点
+            if(min_top>=(canvasList[i].y-min_y)){
+                min_top=(canvasList[i].y-min_y);
+                move_top = canvasList[i].y;
+                move_left=move_left>(canvasList[i].x-min_x)?(canvasList[i].x-min_x):move_left;
+            }
+            ctx_i.lineTo((canvasList[i].x-min_x),(canvasList[i].y-min_y));
+        }
+        if(undefined!=itemXSite&&undefined!=itemYSite){
+            page_y = itemYSite;
+            page_x = itemXSite;
+            //不规则图片固定位置
+            canvas_i.css({top:page_y,left:page_x});
+        }else{
+            //不规则图片重新定位
+            canvas_i.css({top:move_top,left:(page_x-move_left)});
+        }
+        ctx_i.closePath();
+        ctx_i.stroke();
+        ctx_i.fill();
+        //文字初始化
+        if(undefined!=canvasTxt&&null!=canvasTxt){
+            let canvas_width =canvas_i.attr("width");
+            canvas_i.attr("data-text",canvasTxt);
+            // 设置文字居中但是fillText的第二个参数必须为画布宽度一半
+            ctx_i.textAlign = 'center'
+            ctx_i.font = 'bold 14px/1.5em simsun'
+            ctx_i.fillStyle = '#212529'
+            ctx_i.fillText(canvasTxt , canvas_width/2, 50)
+            ctx_i.stroke()
+        }
+        //删除描点
+        $(".floorSpot_key").remove();
+        canvas_i.show();
+        //附加右键菜单
+        initMenus(floorType.unRule,rel);
+        return canvas_i;
+    }
+    //获取所有点图
+    function initBaseImage(version,i_districtId,i_refId,i_regionalCategory) {
+        bui.loading.show();
+
+        $("#canvas").find(".box,.otherBox").remove();
+
+        let q_data={itemState:1,planVersion:version,
+                    refId:i_refId,regionalCategory:i_regionalCategory};
+        if(i_refId!=-1&&i_regionalCategory!="1"){
+            q_data.districtId=i_districtId
+        }
+        $.ajax({
+            type: "POST",
+            url: "${contextPath}/assetManagement/getFloorPlanList.action",
+            data:JSON.stringify(q_data),
+            dataType: "json",
+            async: false,
+            contentType: "application/json; charset=utf-8",
+            success: function (ret) {
+                console.log(ret);
+                if(ret.code!="200"){
+                    bui.loading.hide();
+                    layer.msg('获取数据失败',{icon:2,time : 2000});
+                    return;
+                }
+                if (ret) {
+                    for (let i = 0; i < ret.data.length; i++) {
+                        let itemData = ret.data[i];
+                        console.log(itemData);
+                        //type=1为背景图
+                        if (itemData.planType == 1) {
+                            $("#canvasBack").attr("src",itemData.planUrl);
+                            if(undefined!=itemData.itemWidth&&null!=itemData.itemWidth&&""!=itemData.itemWidth){
+                                $("#canvasBack").css({
+                                    'height':itemData.itemHeight,
+                                    'width':itemData.itemWidth,
+                                });
+                            }
+                        }
+                        //isIrregular=1为规则图形
+                        else if(itemData.isIrregular==1){
+                            createBox(i,itemData);
+                        }else{
+                            doCanvasByData(i,itemData);
+                        }
+                    }
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            },complete:function(ce){
+                bui.loading.hide();
+            }
+        });
+    }
+
+    /**
+     * 创建规则区域
+     * @param curNum
+     * @param data
+     */
+    function createBox(curNum,data){
+        console.log("createBox data:"+JSON.stringify(data))
+        let dataId = data.id || '';
+        let value = data.planText || '';
+        let color = data.planColor || '';
+        let height = data.itemHeight || 0;
+        let width = data.itemWidth || 0;
+        let pageX = data.itemXSite || 0;
+        let pageY = data.itemYSite || 0;
+
+        //创建区域块
+        let pos = $("#canvas").position();
+        let box = $('<div class="box" rel="'+curNum+'" dataId="'+dataId+'"><pre class="content">'
+            +value+'</pre><div class="bg transparent" style="background-color:'
+            +color+'"></div><div class="coor transparent"></div></div>').css({
+            width : width,
+            height : height,
+            top : pageY > 0 ? pageY : (pos.top > 0 ? 0 : pos.top * -1 + 50),
+            left : pageX > 0 ? pageX : (pos.left > 0 ? 0 : pos.left * -1 + 30)
+        });
+        //添加属性
+        for(let  item in data){
+            let itemName = "data-"+item;
+            box.attr(itemName,data[item]);
+        }
+        box.appendTo("#canvas");
+        //更新计数器并记录当前计数
+        initMenus("box",curNum);
+        //计算文本位置
+        box.find('.content').css({
+            marginLeft : box.find('.content').width()/2*-1,
+            marginTop : box.find('.content').height()/2*-1
+        });
+    }
+
+
+    function initBoxMenus(curNum){
+        context.attach('.box[rel='+curNum+']', [
+            {header: '操作'},
+            {text: '详情', action: function(e){
+                    e.preventDefault();
+                    let id=$('.box[rel='+curNum+']').attr("data-boothid");
+                    openModal(id,"box",curNum);
+                    //$('.box[rel='+curNum+'] .bg').css('background-color', 'yellow');
+                }
+            },
+
+        ]);
+    }
+
+    //初始化右键菜单
+    function initMenus(menusType,curNum){
+        //创建右键菜单
+        if("canvas"!=menusType){
+            initBoxMenus(curNum);
+        }else{
+            //创建右键菜单
+            context.attach('.otherBox[rel='+curNum+']', [
+                {header: '操作'},
+                {text: '详情', action: function(e){
+                        e.preventDefault();
+                        layer.prompt({
+                            title: '请输入区域说明',
+                            formType: 2,
+                            value: $('.otherBox[rel='+curNum+'] .content').text()
+                        }, function(value, index, elem){
+                            layer.close(index);
+                            let curCont = $('.otherBox[rel='+curNum+'] .content');
+                            doCanvasText(curNum,value);
+                        });
+                    }
+                }
+            ]);
+        }
+
+    }
+
+    function doEditCanvas(curNum,canvasObj){
+        let oldBox = $('.otherBox[rel='+curNum+']');
+        let rel = oldBox.attr("rel");
+        let oldLeft = oldBox.get(0).offsetLeft;
+        let oldTop = oldBox.get(0).offsetTop;
+        let canData = oldBox.attr("data-tempCanvasData");
+        //重绘
+        oldBox.remove();
+        let otherBox = doCanvasByData(rel,canData,null,{x:oldLeft,y:oldTop},canvasObj.planColor);
+        let canvas_width =otherBox.attr("width");
+        otherBox.attr("data-text",canvasObj.planText);
+        otherBox.attr("data-planColor",canvasObj.planColor);
+        console.log("canvas_width"+canvas_width);
+        let ctx= otherBox[0].getContext('2d');
+        // 设置文字居中但是fillText的第二个参数必须为画布宽度一半
+        ctx.textAlign = 'center'
+        ctx.font = 'bold 14px/1.5em simsun'
+        ctx.fillStyle = "#212529";
+        ctx.fillText(canvasObj.planText , canvas_width/2, 50)
+        ctx.stroke()
+    }
+    //不规则图形添加文字
+    function doCanvasText(curNum,value){
+        let oldBox = $('.otherBox[rel='+curNum+']');
+        let rel = oldBox.attr("rel");
+        let oldLeft = oldBox.get(0).offsetLeft;
+        let oldTop = oldBox.get(0).offsetTop;
+        let canData = oldBox.attr("data-tempCanvasData");
+        //重绘
+        oldBox.remove();
+        let otherBox = doCanvasByData(rel,canData,null,{x:oldLeft,y:oldTop});
+        let canvas_width =otherBox.attr("width");
+        otherBox.attr("data-text",value);
+        console.log("canvas_width"+canvas_width);
+        let ctx= otherBox[0].getContext('2d');
+        // 设置文字居中但是fillText的第二个参数必须为画布宽度一半
+        ctx.textAlign = 'center'
+        ctx.font = 'bold 14px/1.5em simsun'
+        ctx.fillStyle = '#212529'
+        ctx.fillText(value , canvas_width/2, 50)
+        ctx.stroke()
+    }
+</script>

@@ -194,6 +194,9 @@
                         axios.post(rootPath + "/booth/split.action", split.splitTemp)
                             .then(function (response) {
                                 $.operate.saveSuccess(response.data);
+                                if(undefined!=parent.editDia){
+                                    parent.doRefresh();
+                                }
                             })
                             .catch(function (error) {
                                 $.modal.alertError("系统错误");
@@ -202,7 +205,11 @@
                 })
             },
             cancel() {
-                $.modal.close();
+                if(undefined!=parent.editDia){
+                    parent.doRefresh();
+                }else{
+                    $.modal.close();
+                }
             }
         }
     })

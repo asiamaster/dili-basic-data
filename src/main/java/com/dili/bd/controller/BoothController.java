@@ -11,6 +11,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.dili.assets.sdk.dto.AssetsDTO;
+import com.dili.assets.sdk.dto.AssetsQuery;
 import com.dili.assets.sdk.dto.AssetsRentDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.export.AssetsExport;
@@ -510,5 +511,18 @@ public class BoothController {
         modelMap.put(MapExcelConstants.FILE_NAME, "资产列表");
         return NormalExcelConstants.EASYPOI_EXCEL_VIEW;
 
+    }
+
+    /**
+     * 查询摊位号列表
+     */
+    @RequestMapping("search.action")
+    @ResponseBody
+    public BaseOutput<List<AssetsDTO>> search(@RequestBody(required = false) AssetsQuery input) {
+        if (input == null) {
+            input = new AssetsQuery();
+        }
+        input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        return assetsRpc.searchAssets(input);
     }
 }

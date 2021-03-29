@@ -179,6 +179,8 @@
             <button type="button" class="btn btn-primary" onclick="window.location.href='/booth/list'">
                 <i class="fa fa-th"></i> 列表模式
             </button>
+            <hr>
+            <span>已使用:{{used}}</span>&nbsp;<span>空闲中:{{free}}</span>
             <div class="row" v-loading="listLoading">
                 <div class="col-12">
                     <el-row :gutter="12" class="infinite-list"  style="overflow:auto">
@@ -248,6 +250,8 @@
         },
         data() {
             return {
+                used: 0,
+                free: 0,
                 path: [],
                 options:[],
                 filterText: '',
@@ -458,7 +462,11 @@
             }
         }
     })
-    app.loadTree();
+    $(function () {
+        app.loadTree();
+        calUsed();
+    })
+
 
     function refresh() {
         $('#queryForm .form-control').val('');
@@ -466,5 +474,24 @@
 
     function search(){
         app.search();
+        calUsed();
+    }
+
+    function calUsed(){
+        var formData = $("#queryForm").serializeObject();
+        formData["metadata"] = {};
+        formData["metadata"]['departmentId'] = '{"provider":"departmentProvider","index":40,"field":"departmentId"}';
+        $.ajax({
+            type: "GET",
+            data:$.extend({area:app.formData.area},formData),
+            dataType: "json",
+            url: '/booth/listUsed.action',
+            success: function (data) {
+                app.free = data.free;
+                app.used = data.used;
+            },
+            error: function () {
+            }
+        });
     }
 </script>

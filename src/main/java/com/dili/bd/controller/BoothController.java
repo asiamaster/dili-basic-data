@@ -221,6 +221,7 @@ public class BoothController {
             snapshots.add(object);
         }
         jsonObject.set("snapshots", snapshots);
+        jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
         map.put("data", jsonObject);
         return "booth/view";
     }

@@ -145,12 +145,16 @@
                             departmentId: {
                                 options: function (data) {
                                     return loadProvider({
-                                        provider: 'authDepartmentProvider'
-                                    })
+                                        provider: 'authDepartmentProvider',queryParams: {required: true}})
                                 },
                                 label: "所属部门",
                                 type: "select",
                                 layout: 6,
+                                attrs: {
+                                    multiple: true,
+                                    clearable: true,
+                                    collapseTags: false
+                                },
                                 disabled: true,
                                 required: false
                             },
@@ -214,6 +218,55 @@
                                 layout: 6,
                                 disabled: true,
                                 required: true
+                            },
+                            level: {
+                                options: function (data) {
+                                    return loadProvider({
+                                        provider: 'dataDictionaryValueProvider',stringValue:true,
+                                        queryParams: {dd_code: "level", required: true}
+                                    })
+                                },
+                                attrs: {
+                                    clearable: true
+                                },
+                                label: "等级",
+                                type: "select",
+                                disabled: true,
+                                layout: 6,
+                            },
+                            self: {
+                                isOptions: true,
+                                options: [
+                                    {
+                                        text: "是",
+                                        value: 1
+                                    },
+                                    {
+                                        text: "否",
+                                        value: 0
+                                    }
+                                ],
+                                type: "radio-button",
+                                label: "自助租赁",
+                                disabled: true,
+                                layout: 6,
+                            },
+                            sale: {
+                                isOptions: true,
+                                options: [
+                                    {
+                                        text: "是",
+                                        value: 1
+                                    },
+                                    {
+                                        text: "否",
+                                        value: 0
+                                    }
+                                ],
+                                type: "radio-button",
+                                label: "多租赁折扣",
+                                disabled: true,
+                                layout: 6,
                             },
                             notes: {
                                 label: "备注",

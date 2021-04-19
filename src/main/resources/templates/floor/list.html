@@ -321,12 +321,12 @@
                 if (data.parentId === 0) {
                     app.path = [data.name]
                 } else {
-                    app.path = [data.name];
                     app.data.forEach(function (it) {
                         if (it.id === data.parentId) {
-                            app.path.push(it.name);
+                            app.path = [it.name];
                         }
                     });
+                    app.path.push(data.name);
                 }
             },
             open() {

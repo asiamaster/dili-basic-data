@@ -13,6 +13,7 @@
                 ],
                 formData: {
                     businessType: 1,
+                    areaArray: [],
                     self: 0,
                     sale: 0
                 },

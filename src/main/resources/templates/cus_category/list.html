@@ -71,6 +71,11 @@
                         class="fa fa-plus"></i> 导入
                 </button>
             </#resource>
+            <#resource code="cc_export">
+            <button class="btn btn-outline-primary" id="export" onclick="exportHandler();return false;"><i
+                    class="fa fa-download"></i> 导出
+            </button>
+        </#resource>
             </div>
         </div>
         <!-- table-showlist start -->
@@ -138,6 +143,10 @@
 
     function importHandler() {
         $.modal.open("导入品类", "/cus_category/import.action");
+    }
+
+    function exportHandler(){
+        window.location.href = "/cus_category/download.action";
     }
 
     function tips(title, msg) {

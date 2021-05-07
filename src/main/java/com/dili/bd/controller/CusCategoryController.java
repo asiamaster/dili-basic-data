@@ -1,5 +1,10 @@
 package com.dili.bd.controller;
 
+import cn.afterturn.easypoi.entity.vo.MapExcelConstants;
+import cn.afterturn.easypoi.entity.vo.NormalExcelConstants;
+import cn.afterturn.easypoi.excel.entity.ExportParams;
+import cn.afterturn.easypoi.excel.entity.enmus.ExcelType;
+import cn.afterturn.easypoi.handler.inter.IExcelDataHandler;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.TimeInterval;
@@ -14,6 +19,8 @@ import com.dili.assets.sdk.dto.CusCategoryDTO;
 import com.dili.assets.sdk.dto.CusCategoryQuery;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.domian.CategoryNew;
+import com.dili.bd.export.AssetsExport;
+import com.dili.bd.export.CusCategoryExport;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
 import com.dili.bd.util.PinyinUtil;
@@ -27,6 +34,8 @@ import com.dili.uap.sdk.domain.UserTicket;
 import com.dili.uap.sdk.session.SessionContext;
 import com.hankcs.hanlp.suggest.Suggester;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Hyperlink;
 import org.javers.core.Javers;
 import org.javers.core.JaversBuilder;
 import org.javers.core.diff.Diff;
@@ -487,5 +496,24 @@ public class CusCategoryController {
         } catch (Exception e) {
             return BaseOutput.success().setData(new ArrayList<>());
         }
+    }
+
+    /**
+     * download
+     */
+    @RequestMapping("/download.action")
+    public String download(ModelMap modelMap) {
+        CusCategoryQuery input = new CusCategoryQuery();
+        input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        final List<CusCategoryDTO> list = assetsRpc.listCusCategory(input).getData();
+        final List<CusCategoryExport> exports = JSONUtil.toList(JSONUtil.parseArray(list), CusCategoryExport.class);
+
+        ExportParams params = new ExportParams(null, "品类列表", ExcelType.XSSF);
+
+        modelMap.put(NormalExcelConstants.DATA_LIST, exports);
+        modelMap.put(NormalExcelConstants.CLASS, CusCategoryExport.class);
+        modelMap.put(NormalExcelConstants.PARAMS, params);
+        modelMap.put(MapExcelConstants.FILE_NAME, "品类列表");
+        return NormalExcelConstants.EASYPOI_EXCEL_VIEW;
     }
 }

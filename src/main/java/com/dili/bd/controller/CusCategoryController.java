@@ -71,6 +71,7 @@ public class CusCategoryController {
     @RequestMapping("addView.html")
     public String toAdd(ModelMap map) {
         map.put("url", dfsurl);
+        map.put("isGroup", SessionContext.getSessionContext().getUserTicket().getFirmCode().equalsIgnoreCase("group"));
         return "cus_category/add";
     }
 
@@ -195,13 +196,12 @@ public class CusCategoryController {
     /**
      * match test
      *
-     * @param text
      * @return
      */
     private Long matchCategory(String name) {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setState(EnabledStateEnum.ENABLED.getCode());
-        BaseOutput<List<CategoryDTO>> list = assetsRpc.list(categoryDTO);
+        BaseOutput<List<CategoryDTO>> list = null;
 
         CategoryDTO result = intellijSearch(list.getData(), name);
         if (result != null) {
@@ -242,18 +242,21 @@ public class CusCategoryController {
      */
     @RequestMapping("editView.html")
     public String toEdit(Long id, ModelMap map) {
-        CusCategoryDTO categoryDTO = assetsRpc.getCusCategory(id).getData();
+        CusCategoryQuery query = new CusCategoryQuery();
+        query.setId(id);
+        query.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        CusCategoryDTO categoryDTO = assetsRpc.getCusCategory(query).getData();
         List<Long> parentArray = new ArrayList<>();
         parentArray.add(0L);
-        CategoryDTO data = assetsRpc.get(categoryDTO.getCategoryId()).getData();
         JSONObject jsonObject = JSONUtil.parseObj(categoryDTO);
         if (!categoryDTO.getParent().equals(0L)) {
-            CusCategoryDTO parentDTO = assetsRpc.getCusCategory(categoryDTO.getParent()).getData();
+            query = new CusCategoryQuery();
+            query.setId(categoryDTO.getParent());
+            query.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+            CusCategoryDTO parentDTO = assetsRpc.getCusCategory(query).getData();
             parentArray.addAll(StrUtil.split(parentDTO.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
         }
         jsonObject.set("parentArray", parentArray);
-        List<Long> categoryArray = new ArrayList<>(StrUtil.split(data.getPath(), ',').stream().filter(StrUtil::isNotBlank).map(Long::parseLong).collect(Collectors.toList()));
-        jsonObject.set("categoryArray", categoryArray);
         if (StrUtil.isNotBlank(jsonObject.getStr("icon"))) {
             jsonObject.set("icon", dfsurl + "file/view/" + jsonObject.getStr("icon"));
         }
@@ -292,7 +295,7 @@ public class CusCategoryController {
     public Object match(String name) {
         CategoryDTO categoryDTO = new CategoryDTO();
         categoryDTO.setState(EnabledStateEnum.ENABLED.getCode());
-        BaseOutput<List<CategoryDTO>> list = assetsRpc.list(categoryDTO);
+        BaseOutput<List<CategoryDTO>> list = null;
 
         CategoryDTO result = intellijSearch(list.getData(), name);
         if (result != null) {
@@ -386,7 +389,10 @@ public class CusCategoryController {
             if (input.getId() != null) {
                 Javers javers = JaversBuilder.javers().build();
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "edit");
-                CusCategoryDTO old = assetsRpc.getCusCategory(input.getId()).getData();
+                CusCategoryQuery query = new CusCategoryQuery();
+                query.setId(input.getId());
+                query.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+                CusCategoryDTO old = assetsRpc.getCusCategory(query).getData();
                 Diff diff = javers.compare(old, input);
                 AtomicReference<String> content = new AtomicReference<>("");
                 diff.getChanges().forEach(change -> content.updateAndGet(v -> v + change + ","));
@@ -418,7 +424,10 @@ public class CusCategoryController {
     public ModelAndView list(@ModelAttribute CusCategoryQuery input) {
         var result = new ArrayList<CusCategoryDTO>();
         if (input.getParent() != null && input.getParent() != 0) {
-            BaseOutput<CusCategoryDTO> parent = assetsRpc.getCusCategory(input.getParent());
+            CusCategoryQuery query = new CusCategoryQuery();
+            query.setId(input.getParent());
+            query.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+            BaseOutput<CusCategoryDTO> parent = assetsRpc.getCusCategory(query);
             result.add(parent.getData());
 
         }
@@ -441,8 +450,8 @@ public class CusCategoryController {
     @BusinessLogger(businessType = LogBizTypeConst.CUS_CATEGORY, content = "", operationType = "edit", systemCode = LogBizTypeConst.SYSTEM_CODE)
     public BaseOutput batchUpdate(Long id, Integer value) {
         try {
-            BaseOutput baseOutput = assetsRpc.batchCusCategoryUpdate(id, value);
             UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
+            BaseOutput baseOutput = assetsRpc.batchCusCategoryUpdate(id, value, userTicket.getFirmId());
             if (value.equals(EnabledStateEnum.ENABLED.getCode())) {
                 LoggerContext.put(LoggerConstant.LOG_OPERATION_TYPE_KEY, "enable");
             }

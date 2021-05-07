@@ -91,13 +91,20 @@
                                     axios.get('/cus_category/getTree.action')
                                         .then((res) => {
                                             const data = res.data.data;
+                                            var isGroup = ${isGroup};
                                             data.push({
                                                 keycode: "",
                                                 id: 0,
                                                 name: "根目录",
                                                 parent: -1,
                                                 path: "0",
+                                                disabled: !isGroup,
                                                 pyInitials: ""
+                                            });
+                                            data.forEach(function (item) {
+                                                if (item.path.split(',').length === 2 || item.path.split(',').length === 3) {
+                                                    item.disabled = !isGroup;
+                                                }
                                             });
                                             resolve(toEleTree(data, {label: "name", pid: "parent"}));
                                             // console.log(res);
@@ -153,83 +160,14 @@
                             },
                             required: true
                         },
-                        categoryArray: {
-                            isOptions: true,
-                            options: function () {
-                                return new Promise((resolve, reject) => {
-                                    axios.get('/category/getTree.action?state=1')
-                                        .then((res) => {
-                                            const data = res.data.data;
-                                            resolve(toEleTree(data, {label: "name", pid: "parent"}));
-                                            // console.log(res);
-                                        })
-                                        .catch(function (error) {
-                                            reject(error);
-                                            // console.log(error);
-                                        });
-                                });
-                            },
-                            type: "cascader",
-                            label: "集团品类",
+                        alias: {
+                            type: "input",
+                            label: "品类别名",
                             attrs: {
-                                filterable: true,
                                 clearable: true,
-                                props: {
-                                    value: 'id',
-                                    label: 'name',
-                                    separator: '-',
-                                    expandTrigger: 'hover',
-                                    checkStrictly: true
-                                }
-                            },
-                            required: true
-                        },
-                        auto: {
-                            isShowLabel: false,
-                            default: "自动关联",
-                            type: "button",
-                            label: "按钮",
-                            attrs: {
-                                type: "primary",
-                                plain: true,
-                                icon: "el-icon-magic-stick"
-                            },
-                            on: {
-                                click: () => {
-                                    if (this.formData.name === "") {
-                                        this.$message({
-                                            message: '请输入品类名称',
-                                            type: 'warning'
-                                        });
-                                        return;
-                                    }
-                                    this.loading = true;
-                                    $.ajax({
-                                        type: "post",
-                                        url: '/cus_category/match.action',
-                                        dataType: "json",
-                                        data: {
-                                            'name': this.formData.name
-                                        },
-                                        success: function (data) {
-                                            if (data.length > 0) {
-                                                app.formData.categoryArray = data;
-                                            } else {
-                                                app.$message({
-                                                    message: '抱歉,我还不能识别这个品类',
-                                                    type: 'warning'
-                                                });
-                                            }
-                                            app.loading = false;
-                                        },
-                                        error: function () {
-                                            app.$message.error('抱歉,匹配出错');
-                                            app.loading = false;
-                                        }
-                                    });
-                                }
-                            },
-                            tip: "我们将尽可能通过人工智能为您智能匹配品类,如结果不满意可多重试几次"
+                                maxlength: 20,
+                                showWordLimit: true
+                            }
                         },
                         icon: {
                             label: '品类图片',
@@ -251,8 +189,8 @@
                         "pingying",
                         "pyInitials",
                         "keycode",
-                        "icon",
-                        "categoryArray"
+                        "alias",
+                        "icon"
                     ]
                 }
             }
@@ -260,7 +198,6 @@
         methods: {
             handleRequest(data) {
                 data['parent'] = data.parentArray[data.parentArray.length - 1];
-                data['categoryId'] = data.categoryArray[data.categoryArray.length - 1];
                 console.log(data);
 
                 axios.post("/cus_category/save.action", data)

@@ -6,11 +6,6 @@
         </button>
     </#resource>
 
-<#resource code="cc_del">
-    <button type="button" class="btn btn-primary" onclick="tableDeleteClickHandler()">
-        <i class="fa fa-trash-o"></i> 删除
-    </button>
-</#resource>
 <#resource code="cc_on">
     <button type="button" class="btn btn-primary" onclick="tableUnFreezeClickHandler()">
         <i class="fa fa-play"></i> 启用
@@ -26,6 +21,7 @@
     <tr>
         <th scope="col"></th>
         <th scope="col">品类名称</th>
+        <th scope="col">品类别名</th>
         <th scope="col">快捷编码</th>
         <th scope="col">拼音全写</th>
         <th scope="col">拼音简写</th>
@@ -35,15 +31,16 @@
     <tr data-name="${o.name!}">
         <td style="text-align: center"><input type="radio" value="${o.id}" name="ck"/></td>
         <td>${o.name!}</td>
+        <td>${o.alias!}</td>
         <td>${o.keycode!}</td>
         <td>${o.pingying!}</td>
         <td>${o.pyInitials!}</td>
         <td>
-            <% if(o.state==1){ %>
-            已启用
-            <% } %>
-            <% else if(o.state==2){ %>
+            <% if(o.state==2){ %>
             已禁用
+            <% } %>
+            <% else{ %>
+            已启用
             <% }%>
         </td>
     </tr>

@@ -9,6 +9,7 @@ import com.dili.assets.sdk.dto.DistrictDTO;
 import com.dili.assets.sdk.rpc.AssetsRpc;
 import com.dili.bd.util.LogBizTypeConst;
 import com.dili.bd.util.LoggerUtil;
+import com.dili.commons.glossary.YesOrNoEnum;
 import com.dili.logger.sdk.annotation.BusinessLogger;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.uap.sdk.domain.Department;
@@ -201,6 +202,7 @@ public class DistrictController {
         }
         UserTicket userTicket = SessionContext.getSessionContext().getUserTicket();
         input.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
+        input.setIsDelete(YesOrNoEnum.NO.getCode());
         if (input.getDepartmentId() == null) {
             List<Department> departments = departmentRpc.listUserAuthDepartmentByFirmId(userTicket.getId(), userTicket.getFirmId()).getData();
             long[] ids = departments.stream().mapToLong(Department::getId).toArray();

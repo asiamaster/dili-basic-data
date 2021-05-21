@@ -15,7 +15,8 @@
                     businessType: 1,
                     areaArray: [],
                     self: 0,
-                    sale: 0
+                    sale: 0,
+                    floor:""
                 },
                 formDesc: {
                     businessType: {
@@ -57,7 +58,7 @@
                         layout: 6,
                         required: true
                     },
-                    floor: {
+                    floorId: {
                         label: "楼层",
                         type: "select",
                         layout: 6,
@@ -65,7 +66,7 @@
                             clearable: true
                         },
                         optionsLinkageFields: ['areaArray'],
-                        prop: { text: 'name', value: 'name' },
+                        prop: { text: 'name', value: 'id' },
                         options: data => {
                             if (data.areaArray!==undefined && data.areaArray.length > 0) {
                                 let areaArray = data.areaArray;
@@ -242,14 +243,21 @@
             };
         },
         methods: {
-            handleRequest(data) {
+            handleRequest: function (data) {
                 // 转换一级区域和二级区域
                 let areaArray = data.areaArray;
                 data.area = areaArray[0];
                 if (areaArray.length > 1) {
                     data.secondArea = areaArray[1];
                 }
-
+                if (data.floorId) {
+                    let options = assets.$refs.assets.$refs.floorId[0].options;
+                    options.forEach(it =>{
+                        if(it.value == data.floorId){
+                            data.floor = it.text;
+                        }
+                    })
+                }
                 axios.post(rootPath + "${_url}", data)
                     .then(function (response) {
                         if (response.data.code != '200') {

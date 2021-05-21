@@ -18,7 +18,7 @@ package com.dili.bd.controller;
 import cn.hutool.core.collection.CollUtil;
 import com.dili.assets.sdk.dto.FloorDto;
 import com.dili.assets.sdk.dto.FloorQuery;
-import com.dili.bd.rpc.FloorRpc;
+import com.dili.assets.sdk.rpc.FloorRpc;
 import com.dili.commons.bstable.TableResult;
 import com.dili.ss.domain.BaseOutput;
 import com.dili.ss.metadata.ValueProviderUtils;

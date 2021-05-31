@@ -170,7 +170,7 @@ public class BoothController {
         array.put(data.getArea());
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
-            data.setSecondArea(null);
+            jsonObject.remove("secondArea");
         }
         jsonObject.set("areaArray", array);
         jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
@@ -363,7 +363,7 @@ public class BoothController {
         array.put(data.getArea());
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
-            data.setSecondArea(null);
+            jsonObject.remove("secondArea");
         }
         jsonObject.set("areaArray", array);
         jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));

@@ -170,6 +170,7 @@ public class BoothController {
         array.put(data.getArea());
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
+            data.setSecondArea(null);
         }
         jsonObject.set("areaArray", array);
         jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
@@ -362,6 +363,7 @@ public class BoothController {
         array.put(data.getArea());
         if (data.getSecondArea() != null) {
             array.put(data.getSecondArea());
+            data.setSecondArea(null);
         }
         jsonObject.set("areaArray", array);
         jsonObject.set("departmentId", JSONUtil.parseArray("[" + jsonObject.getStr("departmentId") + "]"));
@@ -440,11 +442,11 @@ public class BoothController {
             input.setArea(null);
         }
         Map metaData = new HashMap();
-        metaData.put("unit","{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"unit\"}");
-        metaData.put("level","{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"level\"}");
-        metaData.put("area","{\"provider\":\"districtProvider\",\"index\":50,\"field\":\"area\"}");
-        metaData.put("state","{\"provider\":\"boothStateProvider\",\"index\":50,\"field\":\"state\"}");
-        metaData.put("departmentId","{\"provider\":\"departmentBatchProvider\",\"index\":50,\"field\":\"departmentId\"}");
+        metaData.put("unit", "{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"unit\"}");
+        metaData.put("level", "{\"provider\":\"dataDictionaryValueProvider\",\"index\":50,\"field\":\"level\"}");
+        metaData.put("area", "{\"provider\":\"districtProvider\",\"index\":50,\"field\":\"area\"}");
+        metaData.put("state", "{\"provider\":\"boothStateProvider\",\"index\":50,\"field\":\"state\"}");
+        metaData.put("departmentId", "{\"provider\":\"departmentBatchProvider\",\"index\":50,\"field\":\"departmentId\"}");
         input.setMetadata(metaData);
         final String json = assetsRpc.listPage(input);
         final cn.hutool.json.JSONObject jsonObject = JSONUtil.parseObj(json);

@@ -109,6 +109,12 @@
                             maxlength: 20,
                             showWordLimit: false
                         },
+                        valueFormatter (value) {
+                            return value.replace(/\s+/g,"");
+                        },
+                        displayFormatter (value) {
+                            return value.replace(/\s+/g,"");
+                        },
                         layout: 6,
                         required: true
                     },

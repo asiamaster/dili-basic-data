@@ -56,7 +56,7 @@
                             :prop="'splitList.' + scope.$index + '.numbers'"
                             :rules="rules.numbers"
                     >
-                        <el-input-number v-model="scope.row.numbers" :precision="2" :step="0.1" size="medium" :max="999999.99" :min="0.1"
+                        <el-input-number v-model="scope.row.numbers" :precision="2" :step="0.1" size="medium" :max="999999.99" :min="0.01"
                                          label="描述文字"></el-input-number>
                     </el-form-item>
                 </template>

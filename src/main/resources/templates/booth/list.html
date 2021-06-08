@@ -80,7 +80,7 @@
                 <div class="row  row-cols-6">
                     <div class="form-group col">
                         <label for="">资产编号</label>
-                        <input type="text" class="form-control isNaturalNum" name="name" placeholder="">
+                        <input type="text" class="form-control" name="name" placeholder="">
                     </div>
                     <div class="form-group col">
                         <label for="">楼层</label>
@@ -146,6 +146,11 @@
                             <option value="1">临时</option>
                             <option value="2">办公</option>
                         </select>
+                    </div>
+                    <div class="form-group col">
+                        <label for="level">等级</label>
+                        <select id="level" name="level" class="form-control"></select>
+                        <#bcomboProvider  _id="level" _provider="dataDictionaryValueProvider"  _queryParams='{dd_code:"level",required:false,emptyText:"-- 全部 --"}'  _valueField="value" _textField="text" />
                     </div>
                     <div class="col align-self-center mt-3">
                         <div class="form-inline">

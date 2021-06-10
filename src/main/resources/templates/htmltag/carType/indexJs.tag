@@ -22,6 +22,7 @@
     let _grid = $('#grid');
     let _form = $('#_form');
     let _modal = $('#_modal');
+    var dia;
 
     /*********************变量定义区 end***************/
 
@@ -43,11 +44,27 @@
      * 打开新增窗口
      */
     function openInsertHandler() {
-        $("#_modal").modal();
-
-        $('#_modal .modal-body').load("/carType/add.html");
-        _modal.find('.modal-title').text('车型新增');
-
+        dia = bs4pop.dialog({
+            id:'dialog-add',
+            content: "/carType/add.html",
+            title:'车型新增',
+            isIframe:true,
+            width:900,
+            height: 450,
+            backdrop: 'static',
+            /*btns:[
+                {label: '取消',className: 'btn-secondary'},
+                {
+                    label: "确定",
+                    className: "btn-primary",
+                    onClick: function (e, $iframe) {
+                        let diaWindow = $iframe[0].contentWindow;
+                        bui.util.debounce(diaWindow.addCertainClickHandler(), 1000, true);
+                        return false;
+                    },
+                },
+            ]*/
+        });
     }
 
     /**
@@ -59,10 +76,28 @@
             bs4pop.alert('请选中一条数据');
             return;
         }
-        $("#_modal").modal("show");
 
-        $('#_modal .modal-body').load("/carType/update.html?id=" + rows[0].id);
-        _modal.find('.modal-title').text('车型修改');
+        dia = bs4pop.dialog({
+            id:'dialog-edit',
+            content: "/carType/update.html?id=" + rows[0].id,
+            title:'车型修改',
+            isIframe:true,
+            width:900,
+            height: 450,
+            backdrop: 'static',
+            /*btns:[
+                {label: '取消',className: 'btn-secondary'},
+                {
+                    label: "确定",
+                    className: "btn-primary",
+                    onClick: function (e, $iframe) {
+                        let diaWindow = $iframe[0].contentWindow;
+                        bui.util.debounce(diaWindow.addCertainClickHandler(), 1000, true);
+                        return false;
+                    },
+                },
+            ]*/
+        });
     }
 
     function openDeleteHandler(id) {

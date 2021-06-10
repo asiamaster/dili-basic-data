@@ -14,6 +14,7 @@
     let _grid = $('#grid');
     let _form = $('#_form');
     let _modal = $('#_modal');
+    var dia;
 
     /*********************变量定义区 end***************/
 
@@ -31,16 +32,6 @@
     /******************************驱动执行区 end****************************/
 
     /*****************************************函数区 begin************************************/
-    /**
-     * 打开新增窗口
-     */
-    function openInsertHandler() {
-        $("#_modal").modal();
-
-        $('#_modal .modal-body').load("/carTypePublic/add.html");
-        _modal.find('.modal-title').text('车型新增');
-
-    }
 
     /**
      * 打开修改窗口
@@ -51,14 +42,33 @@
             bs4pop.alert('请选中一条数据');
             return;
         }
-        $("#_modal").modal("show");
+        var url = "";
         if(rows[0].id){
-			$('#_modal .modal-body').load("/carTypePublic/update.html?id=" + rows[0].id + "&carTypeId=" + rows[0].car_type_id + "&name=" + rows[0].carTypeName + "&number=" + rows[0].carTypeNumber);
+            url = "/carTypePublic/update.html?id=" + rows[0].id + "&carTypeId=" + rows[0].car_type_id + "&name=" + rows[0].carTypeName + "&number=" + rows[0].carTypeNumber;
         }else{
-        	$('#_modal .modal-body').load("/carTypePublic/update.html?" + "carTypeId=" + rows[0].car_type_id + "&name=" + rows[0].carTypeName + "&number=" + rows[0].carTypeNumber);
+            url = "/carTypePublic/update.html?" + "carTypeId=" + rows[0].car_type_id + "&name=" + rows[0].carTypeName + "&number=" + rows[0].carTypeNumber;
         }
-		
-        _modal.find('.modal-title').text('业务属性设置');
+        dia = bs4pop.dialog({
+            id:'dialog-add',
+            content: url,
+            title:'业务属性设置',
+            isIframe:true,
+            width:900,
+            height: 450,
+            backdrop: 'static',
+            /*btns:[
+                {label: '取消',className: 'btn-secondary'},
+                {
+                    label: "确定",
+                    className: "btn-primary",
+                    onClick: function (e, $iframe) {
+                        let diaWindow = $iframe[0].contentWindow;
+                        bui.util.debounce(diaWindow.addCertainClickHandler(), 1000, true);
+                        return false;
+                    },
+                },
+            ]*/
+        });
     }
 
     function openDeleteHandler(id) {

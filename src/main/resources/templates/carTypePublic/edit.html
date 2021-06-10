@@ -1,3 +1,4 @@
+<#bs4Body>
 <style>
     #updateForm .select2-container--default .select2-selection--single {
         border: 1px solid #DBDDE1;
@@ -63,15 +64,21 @@
 	        </div>
 	    </div>
 
-        <div class="text-right">
-            <button type="button" class="btn btn-secondary px-5" data-dismiss="modal" id="cancel">取消</button>
-            <button type="button" class="btn btn-primary px-5" id="editformSubmit">提交</button>
-        </div>
+		<div class="modal-footer-wrap">
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary px-5" onclick="javascript: parent.dia.hide()" id="cancel">取消</button>
+				<button type="button" class="btn btn-primary px-5" onclick="debounceSave($('#updateForm'))" id="editformSubmit">提交</button>
+			</div>
+		</div>
     </form>
 </div>
+</#bs4Body>
+<#carTypePublic_indexJs />
 <script>
 	var autoPass = '${obj.autoPass!}';
 	var autoSave = '${obj.autoSave!}';
+	// 保存数据
+	let debounceSave =  bui.util.debounce(addCertainClickHandler,1000,true)
 	$(function(){
 		if(autoPass && autoPass == 1){
 			$("#c_autoPassCheckbox").attr("checked", "checked");
@@ -144,7 +151,7 @@
 		}
 	}
     // 提交保存
-    $('#editformSubmit').on('click', function (e) {
+    function addCertainClickHandler(){
         if (!$('#updateForm').valid()) {
             return false;
         } else {
@@ -171,11 +178,12 @@
                 data: _formData,
                 processData: false,
                 contentType: false,
-                async: true,
+                async: false,
                 success: function (res) {
                     bui.loading.hide();
                     if (res.code == "200") {
-                        window.location.reload();
+						parent.dia.hide();
+						parent.queryDataHandler();
                     } else {
                         bui.loading.hide();
                         bs4pop.alert(res.result, {type: 'error'});
@@ -187,7 +195,7 @@
                 }
             });
         }
-    });
+    }
 
 </script>
 

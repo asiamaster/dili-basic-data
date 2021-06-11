@@ -64,10 +64,10 @@
                                 message: "名称只能是中文、英文字母和数字"
                             }],
                             valueFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             displayFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             on: {
                                 change: (value) => {
@@ -129,10 +129,10 @@
                             type: "cascader",
                             label: "父品类",
                             valueFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             displayFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             attrs: {
                                 filterable: true,
@@ -151,10 +151,10 @@
                             type: "input",
                             label: "拼音全写",
                             valueFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             displayFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z]+$", ""),
@@ -172,10 +172,10 @@
                             type: "input",
                             label: "拼音简写",
                             valueFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             displayFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z]+$", ""),
@@ -193,10 +193,10 @@
                             type: "input",
                             label: "快捷编码",
                             valueFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             displayFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z0-9]+$", ""),
@@ -214,10 +214,10 @@
                             type: "input",
                             label: "品类别名",
                             valueFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             displayFormatter(value) {
-                                return value.trim();
+                                return typeof value === 'string' ? value.trim() : value
                             },
                             rules: [{
                                 pattern: new RegExp("^[\u4e00-\u9fa5_a-zA-Z0-9]+$", ""),
@@ -259,7 +259,6 @@
         methods: {
             handleRequest(data) {
                 data['parent'] = data.parentArray[data.parentArray.length - 1];
-                console.log(data);
 
                 axios.post("/cus_category/save.action", data)
                     .then(function (response) {

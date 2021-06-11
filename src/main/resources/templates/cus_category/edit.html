@@ -267,7 +267,6 @@
         methods: {
             handleRequest(data) {
                 data['parent'] = data.parentArray[data.parentArray.length - 1];
-                console.log(data);
 
                 axios.post("/cus_category/save.action", data)
                     .then(function (response) {

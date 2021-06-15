@@ -45,8 +45,17 @@
                 pram: {"accessToken": "389af650c1fe4d74a7bbd42c850088a3.1rHkoUqx3d4r3uoyoqpBtw"},
                 formData: {pingying: '', pyInitials: '', name: '', categoryArray: []},
                 formConfig: {
+                    formBtns: [
+                        {
+                            text: '关闭',
+                            click: () => {
+                                $('#addModal').modal('hide');
+                            }
+                        }
+                    ],
                     isDialog: true,
                     isShowCancelBtn: false,
+                    isShowErrorNotify: false,
                     formBtnSize: 'small',
                     formAttrs:{size:'small'},
                     formDesc: {
@@ -63,12 +72,6 @@
                                 type: "string",
                                 message: "名称只能是中文、英文字母和数字"
                             }],
-                            valueFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
-                            displayFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
                             on: {
                                 change: (value) => {
                                     if (value !== undefined && value.trim() !== '') {
@@ -128,12 +131,6 @@
                             },
                             type: "cascader",
                             label: "父品类",
-                            valueFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
-                            displayFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
                             attrs: {
                                 filterable: true,
                                 clearable: true,
@@ -150,12 +147,6 @@
                         pingying: {
                             type: "input",
                             label: "拼音全写",
-                            valueFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
-                            displayFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z]+$", ""),
                                 type: "string",
@@ -171,12 +162,6 @@
                         pyInitials: {
                             type: "input",
                             label: "拼音简写",
-                            valueFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
-                            displayFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z]+$", ""),
                                 type: "string",
@@ -192,12 +177,6 @@
                         keycode: {
                             type: "input",
                             label: "快捷编码",
-                            valueFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
-                            displayFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z0-9]+$", ""),
                                 type: "string",
@@ -213,12 +192,6 @@
                         alias: {
                             type: "input",
                             label: "品类别名",
-                            valueFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
-                            displayFormatter(value) {
-                                return typeof value === 'string' ? value.trim() : value
-                            },
                             rules: [{
                                 pattern: new RegExp("^[\u4e00-\u9fa5_a-zA-Z0-9]+$", ""),
                                 type: "string",

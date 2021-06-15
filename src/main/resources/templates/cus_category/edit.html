@@ -49,8 +49,17 @@
                 pram: {"accessToken": "389af650c1fe4d74a7bbd42c850088a3.1rHkoUqx3d4r3uoyoqpBtw"},
                 formData: {pingying: '', pyInitials: '', name: '', categoryArray: []},
                 formConfig: {
+                    formBtns: [
+                        {
+                            text: '关闭',
+                            click: () => {
+                                $('#editModal').modal('hide');
+                            }
+                        }
+                    ],
                     isDialog: true,
                     isShowCancelBtn: false,
+                    isShowErrorNotify: false,
                     formBtnSize: 'small',
                     formAttrs:{size:'small'},
                     formDesc: {
@@ -68,12 +77,6 @@
                                 message: "名称只能是中文、英文字母和数字"
                             }],
                             disabled: true,
-                            valueFormatter(value) {
-                                return value.trim();
-                            },
-                            displayFormatter(value) {
-                                return value.trim();
-                            },
                             on: {
                                 change: (value) => {
                                     if (value !== undefined && value.trim() !== '') {
@@ -156,12 +159,6 @@
                         pingying: {
                             type: "input",
                             label: "拼音全写",
-                            valueFormatter(value) {
-                                return value.trim();
-                            },
-                            displayFormatter(value) {
-                                return value.trim();
-                            },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z]+$", ""),
                                 type: "string",
@@ -178,17 +175,11 @@
                         pyInitials: {
                             type: "input",
                             label: "拼音简写",
-                            valueFormatter(value) {
-                                return value.trim();
-                            },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z]+$", ""),
                                 type: "string",
                                 message: "拼音简写只能是字母"
                             }],
-                            displayFormatter(value) {
-                                return value.trim();
-                            },
                             attrs: {
                                 clearable: true,
                                 maxlength: 50,
@@ -200,17 +191,11 @@
                         keycode: {
                             type: "input",
                             label: "快捷编码",
-                            valueFormatter(value) {
-                                return value.trim();
-                            },
                             rules: [{
                                 pattern: new RegExp("^[a-zA-Z0-9]+$", ""),
                                 type: "string",
                                 message: "快捷编码只能是英文字母和数字"
                             }],
-                            displayFormatter(value) {
-                                return value.trim();
-                            },
                             attrs: {
                                 clearable: true,
                                 maxlength: 20,
@@ -221,12 +206,6 @@
                         alias: {
                             type: "input",
                             label: "品类别名",
-                            valueFormatter(value) {
-                                return value.trim();
-                            },
-                            displayFormatter(value) {
-                                return value.trim();
-                            },
                             rules: [{
                                 pattern: new RegExp("^[\u4e00-\u9fa5_a-zA-Z0-9]+$", ""),
                                 type: "string",

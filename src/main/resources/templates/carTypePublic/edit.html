@@ -33,7 +33,7 @@
 						        %>
 					        	<input type="checkbox" value="${tag.code!}" id="c_tagCheckbox_${tagLP.index!}" name="tag" class="custom-control-input" <% if(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code)){%>checked<%}%> onclick="changeInput(this)">
 						        <label class="custom-control-label" for="c_tagCheckbox_${tagLP.index!}" >${tag.name!}-</label>
-				        		<input type="text" class="custom-control-inline tagValue" name="tagExtWeight" id="weight_${tagLP.index}"  value="${ss!}" <% if(!(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code))){%> disabled  <%}%> number="true" minNumber min="0" max="999999999.99" placeholder="公斤"/>
+				        		<input type="text" class="custom-control-inline tagValue" name="tagExtWeight" id="weight_${tagLP.index}" required onfocus="if(value==0){value=''}" onblur="if(!value){value=0}" value="${ss!}" <% if(!(obj != null && obj.tag != null && strutil.contain(obj.tag, tag.code))){%> disabled  <%}%> number="true" minNumber min="0" max="999999999.99" placeholder="公斤"/>
 				        		<input type="hidden" value="${tag.code!}" name="tagExtCode">
 				        		<input type="hidden" value="${tag.name!}" name="tagExtName">
 					    	</div>
@@ -148,6 +148,9 @@
 			$(input[0]).attr("disabled", "disabled");
 		}else{
 			$(input[0]).attr("disabled", false);
+			if(!$(input[0]).val()){
+				$(input[0]).val(0);
+			}
 		}
 	}
     // 提交保存

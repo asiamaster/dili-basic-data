@@ -104,8 +104,9 @@ public class CusCategoryController {
     @ResponseBody
     public Object doImport(@RequestParam("file") MultipartFile file) {
         try {
+            count = 0;
             TimeInterval timer = DateUtil.timer();
-            assetsRpc.delByMarket(SessionContext.getSessionContext().getUserTicket().getFirmId());
+//            assetsRpc.delByMarket(SessionContext.getSessionContext().getUserTicket().getFirmId());
             ExcelReader reader = ExcelUtil.getReader(file.getInputStream(), 0);
             List<Map<String, Object>> readAll = reader.readAll();
             Set<String> yiji = new HashSet<>();
@@ -133,6 +134,22 @@ public class CusCategoryController {
                             if (it3.get(objects2[1].toString()).toString().equals(categoryNew2.getName())) {
                                 CategoryNew categoryNew3 = new CategoryNew();
                                 categoryNew3.setName(it3.get(objects2[2].toString()).toString());
+                                if (esanji.stream().anyMatch(itersanji -> itersanji.getName().equals(categoryNew3.getName()))) {
+                                    return;
+                                }
+                                List<CategoryNew> siji = new ArrayList<>();
+                                readAll.forEach(it4 -> {
+                                    Object[] objects3 = it4.keySet().toArray();
+                                    if (it4.get(objects3[2].toString()).toString().equals(categoryNew3.getName())) {
+                                        CategoryNew categoryNew4 = new CategoryNew();
+                                        categoryNew4.setName(it4.get(objects3[3].toString()).toString());
+                                        if (siji.stream().anyMatch(itersiji -> itersiji.getName().equals(categoryNew4.getName()))) {
+                                            return;
+                                        }
+                                        siji.add(categoryNew4);
+                                    }
+                                });
+                                categoryNew3.setChildren(siji);
                                 esanji.add(categoryNew3);
                             }
                         });
@@ -159,8 +176,6 @@ public class CusCategoryController {
                 cusCategory.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
                 cusCategory.setCreateTime(new Date());
                 cusCategory.setModifyTime(new Date());
-                cusCategory.setCategoryId(matchCategory(cusCategory.getName()));
-                cusCategory.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
                 BaseOutput<Integer> baseOutput = assetsRpc.saveCusCategory(cusCategory);
                 savechildren(baseOutput.getData().longValue(), categoryNew.getChildren());
             }
@@ -194,8 +209,6 @@ public class CusCategoryController {
                 cusCategory.setCreatorId(SessionContext.getSessionContext().getUserTicket().getId());
                 cusCategory.setCreateTime(new Date());
                 cusCategory.setModifyTime(new Date());
-                cusCategory.setCategoryId(matchCategory(cusCategory.getName()));
-                cusCategory.setMarketId(SessionContext.getSessionContext().getUserTicket().getFirmId());
                 BaseOutput<Integer> baseOutput = assetsRpc.saveCusCategory(cusCategory);
                 savechildren(baseOutput.getData().longValue(), categoryNew.getChildren());
             }

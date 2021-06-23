@@ -1,3 +1,10 @@
+<style>
+    .fixed-top-btn {
+        top: 0;
+        z-index: 9989;
+        position: fixed;
+    }
+</style>
 <div id="toolbar" class="btn-group" role="group" aria-label="Toolbar with button groups">
 
     <#resource code="cc_edit">
@@ -22,7 +29,7 @@
     </button>
 </#resource>
 </div>
-<table class="table table-bordered mt-3 text-center" >
+<table class="table table-bordered mt-3 text-center" style="margin-top: 10px;" >
     <tr>
         <th scope="col"></th>
         <th scope="col">品类名称</th>
@@ -51,6 +58,13 @@
 </table>
 
 <script type="text/javascript">
+    $(window).scroll(function() {
+        if ($(this).scrollTop() > 100) {
+            $("#toolbar").addClass("fixed-top-btn");
+        } else {
+            $("#toolbar").removeClass("fixed-top-btn");
+        }
+    });
     function tableUpdateClickHandler(id) {
         let size = $("input[name='ck']:checked").length;
         if (size === 0){
